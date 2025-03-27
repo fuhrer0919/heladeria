@@ -9,31 +9,75 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import sqlite3  # Import SQLite for database interaction
+from window.ventana_v2 import Ui_page_v2  # Import ventana_v2
 
 
 class Ui_page_v1(object):
     def setupUi(self, page_v1):
         page_v1.setObjectName("page_v1")
         page_v1.resize(400, 300)
+        page_v1.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)  # Disable close button
         self.label = QtWidgets.QLabel(page_v1)
-        self.label.setGeometry(QtCore.QRect(130, 40, 141, 31))  # Centered horizontally
+        self.label.setGeometry(QtCore.QRect(150, 40, 141, 31))
         self.label.setObjectName("label")
         self.username_in = QtWidgets.QLineEdit(page_v1)
-        self.username_in.setGeometry(QtCore.QRect(144, 90, 113, 24))  # Centered horizontally
+        self.username_in.setGeometry(QtCore.QRect(160, 90, 113, 24))
         self.username_in.setObjectName("username_in")
         self.user_ivalid = QtWidgets.QLabel(page_v1)
-        self.user_ivalid.setGeometry(QtCore.QRect(170, 130, 61, 16))  # Centered horizontally
+        self.user_ivalid.setGeometry(QtCore.QRect(120, 130, 161, 16))  # Adjusted width for full message
         self.user_ivalid.setText("")
         self.user_ivalid.setObjectName("user_ivalid")
         self.pushButton_2 = QtWidgets.QPushButton(page_v1)
-        self.pushButton_2.setGeometry(QtCore.QRect(210, 200, 91, 30))  # Centered horizontally
+        self.pushButton_2.setGeometry(QtCore.QRect(220, 200, 91, 30))
         self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton = QtWidgets.QPushButton(page_v1)
-        self.pushButton.setGeometry(QtCore.QRect(100, 200, 91, 30))  # Centered horizontally
+        self.pushButton.setGeometry(QtCore.QRect(110, 200, 91, 30))
         self.pushButton.setObjectName("pushButton")
+        self.pushButton.clicked.connect(self.validate_user)  # Connect OK button to validation
+        self.user_name = None  # Store the user's name
 
         self.retranslateUi(page_v1)
         QtCore.QMetaObject.connectSlotsByName(page_v1)
+
+    def validate_user(self):
+        input_text = self.username_in.text()
+        if not input_text.isdigit():  # Check if input is numeric
+            self.user_ivalid.setText("Usuario incorrecto")
+            return
+
+        user_id = int(input_text)
+        try:
+            # Connect to the database
+            connection = sqlite3.connect("/home/andres/Documentos/app_heladeria/databases/Pow_Ice")
+            cursor = connection.cursor()
+
+            # Query to check if the ID exists and fetch the name
+            cursor.execute("SELECT nombre FROM usuarios WHERE id = ?", (user_id,))
+            result = cursor.fetchone()
+
+            if result:
+                self.user_name = result[0]  # Store the user's name
+                self.user_ivalid.setText("Usuario correcto")
+                self.open_ventana_v2()  # Open ventana_v2 if user is valid
+            else:
+                self.user_ivalid.setText("Usuario incorrecto")
+
+        except sqlite3.Error as e:
+            self.user_ivalid.setText("Error de BD")
+            print(f"Database error: {e}")
+        finally:
+            if connection:
+                connection.close()
+
+    def open_ventana_v2(self):
+        self.window = QtWidgets.QWidget()
+        self.ui = Ui_page_v2()
+        self.ui.setupUi(self.window)
+        self.ui.set_user_active(self.user_name)  # Pass the user's name to ventana_v2
+        self.window.resize(1024, 600)  # Set resolution to 1024x600
+        self.window.show()
+        QtWidgets.QApplication.instance().activeWindow().hide()  # Hide the current window
 
     def retranslateUi(self, page_v1):
         _translate = QtCore.QCoreApplication.translate

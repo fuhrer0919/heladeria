@@ -1,0 +1,4 @@
+
+INSERT INTO usuarios (nombre, CC, Movil,fecha_ingreso) VALUES ('Deicy Alarcon',1234567890, 3114950728,'2025-01-05');
+-- Consultar datos de la tabla usuarios
+SELECT * FROM usuarios;

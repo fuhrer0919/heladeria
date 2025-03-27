@@ -16,6 +16,7 @@ class Ui_main(object):
     def setupUi(self, main):
         main.setObjectName("main")
         main.resize(1024, 600)
+        main.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)  # Disable close button
         self.ventas = QtWidgets.QPushButton(main)
         self.ventas.setGeometry(QtCore.QRect(411, 150, 202, 48))  # Centered horizontally
         self.ventas.setObjectName("ventas")
