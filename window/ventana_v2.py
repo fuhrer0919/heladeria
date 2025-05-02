@@ -25,6 +25,12 @@ class Ui_page_v2(object):
         self.Helados = QtWidgets.QPushButton(page_v2)
         self.Helados.setGeometry(QtCore.QRect(160, 30, 91, 30))
         self.Helados.setObjectName("Helados")
+        self.Helados.clicked.connect(self.show_cono1)  # Connect Helados button to show_cono1 function
+        self.Cono1 = QtWidgets.QPushButton(page_v2)
+        self.Cono1.setGeometry(QtCore.QRect(260, 30, 91, 30))  # Position to the right of Helados
+        self.Cono1.setObjectName("Cono1")
+        self.Cono1.hide()  # Initially hidden
+        self.Cono1.clicked.connect(self.add_cono1)  # Connect Cono1 button to add_cono1 function
         self.Paletas = QtWidgets.QPushButton(page_v2)
         self.Paletas.setGeometry(QtCore.QRect(160, 60, 91, 30))
         self.Paletas.setObjectName("Paletas")
@@ -65,11 +71,19 @@ class Ui_page_v2(object):
         self.retranslateUi(page_v2)
         QtCore.QMetaObject.connectSlotsByName(page_v2)
 
+    def show_cono1(self):
+        self.Cono1.show()  # Show the Cono1 button when Helados is clicked
+
+    def add_cono1(self):
+        # TODO: Implement the logic to add Cono1 to the order
+        pass
+
     def retranslateUi(self, page_v2):
         _translate = QtCore.QCoreApplication.translate
         page_v2.setWindowTitle(_translate("page_v2", "page_v2"))
         self.user_active.setText(_translate("page_v2", "usuario activo: _____"))
         self.Helados.setText(_translate("page_v2", "Helados"))
+        self.Cono1.setText(_translate("page_v2", "Cono 1"))
         self.Paletas.setText(_translate("page_v2", "Paletas"))
         self.Obleas.setText(_translate("page_v2", "Obleas"))
         self.Brownie.setText(_translate("page_v2", "Brownie"))
