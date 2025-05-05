@@ -15,6 +15,7 @@ from window.ventana_v2 import Ui_page_v2  # Import ventana_v2
 
 class Ui_page_v1(object):
     def setupUi(self, page_v1):
+        self.page_v1 = page_v1  # Guardar referencia a la ventana
         page_v1.setObjectName("page_v1")
         page_v1.resize(400, 300)
         page_v1.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)  # Disable close button
@@ -31,6 +32,7 @@ class Ui_page_v1(object):
         self.pushButton_2 = QtWidgets.QPushButton(page_v1)
         self.pushButton_2.setGeometry(QtCore.QRect(220, 200, 91, 30))
         self.pushButton_2.setObjectName("pushButton_2")
+        self.pushButton_2.clicked.connect(self.go_back)  # Conectar el botón Atrás
         self.pushButton = QtWidgets.QPushButton(page_v1)
         self.pushButton.setGeometry(QtCore.QRect(110, 200, 91, 30))
         self.pushButton.setObjectName("pushButton")
@@ -39,6 +41,23 @@ class Ui_page_v1(object):
 
         self.retranslateUi(page_v1)
         QtCore.QMetaObject.connectSlotsByName(page_v1)
+
+    def go_back(self):
+        try:
+            # Obtener la ventana principal
+            main_window = None
+            for widget in QtWidgets.QApplication.topLevelWidgets():
+                if isinstance(widget, QtWidgets.QMainWindow):
+                    main_window = widget
+                    break
+            
+            if main_window:
+                main_window.show()
+                self.page_v1.close()
+            else:
+                print("No se encontró la ventana principal")
+        except Exception as e:
+            print(f"Error al volver a la ventana principal: {e}")
 
     def validate_user(self):
         input_text = self.username_in.text()
