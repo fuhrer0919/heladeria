@@ -31,12 +31,100 @@ class Ui_page_v2(object):
         self.Cono1.setObjectName("Cono1")
         self.Cono1.hide()  # Initially hidden
         self.Cono1.clicked.connect(self.add_cono1)  # Connect Cono1 button to add_cono1 function
+        self.Cono2 = QtWidgets.QPushButton(page_v2)
+        self.Cono2.setGeometry(QtCore.QRect(260, 70, 91, 30))  # Debajo de Cono1
+        self.Cono2.setObjectName("Cono2")
+        self.Cono2.hide()
+        self.Cono2.clicked.connect(self.add_cono2)
+        self.Canasta2 = QtWidgets.QPushButton(page_v2)
+        self.Canasta2.setGeometry(QtCore.QRect(360, 30, 91, 30))  # A la derecha de Cono1 (260+91+9=360)
+        self.Canasta2.setObjectName("Canasta2")
+        self.Canasta2.hide()  # Inicialmente oculto
+        self.Canasta2.clicked.connect(self.add_canasta2)
+
+        # --- Nuevos botones debajo de Canasta2 ---
+        self.Canasta3 = QtWidgets.QPushButton(page_v2)
+        self.Canasta3.setGeometry(QtCore.QRect(360, 70, 91, 30))  # Debajo de Canasta2
+        self.Canasta3.setObjectName("Canasta3")
+        self.Canasta3.hide()
+        self.Canasta3.clicked.connect(self.add_canasta3)
+
+        self.SuperCanasta = QtWidgets.QPushButton(page_v2)
+        self.SuperCanasta.setGeometry(QtCore.QRect(360, 110, 91, 30))  # Debajo de Canasta3
+        self.SuperCanasta.setObjectName("SuperCanasta")
+        self.SuperCanasta.hide()
+        self.SuperCanasta.clicked.connect(self.add_supercanasta)
+
+        self.CanastaFrutal = QtWidgets.QPushButton(page_v2)
+        self.CanastaFrutal.setGeometry(QtCore.QRect(360, 150, 91, 30))  # Debajo de SuperCanasta
+        self.CanastaFrutal.setObjectName("CanastaFrutal")
+        self.CanastaFrutal.hide()
+        self.CanastaFrutal.clicked.connect(self.add_canastafrutal)
+
+        self.CanastaAlaska = QtWidgets.QPushButton(page_v2)
+        self.CanastaAlaska.setGeometry(QtCore.QRect(360, 190, 91, 30))  # Debajo de CanastaFrutal
+        self.CanastaAlaska.setObjectName("CanastaAlaska")
+        self.CanastaAlaska.hide()
+        self.CanastaAlaska.clicked.connect(self.add_canastaalaska)
+
+        self.CanastaPowIce = QtWidgets.QPushButton(page_v2)
+        self.CanastaPowIce.setGeometry(QtCore.QRect(360, 230, 91, 30))  # Debajo de CanastaAlaska
+        self.CanastaPowIce.setObjectName("CanastaPowIce")
+        self.CanastaPowIce.hide()
+        self.CanastaPowIce.clicked.connect(self.add_canastapowice)
+
         self.Paletas = QtWidgets.QPushButton(page_v2)
         self.Paletas.setGeometry(QtCore.QRect(160, 60, 91, 30))
         self.Paletas.setObjectName("Paletas")
+        self.Paletas.clicked.connect(self.show_refrescante)  # Conectar a la función para mostrar Refrescante
+
+        # Botón Refrescante (a la derecha de Paletas)
+        self.Refrescante = QtWidgets.QPushButton(page_v2)
+        self.Refrescante.setGeometry(QtCore.QRect(260, 30, 91, 30))  # A la derecha de Paletas
+        self.Refrescante.setObjectName("Refrescante")
+        self.Refrescante.hide()
+        self.Refrescante.clicked.connect(self.add_refrescante)
+
+        # Botón Cremosa (debajo de Refrescante)
+        self.Cremosa = QtWidgets.QPushButton(page_v2)
+        self.Cremosa.setGeometry(QtCore.QRect(260, 70, 91, 30))  # Debajo de Refrescante
+        self.Cremosa.setObjectName("Cremosa")
+        self.Cremosa.hide()
+        self.Cremosa.clicked.connect(self.add_cremosa)
+
+        # Botón Super Paleta (debajo de Cremosa)
+        self.SuperPaleta = QtWidgets.QPushButton(page_v2)
+        self.SuperPaleta.setGeometry(QtCore.QRect(260, 110, 91, 30))  # Debajo de Cremosa
+        self.SuperPaleta.setObjectName("SuperPaleta")
+        self.SuperPaleta.hide()
+        self.SuperPaleta.clicked.connect(self.add_superpaleta)
+
         self.Obleas = QtWidgets.QPushButton(page_v2)
         self.Obleas.setGeometry(QtCore.QRect(160, 90, 91, 30))
         self.Obleas.setObjectName("Obleas")
+        self.Obleas.clicked.connect(self.show_obleas)  # Conectar a la función para mostrar los botones de Obleas
+
+        # Botón Oblea Sencilla (a la derecha de Obleas)
+        self.ObleaSencilla = QtWidgets.QPushButton(page_v2)
+        self.ObleaSencilla.setGeometry(QtCore.QRect(260, 30, 91, 30))  # Primera columna a la derecha
+        self.ObleaSencilla.setObjectName("ObleaSencilla")
+        self.ObleaSencilla.hide()
+        self.ObleaSencilla.clicked.connect(self.add_obleasencilla)
+
+        # Botón Super oblea (debajo de Oblea Sencilla)
+        self.SuperOblea = QtWidgets.QPushButton(page_v2)
+        self.SuperOblea.setGeometry(QtCore.QRect(260, 70, 91, 30))  # Segunda columna a la derecha
+        self.SuperOblea.setObjectName("SuperOblea")
+        self.SuperOblea.hide()
+        self.SuperOblea.clicked.connect(self.add_superoblea)
+
+        # Botón Oblea PowIce (debajo de Super oblea)
+        self.ObleaPowIce = QtWidgets.QPushButton(page_v2)
+        self.ObleaPowIce.setGeometry(QtCore.QRect(260, 110, 91, 30))  # Tercera columna a la derecha
+        self.ObleaPowIce.setObjectName("ObleaPowIce")
+        self.ObleaPowIce.hide()
+        self.ObleaPowIce.clicked.connect(self.add_obleapowice)
+
         self.Brownie = QtWidgets.QPushButton(page_v2)
         self.Brownie.setGeometry(QtCore.QRect(160, 120, 91, 30))
         self.Brownie.setObjectName("Brownie")
@@ -71,11 +159,100 @@ class Ui_page_v2(object):
         self.retranslateUi(page_v2)
         QtCore.QMetaObject.connectSlotsByName(page_v2)
 
+    def hide_right_buttons(self):
+        # Oculta todos los botones a la derecha de la columna principal
+        self.Cono1.hide()
+        self.Cono2.hide()
+        self.Canasta2.hide()
+        self.Canasta3.hide()
+        self.SuperCanasta.hide()
+        self.CanastaFrutal.hide()
+        self.CanastaAlaska.hide()
+        self.CanastaPowIce.hide()
+        self.Refrescante.hide()
+        self.Cremosa.hide()
+        self.SuperPaleta.hide()
+        self.ObleaSencilla.hide()
+        self.SuperOblea.hide()
+        self.ObleaPowIce.hide()
+
     def show_cono1(self):
-        self.Cono1.show()  # Show the Cono1 button when Helados is clicked
+        self.hide_right_buttons()
+        self.Cono1.show()
+        self.Cono2.show()
+        self.Canasta2.show()
+        self.Canasta3.show()
+        self.SuperCanasta.show()
+        self.CanastaFrutal.show()
+        self.CanastaAlaska.show()
+        self.CanastaPowIce.show()
 
     def add_cono1(self):
         # TODO: Implement the logic to add Cono1 to the order
+        pass
+
+    def add_cono2(self):
+        # TODO: Implement the logic to add Cono2 to the order
+        pass
+
+    def add_canasta2(self):
+        # TODO: Implement the logic to add Canasta2 to the order
+        pass
+
+    def add_canasta3(self):
+        # TODO: Implement the logic to add Canasta3 to the order
+        pass
+
+    def add_supercanasta(self):
+        # TODO: Implement the logic to add SuperCanasta to the order
+        pass
+
+    def add_canastafrutal(self):
+        # TODO: Implement the logic to add CanastaFrutal to the order
+        pass
+
+    def add_canastaalaska(self):
+        # TODO: Implement the logic to add CanastaAlaska to the order
+        pass
+
+    def add_canastapowice(self):
+        # TODO: Implement the logic to add CanastaPowIce to the order
+        pass
+
+    def show_refrescante(self):
+        self.hide_right_buttons()
+        self.Refrescante.show()
+        self.Cremosa.show()
+        self.SuperPaleta.show()
+
+    def add_refrescante(self):
+        # TODO: Implement the logic to add Refrescante to the order
+        pass
+
+    def add_cremosa(self):
+        # TODO: Implement the logic to add Cremosa to the order
+        pass
+
+    def add_superpaleta(self):
+        # TODO: Implement the logic to add Super Paleta to the order
+        pass
+
+    def show_obleas(self):
+        self.hide_right_buttons()
+        self.ObleaSencilla.show()
+        self.SuperOblea.show()
+        self.ObleaPowIce.show()
+
+    def add_obleasencilla(self):
+        # TODO: Implement the logic to add Oblea Sencilla to the order
+        pass
+
+    def add_superoblea(self):
+        # TODO: Implement the logic to add Super oblea to the order
+        pass
+
+    def add_obleapowice(self):
+        # TODO: Implement the logic to add Oblea PowIce to the order
         pass
 
     def retranslateUi(self, page_v2):
@@ -84,8 +261,21 @@ class Ui_page_v2(object):
         self.user_active.setText(_translate("page_v2", "usuario activo: _____"))
         self.Helados.setText(_translate("page_v2", "Helados"))
         self.Cono1.setText(_translate("page_v2", "Cono 1"))
+        self.Cono2.setText(_translate("page_v2", "Cono 2"))
+        self.Canasta2.setText(_translate("page_v2", "Canasta 2"))
+        self.Canasta3.setText(_translate("page_v2", "Canasta 3"))
+        self.SuperCanasta.setText(_translate("page_v2", "Super Canasta"))
+        self.CanastaFrutal.setText(_translate("page_v2", "Canasta Frutal"))
+        self.CanastaAlaska.setText(_translate("page_v2", "Canasta Alaska"))
+        self.CanastaPowIce.setText(_translate("page_v2", "Canasta PowIce"))
         self.Paletas.setText(_translate("page_v2", "Paletas"))
+        self.Refrescante.setText(_translate("page_v2", "Refrescante"))
+        self.Cremosa.setText(_translate("page_v2", "Cremosa"))
+        self.SuperPaleta.setText(_translate("page_v2", "Super Paleta"))
         self.Obleas.setText(_translate("page_v2", "Obleas"))
+        self.ObleaSencilla.setText(_translate("page_v2", "Oblea Sencilla"))
+        self.SuperOblea.setText(_translate("page_v2", "Super Oblea"))
+        self.ObleaPowIce.setText(_translate("page_v2", "Oblea PowIce"))
         self.Brownie.setText(_translate("page_v2", "Brownie"))
         self.Waffles.setText(_translate("page_v2", "Waffles"))
         self.Fresas.setText(_translate("page_v2", "Fresas"))
@@ -109,3 +299,4 @@ if __name__ == "__main__":
     ui.setupUi(page_v2)
     page_v2.show()
     sys.exit(app.exec_())
+
