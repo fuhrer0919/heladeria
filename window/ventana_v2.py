@@ -58,6 +58,7 @@ class Ui_page_v2(object):
         self.Bebidas = QtWidgets.QPushButton(page_v2)
         self.Bebidas.setGeometry(QtCore.QRect(160, 210, 120, 30))  # Aumentado a 120 de ancho
         self.Bebidas.setObjectName("Bebidas")
+        self.Bebidas.clicked.connect(self.show_bebidas)
 
         self.Otros = QtWidgets.QPushButton(page_v2)
         self.Otros.setGeometry(QtCore.QRect(160, 240, 120, 30))  # Aumentado a 120 de ancho
@@ -232,6 +233,56 @@ class Ui_page_v2(object):
         self.WaffleCosmico.hide()
         self.WaffleCosmico.clicked.connect(self.add_wafflecosmico)
 
+        # Botones de Bebidas (primera columna)
+        self.MalteadaSencilla = QtWidgets.QPushButton(page_v2)
+        self.MalteadaSencilla.setGeometry(QtCore.QRect(290, 30, 140, 30))
+        self.MalteadaSencilla.setObjectName("MalteadaSencilla")
+        self.MalteadaSencilla.hide()
+        self.MalteadaSencilla.clicked.connect(self.add_malteadasencilla)
+
+        self.MalteadaSuper = QtWidgets.QPushButton(page_v2)
+        self.MalteadaSuper.setGeometry(QtCore.QRect(290, 70, 140, 30))
+        self.MalteadaSuper.setObjectName("MalteadaSuper")
+        self.MalteadaSuper.hide()
+        self.MalteadaSuper.clicked.connect(self.add_malteadasuper)
+
+        self.Smoothie = QtWidgets.QPushButton(page_v2)
+        self.Smoothie.setGeometry(QtCore.QRect(290, 110, 140, 30))
+        self.Smoothie.setObjectName("Smoothie")
+        self.Smoothie.hide()
+        self.Smoothie.clicked.connect(self.add_smoothie)
+
+        # Botones de Bebidas (segunda columna)
+        self.Limonada = QtWidgets.QPushButton(page_v2)
+        self.Limonada.setGeometry(QtCore.QRect(440, 30, 140, 30))
+        self.Limonada.setObjectName("Limonada")
+        self.Limonada.hide()
+        self.Limonada.clicked.connect(self.add_limonada)
+
+        self.JugoEnAgua = QtWidgets.QPushButton(page_v2)
+        self.JugoEnAgua.setGeometry(QtCore.QRect(440, 70, 140, 30))
+        self.JugoEnAgua.setObjectName("JugoEnAgua")
+        self.JugoEnAgua.hide()
+        self.JugoEnAgua.clicked.connect(self.add_jugoenagua)
+
+        self.JugoEnLeche = QtWidgets.QPushButton(page_v2)
+        self.JugoEnLeche.setGeometry(QtCore.QRect(440, 110, 140, 30))
+        self.JugoEnLeche.setObjectName("JugoEnLeche")
+        self.JugoEnLeche.hide()
+        self.JugoEnLeche.clicked.connect(self.add_jugoenleche)
+
+        self.GranizadoFrutal = QtWidgets.QPushButton(page_v2)
+        self.GranizadoFrutal.setGeometry(QtCore.QRect(440, 150, 140, 30))
+        self.GranizadoFrutal.setObjectName("GranizadoFrutal")
+        self.GranizadoFrutal.hide()
+        self.GranizadoFrutal.clicked.connect(self.add_granizadofrutal)
+
+        self.GranizadoCafe = QtWidgets.QPushButton(page_v2)
+        self.GranizadoCafe.setGeometry(QtCore.QRect(440, 190, 140, 30))
+        self.GranizadoCafe.setObjectName("GranizadoCafe")
+        self.GranizadoCafe.hide()
+        self.GranizadoCafe.clicked.connect(self.add_granizadocafe)
+
         self.retranslateUi(page_v2)
         QtCore.QMetaObject.connectSlotsByName(page_v2)
 
@@ -260,6 +311,14 @@ class Ui_page_v2(object):
         self.SuperWaffle.hide()
         self.MegaWaffles.hide()
         self.WaffleCosmico.hide()
+        self.MalteadaSencilla.hide()
+        self.MalteadaSuper.hide()
+        self.Smoothie.hide()
+        self.Limonada.hide()
+        self.JugoEnAgua.hide()
+        self.JugoEnLeche.hide()
+        self.GranizadoFrutal.hide()
+        self.GranizadoCafe.hide()
 
     def show_cono1(self):
         self.hide_right_buttons()
@@ -394,6 +453,49 @@ class Ui_page_v2(object):
         # TODO: Implement the logic to add Waffle Cosmico to the order
         pass
 
+    def show_bebidas(self):
+        self.hide_right_buttons()
+        self.MalteadaSencilla.show()
+        self.MalteadaSuper.show()
+        self.Smoothie.show()
+        self.Limonada.show()
+        self.JugoEnAgua.show()
+        self.JugoEnLeche.show()
+        self.GranizadoFrutal.show()
+        self.GranizadoCafe.show()
+
+    def add_malteadasencilla(self):
+        # TODO: Implement the logic to add Malteada Sencilla to the order
+        pass
+
+    def add_malteadasuper(self):
+        # TODO: Implement the logic to add Malteada Super to the order
+        pass
+
+    def add_smoothie(self):
+        # TODO: Implement the logic to add Smoothie to the order
+        pass
+
+    def add_limonada(self):
+        # TODO: Implement the logic to add Limonada to the order
+        pass
+
+    def add_jugoenagua(self):
+        # TODO: Implement the logic to add Jugo en Agua to the order
+        pass
+
+    def add_jugoenleche(self):
+        # TODO: Implement the logic to add Jugo en Leche to the order
+        pass
+
+    def add_granizadofrutal(self):
+        # TODO: Implement the logic to add Granizado Frutal to the order
+        pass
+
+    def add_granizadocafe(self):
+        # TODO: Implement the logic to add Granizado Cafe to the order
+        pass
+
     def go_back(self):
         try:
             # Importar aquí para evitar la importación circular
@@ -438,6 +540,14 @@ class Ui_page_v2(object):
         self.Waffles.setText(_translate("page_v2", "Waffles"))
         self.Fresas.setText(_translate("page_v2", "Fresas"))
         self.Bebidas.setText(_translate("page_v2", "Bebidas"))
+        self.MalteadaSencilla.setText(_translate("page_v2", "Malteada Sencilla"))
+        self.MalteadaSuper.setText(_translate("page_v2", "Malteada Super"))
+        self.Smoothie.setText(_translate("page_v2", "Smoothie"))
+        self.Limonada.setText(_translate("page_v2", "Limonada"))
+        self.JugoEnAgua.setText(_translate("page_v2", "Jugo En Agua"))
+        self.JugoEnLeche.setText(_translate("page_v2", "Jugo En Leche"))
+        self.GranizadoFrutal.setText(_translate("page_v2", "Granizado Frutal"))
+        self.GranizadoCafe.setText(_translate("page_v2", "Granizado Cafe"))
         self.Otros.setText(_translate("page_v2", "Otros"))
         self.pushButton_2.setText(_translate("page_v2", "Atrás"))
         self.pushButton.setText(_translate("page_v2", "OK"))
