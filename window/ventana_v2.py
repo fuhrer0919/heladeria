@@ -63,6 +63,7 @@ class Ui_page_v2(object):
         self.Otros = QtWidgets.QPushButton(page_v2)
         self.Otros.setGeometry(QtCore.QRect(160, 240, 120, 30))  # Aumentado a 120 de ancho
         self.Otros.setObjectName("Otros")
+        self.Otros.clicked.connect(self.show_otros)
 
         # Botones de Helados (segunda columna)
         self.Cono1 = QtWidgets.QPushButton(page_v2)
@@ -283,6 +284,44 @@ class Ui_page_v2(object):
         self.GranizadoCafe.hide()
         self.GranizadoCafe.clicked.connect(self.add_granizadocafe)
 
+        # Botones de Otros (primera columna)
+        self.BananaSplit = QtWidgets.QPushButton(page_v2)
+        self.BananaSplit.setGeometry(QtCore.QRect(290, 30, 140, 30))
+        self.BananaSplit.setObjectName("BananaSplit")
+        self.BananaSplit.hide()
+        self.BananaSplit.clicked.connect(self.add_bananasplit)
+
+        self.Topping = QtWidgets.QPushButton(page_v2)
+        self.Topping.setGeometry(QtCore.QRect(290, 70, 140, 30))
+        self.Topping.setObjectName("Topping")
+        self.Topping.hide()
+        self.Topping.clicked.connect(self.add_topping)
+
+        self.Empaque = QtWidgets.QPushButton(page_v2)
+        self.Empaque.setGeometry(QtCore.QRect(290, 110, 140, 30))
+        self.Empaque.setObjectName("Empaque")
+        self.Empaque.hide()
+        self.Empaque.clicked.connect(self.add_empaque)
+
+        # Botones de Otros (segunda columna)
+        self.TintoAmericano = QtWidgets.QPushButton(page_v2)
+        self.TintoAmericano.setGeometry(QtCore.QRect(440, 30, 140, 30))
+        self.TintoAmericano.setObjectName("TintoAmericano")
+        self.TintoAmericano.hide()
+        self.TintoAmericano.clicked.connect(self.add_tintoamericano)
+
+        self.Cappuccino = QtWidgets.QPushButton(page_v2)
+        self.Cappuccino.setGeometry(QtCore.QRect(440, 70, 140, 30))
+        self.Cappuccino.setObjectName("Cappuccino")
+        self.Cappuccino.hide()
+        self.Cappuccino.clicked.connect(self.add_cappuccino)
+
+        self.Mochaccino = QtWidgets.QPushButton(page_v2)
+        self.Mochaccino.setGeometry(QtCore.QRect(440, 110, 140, 30))
+        self.Mochaccino.setObjectName("Mochaccino")
+        self.Mochaccino.hide()
+        self.Mochaccino.clicked.connect(self.add_mochaccino)
+
         self.retranslateUi(page_v2)
         QtCore.QMetaObject.connectSlotsByName(page_v2)
 
@@ -319,6 +358,12 @@ class Ui_page_v2(object):
         self.JugoEnLeche.hide()
         self.GranizadoFrutal.hide()
         self.GranizadoCafe.hide()
+        self.BananaSplit.hide()
+        self.Topping.hide()
+        self.Empaque.hide()
+        self.TintoAmericano.hide()
+        self.Cappuccino.hide()
+        self.Mochaccino.hide()
 
     def show_cono1(self):
         self.hide_right_buttons()
@@ -496,6 +541,39 @@ class Ui_page_v2(object):
         # TODO: Implement the logic to add Granizado Cafe to the order
         pass
 
+    def show_otros(self):
+        self.hide_right_buttons()
+        self.BananaSplit.show()
+        self.Topping.show()
+        self.Empaque.show()
+        self.TintoAmericano.show()
+        self.Cappuccino.show()
+        self.Mochaccino.show()
+
+    def add_bananasplit(self):
+        # TODO: Implement the logic to add Banana Split to the order
+        pass
+
+    def add_topping(self):
+        # TODO: Implement the logic to add Topping to the order
+        pass
+
+    def add_empaque(self):
+        # TODO: Implement the logic to add Empaque to the order
+        pass
+
+    def add_tintoamericano(self):
+        # TODO: Implement the logic to add Tinto Americano to the order
+        pass
+
+    def add_cappuccino(self):
+        # TODO: Implement the logic to add Cappuccino to the order
+        pass
+
+    def add_mochaccino(self):
+        # TODO: Implement the logic to add Mochaccino to the order
+        pass
+
     def go_back(self):
         try:
             # Importar aquí para evitar la importación circular
@@ -561,6 +639,12 @@ class Ui_page_v2(object):
         self.SuperWaffle.setText(_translate("page_v2", "Super Waffle"))
         self.MegaWaffles.setText(_translate("page_v2", "Mega Waffles"))
         self.WaffleCosmico.setText(_translate("page_v2", "Waffle Cosmico"))
+        self.BananaSplit.setText(_translate("page_v2", "Banana Split"))
+        self.Topping.setText(_translate("page_v2", "Topping"))
+        self.Empaque.setText(_translate("page_v2", "Empaque"))
+        self.TintoAmericano.setText(_translate("page_v2", "Tinto Americano"))
+        self.Cappuccino.setText(_translate("page_v2", "Cappuccino"))
+        self.Mochaccino.setText(_translate("page_v2", "Mochaccino"))
 
     def set_user_active(self, user_name):
         self.user_active.setText(f"usuario activo: {user_name}")  # Update user_active label
