@@ -12,11 +12,17 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_page_v2(object):
+    # Class variable to track number of open windows
+    open_windows = 0
+
     def setupUi(self, page_v2):
         self.page_v2 = page_v2  # Guardar referencia a la ventana principal
         page_v2.setObjectName("page_v2")
         page_v2.resize(1024, 600)
         page_v2.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)  # Disable close button
+        
+        # Increment window counter when creating a new window
+        Ui_page_v2.open_windows += 1
         self.user_active = QtWidgets.QLabel(page_v2)
         self.user_active.setGeometry(QtCore.QRect(150, 0, 300, 20))
         self.user_active.setObjectName("user_active")
@@ -176,6 +182,17 @@ class Ui_page_v2(object):
         self.pushButton.setGeometry(QtCore.QRect(270, 300, 120, 30))  # Aumentado a 120 de ancho
         self.pushButton.setObjectName("pushButton")
 
+        self.plusButton = QtWidgets.QPushButton(page_v2)
+        self.plusButton.setGeometry(QtCore.QRect(270, 340, 120, 30))  # Below OK button
+        self.plusButton.setObjectName("plusButton")
+        self.plusButton.clicked.connect(self.open_new_window)
+
+        # Add minus button next to plus button
+        self.minusButton = QtWidgets.QPushButton(page_v2)
+        self.minusButton.setGeometry(QtCore.QRect(400, 340, 120, 30))  # Next to plus button
+        self.minusButton.setObjectName("minusButton")
+        self.minusButton.clicked.connect(self.close_current_window)
+
         self.pushButton_3 = QtWidgets.QPushButton(page_v2)
         self.pushButton_3.setGeometry(QtCore.QRect(40, 280, 120, 30))  # Aumentado a 120 de ancho
         self.pushButton_3.setObjectName("pushButton_3")
@@ -322,6 +339,12 @@ class Ui_page_v2(object):
         self.Mochaccino.hide()
         self.Mochaccino.clicked.connect(self.add_mochaccino)
 
+        self.Aromatica = QtWidgets.QPushButton(page_v2)
+        self.Aromatica.setGeometry(QtCore.QRect(440, 150, 140, 30))
+        self.Aromatica.setObjectName("Aromatica")
+        self.Aromatica.hide()
+        self.Aromatica.clicked.connect(self.add_aromatica)
+
         self.retranslateUi(page_v2)
         QtCore.QMetaObject.connectSlotsByName(page_v2)
 
@@ -364,6 +387,7 @@ class Ui_page_v2(object):
         self.TintoAmericano.hide()
         self.Cappuccino.hide()
         self.Mochaccino.hide()
+        self.Aromatica.hide()
 
     def show_cono1(self):
         self.hide_right_buttons()
@@ -549,6 +573,7 @@ class Ui_page_v2(object):
         self.TintoAmericano.show()
         self.Cappuccino.show()
         self.Mochaccino.show()
+        self.Aromatica.show()
 
     def add_bananasplit(self):
         # TODO: Implement the logic to add Banana Split to the order
@@ -573,6 +598,33 @@ class Ui_page_v2(object):
     def add_mochaccino(self):
         # TODO: Implement the logic to add Mochaccino to the order
         pass
+
+    def add_aromatica(self):
+        # TODO: Implement the logic to add Aromatica to the order
+        pass
+
+    def open_new_window(self):
+        try:
+            # Create new window instance
+            self.new_window = QtWidgets.QWidget()
+            self.new_ui = Ui_page_v2()
+            self.new_ui.setupUi(self.new_window)
+            # Get current user from the active window
+            current_user = self.user_active.text().replace("usuario activo: ", "")
+            self.new_ui.set_user_active(current_user)
+            self.new_window.resize(1024, 600)
+            self.new_window.show()
+        except Exception as e:
+            print(f"Error al abrir nueva ventana: {e}")
+
+    def close_current_window(self):
+        if Ui_page_v2.open_windows > 1:
+            # Decrement open windows counter before closing
+            Ui_page_v2.open_windows -= 1
+            # Close current window
+            self.page_v2.close()
+        else:
+            print("No se puede cerrar la última ventana")
 
     def go_back(self):
         try:
@@ -629,6 +681,8 @@ class Ui_page_v2(object):
         self.Otros.setText(_translate("page_v2", "Otros"))
         self.pushButton_2.setText(_translate("page_v2", "Atrás"))
         self.pushButton.setText(_translate("page_v2", "OK"))
+        self.plusButton.setText(_translate("page_v2", "+"))
+        self.minusButton.setText(_translate("page_v2", "-"))
         self.label.setText(_translate("page_v2", "Total:"))
         self.label_2.setText(_translate("page_v2", "111111"))
         self.pushButton_3.setText(_translate("page_v2", "Borrar"))
@@ -645,9 +699,11 @@ class Ui_page_v2(object):
         self.TintoAmericano.setText(_translate("page_v2", "Tinto Americano"))
         self.Cappuccino.setText(_translate("page_v2", "Cappuccino"))
         self.Mochaccino.setText(_translate("page_v2", "Mochaccino"))
+        self.Aromatica.setText(_translate("page_v2", "Aromatica"))
 
     def set_user_active(self, user_name):
-        self.user_active.setText(f"usuario activo: {user_name}")  # Update user_active label
+        """Update the user_active label with the given username"""
+        self.user_active.setText(f"usuario activo: {user_name}")
 
 
 if __name__ == "__main__":
