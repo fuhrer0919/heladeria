@@ -9,10 +9,13 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import sqlite3
+from PyQt5.QtWidgets import QTableWidgetItem
 
 
 class Ui_page_v2(object):
     # Class variable to track number of open windows
+    
     open_windows = 0
 
     def setupUi(self, page_v2):
@@ -26,321 +29,324 @@ class Ui_page_v2(object):
         self.user_active = QtWidgets.QLabel(page_v2)
         self.user_active.setGeometry(QtCore.QRect(150, 0, 300, 20))
         self.user_active.setObjectName("user_active")
-        self.tableView = QtWidgets.QTableView(page_v2)
-        self.tableView.setGeometry(QtCore.QRect(20, 40, 121, 211))
+        
+        # Configurar TableView
+        self.tableView = QtWidgets.QTableWidget(page_v2)
+        self.tableView.setGeometry(QtCore.QRect(20, 40, 400, 400))  # Aumentado el tamaño
         self.tableView.setObjectName("tableView")
+        self.tableView.setColumnCount(3)
+        self.tableView.setHorizontalHeaderLabels(["Producto", "Precio", "Cant"])
+        self.tableView.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.tableView.itemChanged.connect(self.calculate_total)  # Conectar el evento de cambio de celda
 
-        # Botones principales (columna izquierda)
+        # Botones principales (columna izquierda) - Movidos a la derecha del TableView
         self.Helados = QtWidgets.QPushButton(page_v2)
-        self.Helados.setGeometry(QtCore.QRect(160, 30, 120, 30))  # Aumentado a 120 de ancho
+        self.Helados.setGeometry(QtCore.QRect(440, 40, 120, 30))
         self.Helados.setObjectName("Helados")
         self.Helados.clicked.connect(self.show_cono1)
 
         self.Paletas = QtWidgets.QPushButton(page_v2)
-        self.Paletas.setGeometry(QtCore.QRect(160, 60, 120, 30))  # Aumentado a 120 de ancho
+        self.Paletas.setGeometry(QtCore.QRect(440, 80, 120, 30))
         self.Paletas.setObjectName("Paletas")
         self.Paletas.clicked.connect(self.show_refrescante)
 
         self.Obleas = QtWidgets.QPushButton(page_v2)
-        self.Obleas.setGeometry(QtCore.QRect(160, 90, 120, 30))  # Aumentado a 120 de ancho
+        self.Obleas.setGeometry(QtCore.QRect(440, 120, 120, 30))
         self.Obleas.setObjectName("Obleas")
         self.Obleas.clicked.connect(self.show_obleas)
 
         self.Brownie = QtWidgets.QPushButton(page_v2)
-        self.Brownie.setGeometry(QtCore.QRect(160, 120, 120, 30))  # Aumentado a 120 de ancho
+        self.Brownie.setGeometry(QtCore.QRect(440, 160, 120, 30))
         self.Brownie.setObjectName("Brownie")
         self.Brownie.clicked.connect(self.show_brownie)
 
         self.Fresas = QtWidgets.QPushButton(page_v2)
-        self.Fresas.setGeometry(QtCore.QRect(160, 150, 120, 30))  # Aumentado a 120 de ancho
+        self.Fresas.setGeometry(QtCore.QRect(440, 200, 120, 30))
         self.Fresas.setObjectName("Fresas")
         self.Fresas.clicked.connect(self.show_fresas)
 
         self.Waffles = QtWidgets.QPushButton(page_v2)
-        self.Waffles.setGeometry(QtCore.QRect(160, 180, 120, 30))  # Aumentado a 120 de ancho
+        self.Waffles.setGeometry(QtCore.QRect(440, 240, 120, 30))
         self.Waffles.setObjectName("Waffles")
         self.Waffles.clicked.connect(self.show_waffles)
 
         self.Bebidas = QtWidgets.QPushButton(page_v2)
-        self.Bebidas.setGeometry(QtCore.QRect(160, 210, 120, 30))  # Aumentado a 120 de ancho
+        self.Bebidas.setGeometry(QtCore.QRect(440, 280, 120, 30))
         self.Bebidas.setObjectName("Bebidas")
         self.Bebidas.clicked.connect(self.show_bebidas)
 
         self.Otros = QtWidgets.QPushButton(page_v2)
-        self.Otros.setGeometry(QtCore.QRect(160, 240, 120, 30))  # Aumentado a 120 de ancho
+        self.Otros.setGeometry(QtCore.QRect(440, 320, 120, 30))
         self.Otros.setObjectName("Otros")
         self.Otros.clicked.connect(self.show_otros)
 
-        # Botones de Helados (segunda columna)
+        # Botones de Helados (segunda columna) - Movidos más a la derecha
         self.Cono1 = QtWidgets.QPushButton(page_v2)
-        self.Cono1.setGeometry(QtCore.QRect(290, 30, 140, 30))  # Aumentado a 140 de ancho
+        self.Cono1.setGeometry(QtCore.QRect(580, 40, 140, 30))
         self.Cono1.setObjectName("Cono1")
         self.Cono1.hide()
         self.Cono1.clicked.connect(self.add_cono1)
 
         self.Cono2 = QtWidgets.QPushButton(page_v2)
-        self.Cono2.setGeometry(QtCore.QRect(290, 70, 140, 30))  # Aumentado a 140 de ancho
+        self.Cono2.setGeometry(QtCore.QRect(580, 80, 140, 30))
         self.Cono2.setObjectName("Cono2")
         self.Cono2.hide()
         self.Cono2.clicked.connect(self.add_cono2)
 
-        # Botones de Canasta (tercera columna)
+        # Botones de Canasta (tercera columna) - Movidos más a la derecha
         self.Canasta2 = QtWidgets.QPushButton(page_v2)
-        self.Canasta2.setGeometry(QtCore.QRect(440, 30, 140, 30))  # Aumentado a 140 de ancho
+        self.Canasta2.setGeometry(QtCore.QRect(740, 40, 140, 30))
         self.Canasta2.setObjectName("Canasta2")
         self.Canasta2.hide()
         self.Canasta2.clicked.connect(self.add_canasta2)
 
         self.Canasta3 = QtWidgets.QPushButton(page_v2)
-        self.Canasta3.setGeometry(QtCore.QRect(440, 70, 140, 30))  # Aumentado a 140 de ancho
+        self.Canasta3.setGeometry(QtCore.QRect(740, 80, 140, 30))
         self.Canasta3.setObjectName("Canasta3")
         self.Canasta3.hide()
         self.Canasta3.clicked.connect(self.add_canasta3)
 
         self.SuperCanasta = QtWidgets.QPushButton(page_v2)
-        self.SuperCanasta.setGeometry(QtCore.QRect(440, 110, 140, 30))  # Aumentado a 140 de ancho
+        self.SuperCanasta.setGeometry(QtCore.QRect(740, 120, 140, 30))
         self.SuperCanasta.setObjectName("SuperCanasta")
         self.SuperCanasta.hide()
         self.SuperCanasta.clicked.connect(self.add_supercanasta)
 
         self.CanastaFrutal = QtWidgets.QPushButton(page_v2)
-        self.CanastaFrutal.setGeometry(QtCore.QRect(440, 150, 140, 30))  # Aumentado a 140 de ancho
+        self.CanastaFrutal.setGeometry(QtCore.QRect(740, 160, 140, 30))
         self.CanastaFrutal.setObjectName("CanastaFrutal")
         self.CanastaFrutal.hide()
         self.CanastaFrutal.clicked.connect(self.add_canastafrutal)
 
         self.CanastaAlaska = QtWidgets.QPushButton(page_v2)
-        self.CanastaAlaska.setGeometry(QtCore.QRect(440, 190, 140, 30))  # Aumentado a 140 de ancho
+        self.CanastaAlaska.setGeometry(QtCore.QRect(740, 200, 140, 30))
         self.CanastaAlaska.setObjectName("CanastaAlaska")
         self.CanastaAlaska.hide()
         self.CanastaAlaska.clicked.connect(self.add_canastaalaska)
 
         self.CanastaPowIce = QtWidgets.QPushButton(page_v2)
-        self.CanastaPowIce.setGeometry(QtCore.QRect(440, 230, 140, 30))  # Aumentado a 140 de ancho
+        self.CanastaPowIce.setGeometry(QtCore.QRect(740, 240, 140, 30))
         self.CanastaPowIce.setObjectName("CanastaPowIce")
         self.CanastaPowIce.hide()
         self.CanastaPowIce.clicked.connect(self.add_canastapowice)
 
-        # Botones de Paletas
+        # Botones de control - Movidos a la parte inferior
+        self.pushButton_2 = QtWidgets.QPushButton(page_v2)
+        self.pushButton_2.setGeometry(QtCore.QRect(440, 450, 120, 30))
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.pushButton_2.clicked.connect(self.go_back)
+
+        self.pushButton = QtWidgets.QPushButton(page_v2)
+        self.pushButton.setGeometry(QtCore.QRect(580, 450, 120, 30))
+        self.pushButton.setObjectName("pushButton")
+
+        self.plusButton = QtWidgets.QPushButton(page_v2)
+        self.plusButton.setGeometry(QtCore.QRect(440, 490, 120, 30))
+        self.plusButton.setObjectName("plusButton")
+        self.plusButton.clicked.connect(self.open_new_window)
+
+        self.minusButton = QtWidgets.QPushButton(page_v2)
+        self.minusButton.setGeometry(QtCore.QRect(580, 490, 120, 30))
+        self.minusButton.setObjectName("minusButton")
+        self.minusButton.clicked.connect(self.close_current_window)
+
+        self.pushButton_3 = QtWidgets.QPushButton(page_v2)
+        self.pushButton_3.setGeometry(QtCore.QRect(20, 450, 120, 30))
+        self.pushButton_3.setObjectName("pushButton_3")
+        self.pushButton_3.clicked.connect(self.delete_last_row)
+
+        # Labels - Movidos a la parte inferior
+        self.label = QtWidgets.QLabel(page_v2)
+        self.label.setGeometry(QtCore.QRect(20, 490, 68, 22))
+        self.label.setObjectName("label")
+
+        self.label_2 = QtWidgets.QLabel(page_v2)
+        self.label_2.setGeometry(QtCore.QRect(90, 490, 68, 22))
+        self.label_2.setObjectName("label_2")
+
+        # Botones de Paletas - Ajustados a la nueva posición
         self.Refrescante = QtWidgets.QPushButton(page_v2)
-        self.Refrescante.setGeometry(QtCore.QRect(290, 30, 140, 30))  # Aumentado a 140 de ancho
+        self.Refrescante.setGeometry(QtCore.QRect(580, 40, 140, 30))
         self.Refrescante.setObjectName("Refrescante")
         self.Refrescante.hide()
         self.Refrescante.clicked.connect(self.add_refrescante)
 
         self.Cremosa = QtWidgets.QPushButton(page_v2)
-        self.Cremosa.setGeometry(QtCore.QRect(290, 70, 140, 30))  # Aumentado a 140 de ancho
+        self.Cremosa.setGeometry(QtCore.QRect(580, 80, 140, 30))
         self.Cremosa.setObjectName("Cremosa")
         self.Cremosa.hide()
         self.Cremosa.clicked.connect(self.add_cremosa)
 
         self.SuperPaleta = QtWidgets.QPushButton(page_v2)
-        self.SuperPaleta.setGeometry(QtCore.QRect(290, 110, 140, 30))  # Aumentado a 140 de ancho
+        self.SuperPaleta.setGeometry(QtCore.QRect(580, 120, 140, 30))
         self.SuperPaleta.setObjectName("SuperPaleta")
         self.SuperPaleta.hide()
         self.SuperPaleta.clicked.connect(self.add_superpaleta)
 
-        # Botones de Obleas
+        # Botones de Obleas - Ajustados a la nueva posición
         self.ObleaSencilla = QtWidgets.QPushButton(page_v2)
-        self.ObleaSencilla.setGeometry(QtCore.QRect(290, 30, 140, 30))  # Aumentado a 140 de ancho
+        self.ObleaSencilla.setGeometry(QtCore.QRect(580, 40, 140, 30))
         self.ObleaSencilla.setObjectName("ObleaSencilla")
         self.ObleaSencilla.hide()
         self.ObleaSencilla.clicked.connect(self.add_obleasencilla)
 
         self.SuperOblea = QtWidgets.QPushButton(page_v2)
-        self.SuperOblea.setGeometry(QtCore.QRect(290, 70, 140, 30))  # Aumentado a 140 de ancho
+        self.SuperOblea.setGeometry(QtCore.QRect(580, 80, 140, 30))
         self.SuperOblea.setObjectName("SuperOblea")
         self.SuperOblea.hide()
         self.SuperOblea.clicked.connect(self.add_superoblea)
 
         self.ObleaPowIce = QtWidgets.QPushButton(page_v2)
-        self.ObleaPowIce.setGeometry(QtCore.QRect(290, 110, 140, 30))  # Aumentado a 140 de ancho
+        self.ObleaPowIce.setGeometry(QtCore.QRect(580, 120, 140, 30))
         self.ObleaPowIce.setObjectName("ObleaPowIce")
         self.ObleaPowIce.hide()
         self.ObleaPowIce.clicked.connect(self.add_obleapowice)
 
-        # Botones de Brownie
+        # Botones de Brownie - Ajustados a la nueva posición
         self.BrownieHelado = QtWidgets.QPushButton(page_v2)
-        self.BrownieHelado.setGeometry(QtCore.QRect(290, 30, 140, 30))  # Aumentado a 140 de ancho
+        self.BrownieHelado.setGeometry(QtCore.QRect(580, 40, 140, 30))
         self.BrownieHelado.setObjectName("BrownieHelado")
         self.BrownieHelado.hide()
         self.BrownieHelado.clicked.connect(self.add_browniehelado)
 
         self.BrownieEspecial = QtWidgets.QPushButton(page_v2)
-        self.BrownieEspecial.setGeometry(QtCore.QRect(290, 70, 140, 30))  # Aumentado a 140 de ancho
+        self.BrownieEspecial.setGeometry(QtCore.QRect(580, 80, 140, 30))
         self.BrownieEspecial.setObjectName("BrownieEspecial")
         self.BrownieEspecial.hide()
         self.BrownieEspecial.clicked.connect(self.add_brownieespecial)
 
-        # Botones de control
-        self.pushButton_2 = QtWidgets.QPushButton(page_v2)
-        self.pushButton_2.setGeometry(QtCore.QRect(380, 300, 120, 30))  # Aumentado a 120 de ancho
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.pushButton_2.clicked.connect(self.go_back)
-
-        self.pushButton = QtWidgets.QPushButton(page_v2)
-        self.pushButton.setGeometry(QtCore.QRect(270, 300, 120, 30))  # Aumentado a 120 de ancho
-        self.pushButton.setObjectName("pushButton")
-
-        self.plusButton = QtWidgets.QPushButton(page_v2)
-        self.plusButton.setGeometry(QtCore.QRect(270, 340, 120, 30))  # Below OK button
-        self.plusButton.setObjectName("plusButton")
-        self.plusButton.clicked.connect(self.open_new_window)
-
-        # Add minus button next to plus button
-        self.minusButton = QtWidgets.QPushButton(page_v2)
-        self.minusButton.setGeometry(QtCore.QRect(400, 340, 120, 30))  # Next to plus button
-        self.minusButton.setObjectName("minusButton")
-        self.minusButton.clicked.connect(self.close_current_window)
-
-        self.pushButton_3 = QtWidgets.QPushButton(page_v2)
-        self.pushButton_3.setGeometry(QtCore.QRect(40, 280, 120, 30))  # Aumentado a 120 de ancho
-        self.pushButton_3.setObjectName("pushButton_3")
-
-        # Labels
-        self.label = QtWidgets.QLabel(page_v2)
-        self.label.setGeometry(QtCore.QRect(20, 250, 68, 22))
-        self.label.setObjectName("label")
-
-        self.label_2 = QtWidgets.QLabel(page_v2)
-        self.label_2.setGeometry(QtCore.QRect(70, 250, 68, 22))
-        self.label_2.setObjectName("label_2")
-
-        # Botón Fresas Sencillas (a la derecha de Fresas)
+        # Botones de Fresas - Ajustados a la nueva posición
         self.FresasSencillas = QtWidgets.QPushButton(page_v2)
-        self.FresasSencillas.setGeometry(QtCore.QRect(290, 30, 140, 30))  # Primera columna a la derecha
+        self.FresasSencillas.setGeometry(QtCore.QRect(580, 40, 140, 30))
         self.FresasSencillas.setObjectName("FresasSencillas")
         self.FresasSencillas.hide()
         self.FresasSencillas.clicked.connect(self.add_fresassencillas)
 
-        # Botón Super Fresas (debajo de Fresas Sencillas)
         self.SuperFresas = QtWidgets.QPushButton(page_v2)
-        self.SuperFresas.setGeometry(QtCore.QRect(290, 70, 140, 30))  # Segunda columna a la derecha
+        self.SuperFresas.setGeometry(QtCore.QRect(580, 80, 140, 30))
         self.SuperFresas.setObjectName("SuperFresas")
         self.SuperFresas.hide()
         self.SuperFresas.clicked.connect(self.add_superfresas)
 
-        # Botones de Waffles (a la derecha de Waffles)
+        # Botones de Waffles - Ajustados a la nueva posición
         self.WaffleSencillo = QtWidgets.QPushButton(page_v2)
-        self.WaffleSencillo.setGeometry(QtCore.QRect(290, 30, 140, 30))  # Primera columna a la derecha
+        self.WaffleSencillo.setGeometry(QtCore.QRect(580, 40, 140, 30))
         self.WaffleSencillo.setObjectName("WaffleSencillo")
         self.WaffleSencillo.hide()
         self.WaffleSencillo.clicked.connect(self.add_wafflesencillo)
 
         self.WaffleFrutal = QtWidgets.QPushButton(page_v2)
-        self.WaffleFrutal.setGeometry(QtCore.QRect(290, 70, 140, 30))  # Segunda columna a la derecha
+        self.WaffleFrutal.setGeometry(QtCore.QRect(580, 80, 140, 30))
         self.WaffleFrutal.setObjectName("WaffleFrutal")
         self.WaffleFrutal.hide()
         self.WaffleFrutal.clicked.connect(self.add_wafflefrutal)
 
         self.SuperWaffle = QtWidgets.QPushButton(page_v2)
-        self.SuperWaffle.setGeometry(QtCore.QRect(290, 110, 140, 30))  # Tercera columna a la derecha
+        self.SuperWaffle.setGeometry(QtCore.QRect(580, 120, 140, 30))
         self.SuperWaffle.setObjectName("SuperWaffle")
         self.SuperWaffle.hide()
         self.SuperWaffle.clicked.connect(self.add_superwaffle)
 
         self.MegaWaffles = QtWidgets.QPushButton(page_v2)
-        self.MegaWaffles.setGeometry(QtCore.QRect(290, 150, 140, 30))  # Cuarta columna a la derecha
+        self.MegaWaffles.setGeometry(QtCore.QRect(580, 160, 140, 30))
         self.MegaWaffles.setObjectName("MegaWaffles")
         self.MegaWaffles.hide()
         self.MegaWaffles.clicked.connect(self.add_megawaffles)
 
         self.WaffleCosmico = QtWidgets.QPushButton(page_v2)
-        self.WaffleCosmico.setGeometry(QtCore.QRect(290, 190, 140, 30))  # Quinta columna a la derecha
+        self.WaffleCosmico.setGeometry(QtCore.QRect(580, 200, 140, 30))
         self.WaffleCosmico.setObjectName("WaffleCosmico")
         self.WaffleCosmico.hide()
         self.WaffleCosmico.clicked.connect(self.add_wafflecosmico)
 
-        # Botones de Bebidas (primera columna)
+        # Botones de Bebidas - Ajustados a la nueva posición
         self.MalteadaSencilla = QtWidgets.QPushButton(page_v2)
-        self.MalteadaSencilla.setGeometry(QtCore.QRect(290, 30, 140, 30))
+        self.MalteadaSencilla.setGeometry(QtCore.QRect(580, 40, 140, 30))
         self.MalteadaSencilla.setObjectName("MalteadaSencilla")
         self.MalteadaSencilla.hide()
         self.MalteadaSencilla.clicked.connect(self.add_malteadasencilla)
 
         self.MalteadaSuper = QtWidgets.QPushButton(page_v2)
-        self.MalteadaSuper.setGeometry(QtCore.QRect(290, 70, 140, 30))
+        self.MalteadaSuper.setGeometry(QtCore.QRect(580, 80, 140, 30))
         self.MalteadaSuper.setObjectName("MalteadaSuper")
         self.MalteadaSuper.hide()
         self.MalteadaSuper.clicked.connect(self.add_malteadasuper)
 
         self.Smoothie = QtWidgets.QPushButton(page_v2)
-        self.Smoothie.setGeometry(QtCore.QRect(290, 110, 140, 30))
+        self.Smoothie.setGeometry(QtCore.QRect(580, 120, 140, 30))
         self.Smoothie.setObjectName("Smoothie")
         self.Smoothie.hide()
         self.Smoothie.clicked.connect(self.add_smoothie)
 
-        # Botones de Bebidas (segunda columna)
         self.Limonada = QtWidgets.QPushButton(page_v2)
-        self.Limonada.setGeometry(QtCore.QRect(440, 30, 140, 30))
+        self.Limonada.setGeometry(QtCore.QRect(740, 40, 140, 30))
         self.Limonada.setObjectName("Limonada")
         self.Limonada.hide()
         self.Limonada.clicked.connect(self.add_limonada)
 
         self.JugoEnAgua = QtWidgets.QPushButton(page_v2)
-        self.JugoEnAgua.setGeometry(QtCore.QRect(440, 70, 140, 30))
+        self.JugoEnAgua.setGeometry(QtCore.QRect(740, 80, 140, 30))
         self.JugoEnAgua.setObjectName("JugoEnAgua")
         self.JugoEnAgua.hide()
         self.JugoEnAgua.clicked.connect(self.add_jugoenagua)
 
         self.JugoEnLeche = QtWidgets.QPushButton(page_v2)
-        self.JugoEnLeche.setGeometry(QtCore.QRect(440, 110, 140, 30))
+        self.JugoEnLeche.setGeometry(QtCore.QRect(740, 120, 140, 30))
         self.JugoEnLeche.setObjectName("JugoEnLeche")
         self.JugoEnLeche.hide()
         self.JugoEnLeche.clicked.connect(self.add_jugoenleche)
 
         self.GranizadoFrutal = QtWidgets.QPushButton(page_v2)
-        self.GranizadoFrutal.setGeometry(QtCore.QRect(440, 150, 140, 30))
+        self.GranizadoFrutal.setGeometry(QtCore.QRect(740, 160, 140, 30))
         self.GranizadoFrutal.setObjectName("GranizadoFrutal")
         self.GranizadoFrutal.hide()
         self.GranizadoFrutal.clicked.connect(self.add_granizadofrutal)
 
         self.GranizadoCafe = QtWidgets.QPushButton(page_v2)
-        self.GranizadoCafe.setGeometry(QtCore.QRect(440, 190, 140, 30))
+        self.GranizadoCafe.setGeometry(QtCore.QRect(740, 200, 140, 30))
         self.GranizadoCafe.setObjectName("GranizadoCafe")
         self.GranizadoCafe.hide()
         self.GranizadoCafe.clicked.connect(self.add_granizadocafe)
 
-        # Botones de Otros (primera columna)
+        # Botones de Otros - Ajustados a la nueva posición
         self.BananaSplit = QtWidgets.QPushButton(page_v2)
-        self.BananaSplit.setGeometry(QtCore.QRect(290, 30, 140, 30))
+        self.BananaSplit.setGeometry(QtCore.QRect(580, 40, 140, 30))
         self.BananaSplit.setObjectName("BananaSplit")
         self.BananaSplit.hide()
         self.BananaSplit.clicked.connect(self.add_bananasplit)
 
         self.Topping = QtWidgets.QPushButton(page_v2)
-        self.Topping.setGeometry(QtCore.QRect(290, 70, 140, 30))
+        self.Topping.setGeometry(QtCore.QRect(580, 80, 140, 30))
         self.Topping.setObjectName("Topping")
         self.Topping.hide()
         self.Topping.clicked.connect(self.add_topping)
 
         self.Empaque = QtWidgets.QPushButton(page_v2)
-        self.Empaque.setGeometry(QtCore.QRect(290, 110, 140, 30))
+        self.Empaque.setGeometry(QtCore.QRect(580, 120, 140, 30))
         self.Empaque.setObjectName("Empaque")
         self.Empaque.hide()
         self.Empaque.clicked.connect(self.add_empaque)
 
-        # Botones de Otros (segunda columna)
         self.TintoAmericano = QtWidgets.QPushButton(page_v2)
-        self.TintoAmericano.setGeometry(QtCore.QRect(440, 30, 140, 30))
+        self.TintoAmericano.setGeometry(QtCore.QRect(740, 40, 140, 30))
         self.TintoAmericano.setObjectName("TintoAmericano")
         self.TintoAmericano.hide()
         self.TintoAmericano.clicked.connect(self.add_tintoamericano)
 
         self.Cappuccino = QtWidgets.QPushButton(page_v2)
-        self.Cappuccino.setGeometry(QtCore.QRect(440, 70, 140, 30))
+        self.Cappuccino.setGeometry(QtCore.QRect(740, 80, 140, 30))
         self.Cappuccino.setObjectName("Cappuccino")
         self.Cappuccino.hide()
         self.Cappuccino.clicked.connect(self.add_cappuccino)
 
         self.Mochaccino = QtWidgets.QPushButton(page_v2)
-        self.Mochaccino.setGeometry(QtCore.QRect(440, 110, 140, 30))
+        self.Mochaccino.setGeometry(QtCore.QRect(740, 120, 140, 30))
         self.Mochaccino.setObjectName("Mochaccino")
         self.Mochaccino.hide()
         self.Mochaccino.clicked.connect(self.add_mochaccino)
 
         self.Aromatica = QtWidgets.QPushButton(page_v2)
-        self.Aromatica.setGeometry(QtCore.QRect(440, 150, 140, 30))
+        self.Aromatica.setGeometry(QtCore.QRect(740, 160, 140, 30))
         self.Aromatica.setObjectName("Aromatica")
         self.Aromatica.hide()
         self.Aromatica.clicked.connect(self.add_aromatica)
@@ -401,36 +407,276 @@ class Ui_page_v2(object):
         self.CanastaPowIce.show()
 
     def add_cono1(self):
-        # TODO: Implement the logic to add Cono1 to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'cono 1'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            self.calculate_total()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_cono2(self):
-        # TODO: Implement the logic to add Cono2 to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'cono 2'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            self.calculate_total()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_canasta2(self):
-        # TODO: Implement the logic to add Canasta2 to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'canasta 2'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            self.calculate_total()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_canasta3(self):
-        # TODO: Implement the logic to add Canasta3 to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'canasta 3'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            self.calculate_total()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_supercanasta(self):
-        # TODO: Implement the logic to add SuperCanasta to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'super canasta'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            self.calculate_total()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_canastafrutal(self):
-        # TODO: Implement the logic to add CanastaFrutal to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'canasta frutal'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            self.calculate_total()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_canastaalaska(self):
-        # TODO: Implement the logic to add CanastaAlaska to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'canasta alaska'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            self.calculate_total()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_canastapowice(self):
-        # TODO: Implement the logic to add CanastaPowIce to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'canasta powice'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            self.calculate_total()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def show_refrescante(self):
         self.hide_right_buttons()
@@ -439,16 +685,103 @@ class Ui_page_v2(object):
         self.SuperPaleta.show()
 
     def add_refrescante(self):
-        # TODO: Implement the logic to add Refrescante to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'refrescante'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_cremosa(self):
-        # TODO: Implement the logic to add Cremosa to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'cremosa'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_superpaleta(self):
-        # TODO: Implement the logic to add Super Paleta to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'super paleta'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def show_obleas(self):
         self.hide_right_buttons()
@@ -457,16 +790,103 @@ class Ui_page_v2(object):
         self.ObleaPowIce.show()
 
     def add_obleasencilla(self):
-        # TODO: Implement the logic to add Oblea Sencilla to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'oblea sencilla'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_superoblea(self):
-        # TODO: Implement the logic to add Super oblea to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'super oblea'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_obleapowice(self):
-        # TODO: Implement the logic to add Oblea PowIce to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'oblea powice'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def show_brownie(self):
         self.hide_right_buttons()
@@ -474,12 +894,70 @@ class Ui_page_v2(object):
         self.BrownieEspecial.show()
 
     def add_browniehelado(self):
-        # TODO: Implement the logic to add Brownie Helado to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'brownie helado'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_brownieespecial(self):
-        # TODO: Implement the logic to add Brownie Especial to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'brownie especial'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def show_fresas(self):
         self.hide_right_buttons()
@@ -487,12 +965,70 @@ class Ui_page_v2(object):
         self.SuperFresas.show()
 
     def add_fresassencillas(self):
-        # TODO: Implement the logic to add Fresas Sencillas to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'fresas sencillas'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_superfresas(self):
-        # TODO: Implement the logic to add Super Fresas to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'super fresas'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def show_waffles(self):
         self.hide_right_buttons()
@@ -503,24 +1039,169 @@ class Ui_page_v2(object):
         self.WaffleCosmico.show()
 
     def add_wafflesencillo(self):
-        # TODO: Implement the logic to add Waffle Sencillo to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'waffle sencillo'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_wafflefrutal(self):
-        # TODO: Implement the logic to add Waffle Frutal to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'waffle frutal'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_superwaffle(self):
-        # TODO: Implement the logic to add Super Waffle to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'super waffle'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_megawaffles(self):
-        # TODO: Implement the logic to add Mega Waffles to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'mega waffles'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_wafflecosmico(self):
-        # TODO: Implement the logic to add Waffle Cosmico to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'waffle cosmico'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def show_bebidas(self):
         self.hide_right_buttons()
@@ -534,36 +1215,268 @@ class Ui_page_v2(object):
         self.GranizadoCafe.show()
 
     def add_malteadasencilla(self):
-        # TODO: Implement the logic to add Malteada Sencilla to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'malteada sencilla'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_malteadasuper(self):
-        # TODO: Implement the logic to add Malteada Super to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'malteada super'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_smoothie(self):
-        # TODO: Implement the logic to add Smoothie to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'smoothie'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_limonada(self):
-        # TODO: Implement the logic to add Limonada to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'limonada'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_jugoenagua(self):
-        # TODO: Implement the logic to add Jugo en Agua to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'jugo en agua'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_jugoenleche(self):
-        # TODO: Implement the logic to add Jugo en Leche to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'jugo en leche'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_granizadofrutal(self):
-        # TODO: Implement the logic to add Granizado Frutal to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'granizado frutal'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_granizadocafe(self):
-        # TODO: Implement the logic to add Granizado Cafe to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'granizado cafe'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def show_otros(self):
         self.hide_right_buttons()
@@ -576,32 +1489,235 @@ class Ui_page_v2(object):
         self.Aromatica.show()
 
     def add_bananasplit(self):
-        # TODO: Implement the logic to add Banana Split to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'banana split'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_topping(self):
-        # TODO: Implement the logic to add Topping to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'topping'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_empaque(self):
-        # TODO: Implement the logic to add Empaque to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'empaque'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_tintoamericano(self):
-        # TODO: Implement the logic to add Tinto Americano to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'tinto americano'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_cappuccino(self):
-        # TODO: Implement the logic to add Cappuccino to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'cappuccino'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_mochaccino(self):
-        # TODO: Implement the logic to add Mochaccino to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'mochaccino'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def add_aromatica(self):
-        # TODO: Implement the logic to add Aromatica to the order
-        pass
+        try:
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'aromatica'")
+            result = cursor.fetchone()
+            
+            if result:
+                product_name = str(result[0])
+                found = False
+                
+                for row in range(self.tableView.rowCount()):
+                    if self.tableView.item(row, 0).text() == product_name:
+                        current_cant = int(self.tableView.item(row, 2).text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                        found = True
+                        break
+                
+                if not found:
+                    row_position = self.tableView.rowCount()
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+            
+            conn.close()
+            
+        except sqlite3.Error as e:
+            pass
+        except Exception as e:
+            pass
 
     def open_new_window(self):
         try:
@@ -642,6 +1758,31 @@ class Ui_page_v2(object):
             self.page_v2.close()
         except Exception as e:
             print(f"Error al volver a la ventana anterior: {e}")
+
+    def delete_last_row(self):
+        """Elimina la fila seleccionada o la última fila si no hay selección"""
+        selected_items = self.tableView.selectedItems()
+        if selected_items:
+            # Obtener la fila del item seleccionado
+            row = selected_items[0].row()
+            # Eliminar la fila completa
+            self.tableView.removeRow(row)
+        elif self.tableView.rowCount() > 0:
+            # Si no hay selección, eliminar la última fila
+            self.tableView.removeRow(self.tableView.rowCount() - 1)
+        self.calculate_total()
+
+    def calculate_total(self):
+        """Calcula el total de la suma de precios por cantidades"""
+        total = 0
+        for row in range(self.tableView.rowCount()):
+            try:
+                price = float(self.tableView.item(row, 1).text())
+                quantity = int(self.tableView.item(row, 2).text())
+                total += price * quantity
+            except (ValueError, AttributeError):
+                continue
+        self.label_2.setText(f"{int(total)}")
 
     def retranslateUi(self, page_v2):
         _translate = QtCore.QCoreApplication.translate
@@ -684,7 +1825,7 @@ class Ui_page_v2(object):
         self.plusButton.setText(_translate("page_v2", "+"))
         self.minusButton.setText(_translate("page_v2", "-"))
         self.label.setText(_translate("page_v2", "Total:"))
-        self.label_2.setText(_translate("page_v2", "111111"))
+        self.label_2.setText(_translate("page_v2", "0"))
         self.pushButton_3.setText(_translate("page_v2", "Borrar"))
         self.FresasSencillas.setText(_translate("page_v2", "Fresas Sencillas"))
         self.SuperFresas.setText(_translate("page_v2", "Super Fresas"))
