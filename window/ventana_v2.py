@@ -26,6 +26,10 @@ class Ui_page_v2(object):
         
         # Increment window counter when creating a new window
         Ui_page_v2.open_windows += 1
+        
+        # Conectar el evento de cierre
+        page_v2.closeEvent = self.closeEvent
+        
         self.user_active = QtWidgets.QLabel(page_v2)
         self.user_active.setGeometry(QtCore.QRect(150, 0, 300, 20))
         self.user_active.setObjectName("user_active")
@@ -139,6 +143,7 @@ class Ui_page_v2(object):
         self.pushButton = QtWidgets.QPushButton(page_v2)
         self.pushButton.setGeometry(QtCore.QRect(580, 450, 120, 30))
         self.pushButton.setObjectName("pushButton")
+        self.pushButton.clicked.connect(self.open_ventana_v3)  # Conectar el botón OK con la nueva función
 
         self.plusButton = QtWidgets.QPushButton(page_v2)
         self.plusButton.setGeometry(QtCore.QRect(440, 490, 120, 30))
@@ -1744,29 +1749,40 @@ class Ui_page_v2(object):
 
     def go_back(self):
         try:
-            # Importar aquí para evitar la importación circular
-            from window.ventana_v1 import Ui_page_v1
-            
-            # Crear nueva ventana v1
-            self.window_v1 = QtWidgets.QWidget()
-            self.ui_v1 = Ui_page_v1()
-            self.ui_v1.setupUi(self.window_v1)
-            self.window_v1.resize(1024, 600)
-            self.window_v1.show()
-            
-            # Cerrar la ventana actual
-            self.page_v2.close()
+            # Si es la única ventana v2 abierta, volver a ventana v1
+            if Ui_page_v2.open_windows == 1:
+                # Importar aquí para evitar la importación circular
+                from window.ventana_v1 import Ui_page_v1
+                
+                # Crear nueva ventana v1
+                self.window_v1 = QtWidgets.QWidget()
+                self.ui_v1 = Ui_page_v1()
+                self.ui_v1.setupUi(self.window_v1)
+                self.window_v1.resize(1024, 600)
+                self.window_v1.show()
+                
+                # Cerrar la ventana actual
+                self.page_v2.close()
+            else:
+                # Si hay más ventanas v2 abiertas, solo cerrar la actual
+                self.page_v2.close()
         except Exception as e:
-            print(f"Error al volver a la ventana anterior: {e}")
+            print(f"Error al cerrar la ventana: {e}")
 
     def delete_last_row(self):
-        """Elimina la fila seleccionada o la última fila si no hay selección"""
+        """Elimina la fila completa si se selecciona 'Producto', o establece Cant=1 si se selecciona 'Cant'"""
         selected_items = self.tableView.selectedItems()
         if selected_items:
-            # Obtener la fila del item seleccionado
+            # Obtener la fila y columna del item seleccionado
             row = selected_items[0].row()
-            # Eliminar la fila completa
-            self.tableView.removeRow(row)
+            column = selected_items[0].column()
+            
+            if column == 0:  # Si se seleccionó la columna 'Producto'
+                # Eliminar la fila completa
+                self.tableView.removeRow(row)
+            elif column == 2:  # Si se seleccionó la columna 'Cant'
+                # Establecer la cantidad a 1
+                self.tableView.setItem(row, 2, QTableWidgetItem("1"))
         elif self.tableView.rowCount() > 0:
             # Si no hay selección, eliminar la última fila
             self.tableView.removeRow(self.tableView.rowCount() - 1)
@@ -1845,6 +1861,34 @@ class Ui_page_v2(object):
     def set_user_active(self, user_name):
         """Update the user_active label with the given username"""
         self.user_active.setText(f"usuario activo: {user_name}")
+
+    def open_ventana_v3(self):
+        try:
+            # Importar aquí para evitar la importación circular
+            from window.ventana_v3 import Ui_page_v3
+            
+            # Crear nueva ventana v3
+            self.window_v3 = QtWidgets.QWidget()
+            self.ui_v3 = Ui_page_v3()
+            self.ui_v3.setupUi(self.window_v3)
+            
+            # Obtener el usuario activo actual
+            current_user = self.user_active.text().replace("usuario activo: ", "")
+            self.ui_v3.set_user_active(current_user)
+            
+            # Obtener el total actual y pasarlo a v3
+            total = self.label_2.text()
+            self.ui_v3.set_total(total)
+            
+            self.window_v3.resize(1024, 600)
+            self.window_v3.show()
+        except Exception as e:
+            print(f"Error al abrir ventana v3: {e}")
+
+    def closeEvent(self, event):
+        """Maneja el evento de cierre de la ventana"""
+        Ui_page_v2.open_windows -= 1
+        event.accept()
 
 
 if __name__ == "__main__":
