@@ -28,42 +28,96 @@ class Ui_page_v3(object):
         self.datetime_label.setGeometry(QtCore.QRect(150, 20, 300, 20))
         self.datetime_label.setObjectName("datetime_label")
         
-        # Agregar label para el total
+        # Agregar label para el total con fuente más grande
         self.total_label = QtWidgets.QLabel(page_v3)
-        self.total_label.setGeometry(QtCore.QRect(150, 40, 300, 20))
+        self.total_label.setGeometry(QtCore.QRect(150, 40, 300, 40))  # Aumentado el alto para acomodar texto más grande
         self.total_label.setObjectName("total_label")
+        font = QtGui.QFont()
+        font.setPointSize(16)  # Tamaño de fuente más grande
+        self.total_label.setFont(font)
         
         # Timer para actualizar la fecha y hora
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update_datetime)
-        self.timer.start(1000)  # Actualizar cada segundo
+        self.timer.start(60000)  # Actualizar cada minuto (60000 ms)
+        
+        # Actualizar la fecha y hora inmediatamente
+        current_datetime = datetime.now().strftime("%d/%m/%Y %H:%M")
+        self.datetime_label.setText(f"Fecha y hora: {current_datetime}")
         
         self.label = QtWidgets.QLabel(page_v3)
-        self.label.setGeometry(QtCore.QRect(160, 70, 111, 22))
+        self.label.setGeometry(QtCore.QRect(160, 100, 111, 22))  # Movido más abajo
         self.label.setObjectName("label")
         
         self.radioButton = QtWidgets.QRadioButton(page_v3)
-        self.radioButton.setGeometry(QtCore.QRect(160, 100, 114, 28))
+        self.radioButton.setGeometry(QtCore.QRect(160, 130, 114, 28))  # Movido más abajo
         self.radioButton.setObjectName("radioButton")
+        self.radioButton.toggled.connect(self.on_efectivo_toggled)  # Conectar el evento de cambio
         
         self.radioButton_2 = QtWidgets.QRadioButton(page_v3)
-        self.radioButton_2.setGeometry(QtCore.QRect(160, 130, 114, 28))
+        self.radioButton_2.setGeometry(QtCore.QRect(160, 160, 114, 28))  # Movido más abajo
         self.radioButton_2.setObjectName("radioButton_2")
+        self.radioButton_2.toggled.connect(self.on_daviplata_toggled)  # Conectar el evento de cambio
         
         self.radioButton_3 = QtWidgets.QRadioButton(page_v3)
-        self.radioButton_3.setGeometry(QtCore.QRect(160, 160, 114, 28))
+        self.radioButton_3.setGeometry(QtCore.QRect(160, 190, 114, 28))  # Movido más abajo
         self.radioButton_3.setObjectName("radioButton_3")
+        self.radioButton_3.toggled.connect(self.on_pago_mixto_toggled)  # Conectar el evento de cambio
         
         self.radioButton_4 = QtWidgets.QRadioButton(page_v3)
-        self.radioButton_4.setGeometry(QtCore.QRect(160, 190, 114, 28))
+        self.radioButton_4.setGeometry(QtCore.QRect(160, 220, 114, 28))  # Movido más abajo
         self.radioButton_4.setObjectName("radioButton_4")
+        self.radioButton_4.toggled.connect(self.on_nequi_toggled)  # Conectar el evento de cambio
+        
+        # Label para "Recibido" (inicialmente oculto)
+        self.recibido_label = QtWidgets.QLabel(page_v3)
+        self.recibido_label.setGeometry(QtCore.QRect(400, 130, 111, 22))
+        self.recibido_label.setObjectName("recibido_label")
+        self.recibido_label.hide()
+        
+        # Campo de texto para el valor recibido (inicialmente oculto)
+        self.recibido_input = QtWidgets.QLineEdit(page_v3)
+        self.recibido_input.setGeometry(QtCore.QRect(400, 160, 111, 22))
+        self.recibido_input.setObjectName("recibido_input")
+        self.recibido_input.setValidator(QtGui.QIntValidator())  # Solo permite números enteros
+        self.recibido_input.hide()
+        
+        # Radio buttons para pago mixto (inicialmente ocultos)
+        self.radioButton_mixto_nequi = QtWidgets.QRadioButton(page_v3)
+        self.radioButton_mixto_nequi.setGeometry(QtCore.QRect(400, 130, 114, 28))
+        self.radioButton_mixto_nequi.setObjectName("radioButton_mixto_nequi")
+        self.radioButton_mixto_nequi.hide()
+        
+        self.radioButton_mixto_daviplata = QtWidgets.QRadioButton(page_v3)
+        self.radioButton_mixto_daviplata.setGeometry(QtCore.QRect(400, 160, 114, 28))
+        self.radioButton_mixto_daviplata.setObjectName("radioButton_mixto_daviplata")
+        self.radioButton_mixto_daviplata.hide()
+        
+        # Crear un grupo de botones para los radio buttons de pago mixto
+        self.mixto_button_group = QtWidgets.QButtonGroup(page_v3)
+        self.mixto_button_group.addButton(self.radioButton_mixto_nequi)
+        self.mixto_button_group.addButton(self.radioButton_mixto_daviplata)
+        
+        # Label para efectivo en pago mixto (inicialmente oculto)
+        self.efectivo_mixto_label = QtWidgets.QLabel(page_v3)
+        self.efectivo_mixto_label.setGeometry(QtCore.QRect(400, 190, 111, 22))
+        self.efectivo_mixto_label.setObjectName("efectivo_mixto_label")
+        self.efectivo_mixto_label.hide()
+        
+        # Campo de texto para efectivo en pago mixto (inicialmente oculto)
+        self.efectivo_mixto_input = QtWidgets.QLineEdit(page_v3)
+        self.efectivo_mixto_input.setGeometry(QtCore.QRect(400, 220, 111, 22))
+        self.efectivo_mixto_input.setObjectName("efectivo_mixto_input")
+        self.efectivo_mixto_input.setValidator(QtGui.QIntValidator())  # Solo permite números enteros
+        self.efectivo_mixto_input.hide()
         
         self.pushButton = QtWidgets.QPushButton(page_v3)
-        self.pushButton.setGeometry(QtCore.QRect(310, 240, 91, 30))
+        self.pushButton.setGeometry(QtCore.QRect(310, 270, 91, 30))  # Movido más abajo
         self.pushButton.setObjectName("pushButton")
+        self.pushButton.clicked.connect(self.on_ok_clicked)  # Conectar el evento de clic
         
         self.pushButton_2 = QtWidgets.QPushButton(page_v3)
-        self.pushButton_2.setGeometry(QtCore.QRect(200, 240, 91, 30))
+        self.pushButton_2.setGeometry(QtCore.QRect(200, 270, 91, 30))  # Movido más abajo
         self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton_2.clicked.connect(self.go_back)
 
@@ -83,18 +137,145 @@ class Ui_page_v3(object):
 
     def update_datetime(self):
         """Actualiza la fecha y hora en el label"""
-        current_datetime = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        self.datetime_label.setText(f"Fecha y hora: {current_datetime}")
+        try:
+            current_datetime = datetime.now().strftime("%d/%m/%Y %H:%M")
+            self.datetime_label.setText(f"Fecha y hora: {current_datetime}")
+        except Exception as e:
+            print(f"Error al actualizar la fecha y hora: {e}")
+            self.datetime_label.setText("Fecha y hora: --/--/---- --:--")
 
     def set_total(self, total):
         """Actualiza el label del total"""
         self.total_label.setText(f"Total: ${total}")
 
+    def clear_right_side(self):
+        """Limpia todos los elementos del lado derecho"""
+        self.recibido_label.hide()
+        self.recibido_input.hide()
+        self.recibido_input.clear()
+        self.radioButton_mixto_nequi.hide()
+        self.radioButton_mixto_daviplata.hide()
+        self.efectivo_mixto_label.hide()
+        self.efectivo_mixto_input.hide()
+        self.efectivo_mixto_input.clear()
+
+    def on_efectivo_toggled(self, checked):
+        """Maneja el evento cuando se selecciona/deselecciona el radio button de efectivo"""
+        self.clear_right_side()  # Limpiar todo primero
+        if checked:
+            self.recibido_label.show()
+            self.recibido_input.show()
+
+    def on_daviplata_toggled(self, checked):
+        """Maneja el evento cuando se selecciona/deselecciona el radio button de daviplata"""
+        self.clear_right_side()  # Limpiar todo primero
+
+    def on_pago_mixto_toggled(self, checked):
+        """Maneja el evento cuando se selecciona/deselecciona el radio button de pago mixto"""
+        self.clear_right_side()  # Limpiar todo primero
+        if checked:
+            self.radioButton_mixto_nequi.show()
+            self.radioButton_mixto_daviplata.show()
+            self.efectivo_mixto_label.show()
+            self.efectivo_mixto_input.show()
+
+    def on_nequi_toggled(self, checked):
+        """Maneja el evento cuando se selecciona/deselecciona el radio button de nequi"""
+        self.clear_right_side()  # Limpiar todo primero
+
+    def on_ok_clicked(self):
+        """Maneja el evento cuando se hace clic en el botón OK"""
+        try:
+            # Obtener el total actual
+            total = int(self.total_label.text().replace("Total: $", ""))
+            
+            # Validar el monto recibido si es pago en efectivo
+            if self.radioButton.isChecked():
+                if not self.recibido_input.text():
+                    QtWidgets.QMessageBox.warning(self.page_v3, "Advertencia", "Por favor ingrese el monto recibido")
+                    return
+                received = int(self.recibido_input.text())
+                if received < total:
+                    QtWidgets.QMessageBox.warning(self.page_v3, "Advertencia", 
+                        f"El monto recibido debe ser igual o mayor que (${total})")
+                    return
+            
+            # Validar el monto recibido si es pago mixto
+            if self.radioButton_3.isChecked():
+                if not self.efectivo_mixto_input.text():
+                    QtWidgets.QMessageBox.warning(self.page_v3, "Advertencia", "Por favor ingrese el monto en efectivo")
+                    return
+                received = int(self.efectivo_mixto_input.text())
+                if received < total:
+                    QtWidgets.QMessageBox.warning(self.page_v3, "Advertencia", 
+                        f"El monto en efectivo (${received}) es menor que el total (${total})")
+                    return
+            
+            # Importar aquí para evitar la importación circular
+            from window.ventana_vfinal import Ui_page_vfinal
+            
+            # Crear nueva ventana final
+            self.window_vfinal = QtWidgets.QWidget()
+            self.ui_vfinal = Ui_page_vfinal()
+            self.ui_vfinal.setupUi(self.window_vfinal)
+            
+            # Obtener el usuario activo actual
+            current_user = self.user_active.text().replace("usuario activo: ", "")
+            self.ui_vfinal.set_user_active(current_user)
+            
+            # Obtener el monto recibido si es pago en efectivo
+            received = None
+            if self.radioButton.isChecked() and self.recibido_input.text():
+                received = self.recibido_input.text()
+            elif self.radioButton_3.isChecked() and self.efectivo_mixto_input.text():
+                received = self.efectivo_mixto_input.text()
+            
+            self.ui_vfinal.set_total(str(total), received)
+            
+            # Obtener el método de pago seleccionado
+            payment_method = ""
+            if self.radioButton.isChecked():
+                payment_method = "Efectivo"
+                if self.recibido_input.text():
+                    payment_method += f" - Recibido: ${self.recibido_input.text()}"
+            elif self.radioButton_2.isChecked():
+                payment_method = "Daviplata"
+            elif self.radioButton_3.isChecked():
+                payment_method = "Pago Mixto"
+                if self.radioButton_mixto_nequi.isChecked():
+                    payment_method += " - Nequi"
+                elif self.radioButton_mixto_daviplata.isChecked():
+                    payment_method += " - Daviplata"
+                if self.efectivo_mixto_input.text():
+                    payment_method += f" - Efectivo: ${self.efectivo_mixto_input.text()}"
+            elif self.radioButton_4.isChecked():
+                payment_method = "Nequi"
+            
+            self.ui_vfinal.set_payment_method(payment_method)
+            
+            # Mostrar la ventana final
+            self.window_vfinal.resize(1024, 600)
+            self.window_vfinal.show()
+            
+            # Cerrar la ventana actual (v3)
+            self.page_v3.close()
+            
+            # Cerrar la ventana v2
+            # Buscar la ventana v2 en la lista de ventanas abiertas
+            for window in QtWidgets.QApplication.topLevelWidgets():
+                if isinstance(window, QtWidgets.QWidget) and window.objectName() == "page_v2":
+                    window.close()
+                    break
+                    
+        except Exception as e:
+            print(f"Error al abrir ventana final: {e}")
+
     def retranslateUi(self, page_v3):
         _translate = QtCore.QCoreApplication.translate
         page_v3.setWindowTitle(_translate("page_v3", "page_v3"))
         self.user_active.setText(_translate("page_v3", "usuario activo: _____"))
-        self.datetime_label.setText(_translate("page_v3", "Fecha y hora: "))
+        current_datetime = datetime.now().strftime("%d/%m/%Y %H:%M")
+        self.datetime_label.setText(f"Fecha y hora: {current_datetime}")
         self.total_label.setText(_translate("page_v3", "Total: $0"))
         self.label.setText(_translate("page_v3", "Medio De Pago"))
         self.radioButton.setText(_translate("page_v3", "Efectivo"))
@@ -103,6 +284,10 @@ class Ui_page_v3(object):
         self.radioButton_4.setText(_translate("page_v3", "Nequi"))
         self.pushButton_2.setText(_translate("page_v3", "Atrás"))
         self.pushButton.setText(_translate("page_v3", "OK"))
+        self.recibido_label.setText(_translate("page_v3", "Recibido:"))
+        self.radioButton_mixto_nequi.setText(_translate("page_v3", "Nequi"))
+        self.radioButton_mixto_daviplata.setText(_translate("page_v3", "Daviplata"))
+        self.efectivo_mixto_label.setText(_translate("page_v3", "Efectivo:"))
 
 
 if __name__ == "__main__":

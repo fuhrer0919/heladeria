@@ -1,0 +1,5 @@
+ahora quiero al pulsar el boton 'ok' se guarde en la tabla 'ventas' que esta en la db '/home/andres/Documentos/app_heladeria/databases/Pow_Ice' los siguientes valores:  fecha (extraer de 'datetime_label' la fecha solamente y almacenarla en dormato date sql), hora(extraer hora de 'datetime_label' y almacenarla en formato date sql'),
+
+ahora quiero que al pulsar el boton  'ok' en ventana en 'ventana_v3' se almacencen en la tabla 'ventas' que esta en la db '/home/andres/Documentos/app_heladeria/databases/Pow_Ice' los siguientes datos:  fecha( extraer solo la fecha de 'datetime_label'), id_usuario( con el valor de usuario activo buscar en la tabla llamada 'usuarios' y extraer el 'id' correspondiente al usuario)  id_product( con el valor de producto almacenado  buscar en la tabla llamada 'usuarios' y extraer el 'id' correspondiente al usuario)  
+
+

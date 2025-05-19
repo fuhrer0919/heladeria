@@ -1864,6 +1864,33 @@ class Ui_page_v2(object):
 
     def open_ventana_v3(self):
         try:
+            # Obtener el usuario activo actual
+            current_user = self.user_active.text().replace("usuario activo: ", "")
+            
+            # Crear lista temporal para almacenar los datos
+            productos_cantidad = []
+            
+            # Recorrer todas las filas de la tabla
+            for row in range(self.tableView.rowCount()):
+                try:
+                    producto = self.tableView.item(row, 0).text()
+                    cantidad = self.tableView.item(row, 2).text()
+                    productos_cantidad.append((producto, cantidad))
+                except (AttributeError, ValueError):
+                    continue
+            
+            # Mostrar los datos en la terminal
+            print("\nUsuario activo:")
+            print("-" * 40)
+            print(f"Usuario: {current_user}")
+            print("-" * 40)
+            
+            print("\nProductos seleccionados:")
+            print("-" * 40)
+            for producto, cantidad in productos_cantidad:
+                print(f"Producto: {producto:<30} Cantidad: {cantidad}")
+            print("-" * 40)
+            
             # Importar aquí para evitar la importación circular
             from window.ventana_v3 import Ui_page_v3
             
@@ -1872,8 +1899,7 @@ class Ui_page_v2(object):
             self.ui_v3 = Ui_page_v3()
             self.ui_v3.setupUi(self.window_v3)
             
-            # Obtener el usuario activo actual
-            current_user = self.user_active.text().replace("usuario activo: ", "")
+            # Pasar el usuario activo a v3
             self.ui_v3.set_user_active(current_user)
             
             # Obtener el total actual y pasarlo a v3
