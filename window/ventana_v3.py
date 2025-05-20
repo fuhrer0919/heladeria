@@ -10,9 +10,15 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from datetime import datetime
+import sqlite3
 
 
 class Ui_page_v3(object):
+    def __init__(self, productos_venta=None):
+        self.productos_venta = productos_venta or []
+        self.user_active = None
+        self.total = None
+
     def setupUi(self, page_v3):
         self.page_v3 = page_v3  # Guardar referencia a la ventana principal
         page_v3.setObjectName("page_v3")
@@ -110,6 +116,32 @@ class Ui_page_v3(object):
         self.efectivo_mixto_input.setObjectName("efectivo_mixto_input")
         self.efectivo_mixto_input.setValidator(QtGui.QIntValidator())  # Solo permite números enteros
         self.efectivo_mixto_input.hide()
+        self.efectivo_mixto_input.textChanged.connect(lambda: self.update_difference(self.efectivo_mixto_input, self.transferencia_mixto_input))
+
+        # Label para transferencia en pago mixto (inicialmente oculto)
+        self.transferencia_mixto_label = QtWidgets.QLabel(page_v3)
+        self.transferencia_mixto_label.setGeometry(QtCore.QRect(520, 190, 111, 22))
+        self.transferencia_mixto_label.setObjectName("transferencia_mixto_label")
+        self.transferencia_mixto_label.hide()
+        
+        # Campo de texto para transferencia en pago mixto (inicialmente oculto)
+        self.transferencia_mixto_input = QtWidgets.QLineEdit(page_v3)
+        self.transferencia_mixto_input.setGeometry(QtCore.QRect(520, 220, 111, 22))
+        self.transferencia_mixto_input.setObjectName("transferencia_mixto_input")
+        self.transferencia_mixto_input.setValidator(QtGui.QIntValidator())  # Solo permite números enteros
+        self.transferencia_mixto_input.hide()
+        self.transferencia_mixto_input.textChanged.connect(lambda: self.update_difference(self.transferencia_mixto_input, self.efectivo_mixto_input))
+
+        # Labels para mostrar las diferencias (inicialmente ocultos)
+        self.diferencia_efectivo_label = QtWidgets.QLabel(page_v3)
+        self.diferencia_efectivo_label.setGeometry(QtCore.QRect(400, 250, 111, 22))
+        self.diferencia_efectivo_label.setObjectName("diferencia_efectivo_label")
+        self.diferencia_efectivo_label.hide()
+
+        self.diferencia_transferencia_label = QtWidgets.QLabel(page_v3)
+        self.diferencia_transferencia_label.setGeometry(QtCore.QRect(520, 250, 111, 22))
+        self.diferencia_transferencia_label.setObjectName("diferencia_transferencia_label")
+        self.diferencia_transferencia_label.hide()
         
         self.pushButton = QtWidgets.QPushButton(page_v3)
         self.pushButton.setGeometry(QtCore.QRect(310, 270, 91, 30))  # Movido más abajo
@@ -158,6 +190,11 @@ class Ui_page_v3(object):
         self.efectivo_mixto_label.hide()
         self.efectivo_mixto_input.hide()
         self.efectivo_mixto_input.clear()
+        self.transferencia_mixto_label.hide()
+        self.transferencia_mixto_input.hide()
+        self.transferencia_mixto_input.clear()
+        self.diferencia_efectivo_label.hide()
+        self.diferencia_transferencia_label.hide()
 
     def on_efectivo_toggled(self, checked):
         """Maneja el evento cuando se selecciona/deselecciona el radio button de efectivo"""
@@ -178,97 +215,121 @@ class Ui_page_v3(object):
             self.radioButton_mixto_daviplata.show()
             self.efectivo_mixto_label.show()
             self.efectivo_mixto_input.show()
+            self.transferencia_mixto_label.show()
+            self.transferencia_mixto_input.show()
+            self.diferencia_efectivo_label.show()
+            self.diferencia_transferencia_label.show()
 
     def on_nequi_toggled(self, checked):
         """Maneja el evento cuando se selecciona/deselecciona el radio button de nequi"""
         self.clear_right_side()  # Limpiar todo primero
 
     def on_ok_clicked(self):
-        """Maneja el evento cuando se hace clic en el botón OK"""
         try:
-            # Obtener el total actual
-            total = int(self.total_label.text().replace("Total: $", ""))
+            # Verificar si se ha seleccionado algún método de pago
+            if not (self.radioButton.isChecked() or self.radioButton_2.isChecked() or 
+                   self.radioButton_3.isChecked() or self.radioButton_4.isChecked()):
+                QtWidgets.QMessageBox.warning(self.page_v3, "Advertencia", 
+                    "Por favor seleccione un método de pago")
+                return
             
-            # Validar el monto recibido si es pago en efectivo
+            # Obtener el tipo de pago seleccionado y la diferencia
+            diferencia = None  # Por defecto, la diferencia es NULL
             if self.radioButton.isChecked():
-                if not self.recibido_input.text():
-                    QtWidgets.QMessageBox.warning(self.page_v3, "Advertencia", "Por favor ingrese el monto recibido")
-                    return
-                received = int(self.recibido_input.text())
-                if received < total:
-                    QtWidgets.QMessageBox.warning(self.page_v3, "Advertencia", 
-                        f"El monto recibido debe ser igual o mayor que (${total})")
-                    return
-            
-            # Validar el monto recibido si es pago mixto
-            if self.radioButton_3.isChecked():
-                if not self.efectivo_mixto_input.text():
-                    QtWidgets.QMessageBox.warning(self.page_v3, "Advertencia", "Por favor ingrese el monto en efectivo")
-                    return
-                received = int(self.efectivo_mixto_input.text())
-                if received < total:
-                    QtWidgets.QMessageBox.warning(self.page_v3, "Advertencia", 
-                        f"El monto en efectivo (${received}) es menor que el total (${total})")
-                    return
-            
-            # Importar aquí para evitar la importación circular
-            from window.ventana_vfinal import Ui_page_vfinal
-            
-            # Crear nueva ventana final
-            self.window_vfinal = QtWidgets.QWidget()
-            self.ui_vfinal = Ui_page_vfinal()
-            self.ui_vfinal.setupUi(self.window_vfinal)
-            
-            # Obtener el usuario activo actual
-            current_user = self.user_active.text().replace("usuario activo: ", "")
-            self.ui_vfinal.set_user_active(current_user)
-            
-            # Obtener el monto recibido si es pago en efectivo
-            received = None
-            if self.radioButton.isChecked() and self.recibido_input.text():
-                received = self.recibido_input.text()
-            elif self.radioButton_3.isChecked() and self.efectivo_mixto_input.text():
-                received = self.efectivo_mixto_input.text()
-            
-            self.ui_vfinal.set_total(str(total), received)
-            
-            # Obtener el método de pago seleccionado
-            payment_method = ""
-            if self.radioButton.isChecked():
-                payment_method = "Efectivo"
-                if self.recibido_input.text():
-                    payment_method += f" - Recibido: ${self.recibido_input.text()}"
+                tipo_pago = "efectivo"
             elif self.radioButton_2.isChecked():
-                payment_method = "Daviplata"
+                tipo_pago = "daviplata"
             elif self.radioButton_3.isChecked():
-                payment_method = "Pago Mixto"
-                if self.radioButton_mixto_nequi.isChecked():
-                    payment_method += " - Nequi"
-                elif self.radioButton_mixto_daviplata.isChecked():
-                    payment_method += " - Daviplata"
-                if self.efectivo_mixto_input.text():
-                    payment_method += f" - Efectivo: ${self.efectivo_mixto_input.text()}"
+                tipo_pago = "pago mixto"
+                # Solo para pago mixto, obtener la diferencia del total
+                diferencia = float(self.total_label.text().replace("Total: $", "").replace(",", ""))
             elif self.radioButton_4.isChecked():
-                payment_method = "Nequi"
+                tipo_pago = "nequi"
             
-            self.ui_vfinal.set_payment_method(payment_method)
+            # Obtener el usuario activo
+            current_user = self.user_active.text().replace("usuario activo: ", "")
             
-            # Mostrar la ventana final
-            self.window_vfinal.resize(1024, 600)
-            self.window_vfinal.show()
+            # Obtener fecha y hora actual
+            fecha = datetime.now().strftime("%Y-%m-%d")
+            hora = datetime.now().strftime("%H:%M:%S")
             
-            # Cerrar la ventana actual (v3)
+            # Conectar a la base de datos
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+            
+            # Obtener id_usuario
+            cursor.execute("SELECT id FROM usuarios WHERE nombre = ?", (current_user,))
+            user_result = cursor.fetchone()
+            if not user_result:
+                print(f"Usuario '{current_user}' no encontrado en la base de datos.")
+                return
+            id_usuario = user_result[0]
+            
+            # Obtener id_tipo
+            cursor.execute("SELECT id FROM tipo_de_pago WHERE tipo = ?", (tipo_pago,))
+            tipo_result = cursor.fetchone()
+            if not tipo_result:
+                print(f"Tipo de pago '{tipo_pago}' no encontrado en la base de datos.")
+                return
+            id_tipo = tipo_result[0]
+            
+            # Insertar en la tabla ventas usando los datos recibidos
+            insertados = 0
+            for producto, cantidad in self.productos_venta:
+                print(f"Intentando insertar producto: {producto}, cantidad: {cantidad}")
+                
+                # Obtener id_product
+                cursor.execute("SELECT id FROM products WHERE product = ?", (producto,))
+                prod_result = cursor.fetchone()
+                if not prod_result:
+                    print(f"Producto '{producto}' no encontrado en la base de datos.")
+                    continue
+                id_product = prod_result[0]
+
+                # Insertar en la tabla ventas
+                try:
+                    cursor.execute(
+                        """INSERT INTO ventas (fecha, id_usuario, id_product, hora, id_tipo, diferencia, cant)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                        (fecha, id_usuario, id_product, hora, id_tipo, diferencia, cantidad)
+                    )
+                    print(f"Insertado: {producto} x{cantidad}")
+                    insertados += 1
+                except Exception as e:
+                    print(f"Error al insertar venta: {e}")
+
+            print(f"Total de productos insertados en ventas: {insertados}")
+            
+            # Guardar cambios y cerrar conexión
+            conn.commit()
+            conn.close()
+            
+            # Cerrar la ventana actual
             self.page_v3.close()
             
-            # Cerrar la ventana v2
-            # Buscar la ventana v2 en la lista de ventanas abiertas
-            for window in QtWidgets.QApplication.topLevelWidgets():
-                if isinstance(window, QtWidgets.QWidget) and window.objectName() == "page_v2":
-                    window.close()
-                    break
-                    
         except Exception as e:
-            print(f"Error al abrir ventana final: {e}")
+            print(f"Error al guardar la venta: {e}")
+            if 'conn' in locals():
+                conn.close()
+
+    def update_difference(self, source_input, target_input):
+        """Actualiza el campo de texto objetivo con la diferencia"""
+        try:
+            total = int(self.total_label.text().replace("Total: $", ""))
+            source_text = source_input.text()
+            
+            if source_text:
+                source_value = int(source_text)
+                if source_value <= total:
+                    difference = total - source_value
+                    target_input.setText(str(difference))
+                else:
+                    target_input.setText("0")
+            else:
+                target_input.setText("0")
+                
+        except ValueError:
+            target_input.setText("0")
 
     def retranslateUi(self, page_v3):
         _translate = QtCore.QCoreApplication.translate
@@ -288,6 +349,7 @@ class Ui_page_v3(object):
         self.radioButton_mixto_nequi.setText(_translate("page_v3", "Nequi"))
         self.radioButton_mixto_daviplata.setText(_translate("page_v3", "Daviplata"))
         self.efectivo_mixto_label.setText(_translate("page_v3", "Efectivo:"))
+        self.transferencia_mixto_label.setText(_translate("page_v3", "Transferencia:"))
 
 
 if __name__ == "__main__":

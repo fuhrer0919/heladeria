@@ -11,6 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sqlite3
 from PyQt5.QtWidgets import QTableWidgetItem
+from window.ventana_v3 import Ui_page_v3  # Agregar esta línea
 
 
 class Ui_page_v2(object):
@@ -143,7 +144,7 @@ class Ui_page_v2(object):
         self.pushButton = QtWidgets.QPushButton(page_v2)
         self.pushButton.setGeometry(QtCore.QRect(580, 450, 120, 30))
         self.pushButton.setObjectName("pushButton")
-        self.pushButton.clicked.connect(self.open_ventana_v3)  # Conectar el botón OK con la nueva función
+        self.pushButton.clicked.connect(self.open_v3)  # Conectar el botón OK con la nueva función
 
         self.plusButton = QtWidgets.QPushButton(page_v2)
         self.plusButton.setGeometry(QtCore.QRect(440, 490, 120, 30))
@@ -1862,54 +1863,29 @@ class Ui_page_v2(object):
         """Update the user_active label with the given username"""
         self.user_active.setText(f"usuario activo: {user_name}")
 
-    def open_ventana_v3(self):
-        try:
-            # Obtener el usuario activo actual
-            current_user = self.user_active.text().replace("usuario activo: ", "")
-            
-            # Crear lista temporal para almacenar los datos
-            productos_cantidad = []
-            
-            # Recorrer todas las filas de la tabla
-            for row in range(self.tableView.rowCount()):
-                try:
-                    producto = self.tableView.item(row, 0).text()
-                    cantidad = self.tableView.item(row, 2).text()
-                    productos_cantidad.append((producto, cantidad))
-                except (AttributeError, ValueError):
-                    continue
-            
-            # Mostrar los datos en la terminal
-            print("\nUsuario activo:")
-            print("-" * 40)
-            print(f"Usuario: {current_user}")
-            print("-" * 40)
-            
-            print("\nProductos seleccionados:")
-            print("-" * 40)
-            for producto, cantidad in productos_cantidad:
-                print(f"Producto: {producto:<30} Cantidad: {cantidad}")
-            print("-" * 40)
-            
-            # Importar aquí para evitar la importación circular
-            from window.ventana_v3 import Ui_page_v3
-            
-            # Crear nueva ventana v3
-            self.window_v3 = QtWidgets.QWidget()
-            self.ui_v3 = Ui_page_v3()
-            self.ui_v3.setupUi(self.window_v3)
-            
-            # Pasar el usuario activo a v3
-            self.ui_v3.set_user_active(current_user)
-            
-            # Obtener el total actual y pasarlo a v3
-            total = self.label_2.text()
-            self.ui_v3.set_total(total)
-            
-            self.window_v3.resize(1024, 600)
-            self.window_v3.show()
-        except Exception as e:
-            print(f"Error al abrir ventana v3: {e}")
+    def open_v3(self):
+        # Recolectar datos de productos y cantidades
+        productos_venta = []
+        for row in range(self.tableView.rowCount()):
+            producto = self.tableView.item(row, 0).text()
+            cantidad = int(self.tableView.item(row, 2).text())
+            productos_venta.append((producto, cantidad))
+        
+        # Obtener usuario activo y total
+        current_user = self.user_active.text()
+        total = self.label_2.text()
+        
+        # Abrir ventana v3 y pasar los datos
+        self.window = QtWidgets.QMainWindow()
+        self.ui = Ui_page_v3(productos_venta=productos_venta)
+        self.ui.setupUi(self.window)
+        
+        # Configurar usuario y total en v3
+        self.ui.set_user_active(current_user)
+        self.ui.set_total(total)
+        
+        self.window.show()
+        self.page_v2.close()  # Cambiado de self.close() a self.page_v2.close()
 
     def closeEvent(self, event):
         """Maneja el evento de cierre de la ventana"""
