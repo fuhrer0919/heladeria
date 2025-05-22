@@ -15,6 +15,7 @@ from datetime import datetime
 class Ui_page_vfinal(object):
     def setupUi(self, page_vfinal):
         self.page_vfinal = page_vfinal  # Guardar referencia a la ventana principal
+        self.parent_v2 = None  # Referencia a la ventana v2 padre
         page_vfinal.setObjectName("page_vfinal")
         page_vfinal.resize(1024, 600)
         page_vfinal.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)  # Disable close button
@@ -39,11 +40,13 @@ class Ui_page_vfinal(object):
         
         # Label para el cambio
         self.change_label = QtWidgets.QLabel(page_vfinal)
-        self.change_label.setGeometry(QtCore.QRect(150, 80, 300, 40))
+        self.change_label.setGeometry(QtCore.QRect(150, 80, 900, 40))  # Ajustada la posición x a 150 para alinearlo con los otros labels
         self.change_label.setObjectName("change_label")
         font = QtGui.QFont()
         font.setPointSize(16)  # Tamaño de fuente más grande
         self.change_label.setFont(font)
+        self.change_label.setWordWrap(True)  # Permite que el texto se envuelva si es muy largo
+        self.change_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)  # Alineación a la izquierda y arriba
         
         # Label para método de pago
         self.payment_method_label = QtWidgets.QLabel(page_vfinal)
@@ -90,8 +93,14 @@ class Ui_page_vfinal(object):
                 # Calcular el cambio
                 change = received_value - total_value
                 
-                # Mostrar el cambio
-                self.change_label.setText(f"Cambio: ${change}")
+                # Mostrar el cambio o el desglose del pago mixto
+                if change >= 0:
+                    self.change_label.setText(f"Cambio: ${change}")
+                else:
+                    # En pago mixto, mostrar el desglose
+                    transferencia = abs(change)
+                    efectivo = total_value - transferencia
+                    self.change_label.setText(f"Efectivo: ${efectivo} | Transferencia: ${transferencia}")
             except ValueError:
                 self.change_label.setText("Cambio: Error en el cálculo")
         else:
@@ -110,11 +119,19 @@ class Ui_page_vfinal(object):
             print(f"Error al actualizar la fecha y hora: {e}")
             self.datetime_label.setText("Fecha y hora: --/--/---- --:--")
 
+    def set_parent_v2(self, parent_v2):
+        """Guarda la referencia a la ventana v2 padre"""
+        self.parent_v2 = parent_v2
+
     def close_window(self):
         """Abre la ventana v2 y cierra la actual"""
         try:
             # Importar aquí para evitar la importación circular
             from window.ventana_v2 import Ui_page_v2
+            
+            # Cerrar la ventana v2 específica si existe
+            if self.parent_v2:
+                self.parent_v2.close()
             
             # Crear nueva ventana v2
             self.window_v2 = QtWidgets.QWidget()
@@ -124,6 +141,11 @@ class Ui_page_vfinal(object):
             # Obtener el usuario activo actual y pasarlo a v2
             current_user = self.user_active.text().replace("usuario activo: ", "")
             self.ui_v2.set_user_active(current_user)
+            
+            # Limpiar la tabla de productos
+            self.ui_v2.tableView.setRowCount(0)
+            # Reiniciar el total
+            self.ui_v2.label_2.setText("0")
             
             # Mostrar la ventana v2
             self.window_v2.resize(1024, 600)

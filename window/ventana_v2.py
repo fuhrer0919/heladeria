@@ -1726,7 +1726,12 @@ class Ui_page_v2(object):
             pass
 
     def open_new_window(self):
+        """Abre una nueva ventana y actualiza el contador"""
         try:
+            # Incrementar el contador antes de abrir la nueva ventana
+            Ui_page_v2.open_windows += 1
+            print(f"Ventanas abiertas después de abrir: {Ui_page_v2.open_windows}")  # Debug
+            
             # Create new window instance
             self.new_window = QtWidgets.QWidget()
             self.new_ui = Ui_page_v2()
@@ -1737,16 +1742,23 @@ class Ui_page_v2(object):
             self.new_window.resize(1024, 600)
             self.new_window.show()
         except Exception as e:
+            # Si hay error, decrementar el contador
+            Ui_page_v2.open_windows -= 1
             print(f"Error al abrir nueva ventana: {e}")
 
     def close_current_window(self):
-        if Ui_page_v2.open_windows > 1:
-            # Decrement open windows counter before closing
-            Ui_page_v2.open_windows -= 1
-            # Close current window
-            self.page_v2.close()
-        else:
-            print("No se puede cerrar la última ventana")
+        """Cierra la ventana actual y actualiza el contador"""
+        try:
+            if Ui_page_v2.open_windows > 1:
+                # Decrementar el contador antes de cerrar
+                Ui_page_v2.open_windows -= 1
+                print(f"Ventanas abiertas después de cerrar: {Ui_page_v2.open_windows}")  # Debug
+                # Cerrar la ventana actual
+                self.page_v2.close()
+            else:
+                print("No se puede cerrar la última ventana")
+        except Exception as e:
+            print(f"Error al cerrar ventana: {e}")
 
     def go_back(self):
         try:
@@ -1871,26 +1883,39 @@ class Ui_page_v2(object):
             cantidad = int(self.tableView.item(row, 2).text())
             productos_venta.append((producto, cantidad))
         
-        # Obtener usuario activo y total
-        current_user = self.user_active.text()
-        total = self.label_2.text()
+        # Crear nueva ventana v3
+        self.window_v3 = QtWidgets.QWidget()
+        self.ui_v3 = Ui_page_v3(productos_venta)
+        self.ui_v3.setupUi(self.window_v3)
         
-        # Abrir ventana v3 y pasar los datos
-        self.window = QtWidgets.QMainWindow()
-        self.ui = Ui_page_v3(productos_venta=productos_venta)
-        self.ui.setupUi(self.window)
+        # Obtener el usuario activo actual y pasarlo a v3
+        current_user = self.user_active.text().replace("usuario activo: ", "")
+        self.ui_v3.set_user_active(current_user)
         
-        # Configurar usuario y total en v3
-        self.ui.set_user_active(current_user)
-        self.ui.set_total(total)
+        # Obtener el total actual y pasarlo a v3
+        total = self.label_2.text().replace("Total: $", "").replace(",", "")
+        self.ui_v3.set_total(total)
         
-        self.window.show()
-        self.page_v2.close()  # Cambiado de self.close() a self.page_v2.close()
+        # Pasar la referencia de la ventana v2 actual
+        self.ui_v3.set_parent_v2(self.page_v2)
+        
+        # Mostrar la ventana v3
+        self.window_v3.resize(1024, 600)
+        self.window_v3.show()
+        
+        # No cerrar la ventana actual (v2)
 
     def closeEvent(self, event):
         """Maneja el evento de cierre de la ventana"""
-        Ui_page_v2.open_windows -= 1
-        event.accept()
+        try:
+            # Decrementar el contador solo si es mayor que 0
+            if Ui_page_v2.open_windows > 0:
+                Ui_page_v2.open_windows -= 1
+            print(f"Ventanas abiertas después de cerrar: {Ui_page_v2.open_windows}")  # Debug
+            event.accept()
+        except Exception as e:
+            print(f"Error en closeEvent: {e}")
+            event.accept()
 
 
 if __name__ == "__main__":

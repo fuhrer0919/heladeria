@@ -11,6 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from datetime import datetime
 import sqlite3
+from window.ventana_vfinal import Ui_page_vfinal
 
 
 class Ui_page_v3(object):
@@ -18,6 +19,7 @@ class Ui_page_v3(object):
         self.productos_venta = productos_venta or []
         self.user_active = None
         self.total = None
+        self.parent_v2 = None
 
     def setupUi(self, page_v3):
         self.page_v3 = page_v3  # Guardar referencia a la ventana principal
@@ -224,93 +226,195 @@ class Ui_page_v3(object):
         """Maneja el evento cuando se selecciona/deselecciona el radio button de nequi"""
         self.clear_right_side()  # Limpiar todo primero
 
+    def set_parent_v2(self, parent_v2):
+        """Guarda la referencia a la ventana v2 padre"""
+        self.parent_v2 = parent_v2
+
     def on_ok_clicked(self):
         try:
-            # Verificar si se ha seleccionado algún método de pago
-            if not (self.radioButton.isChecked() or self.radioButton_2.isChecked() or 
-                   self.radioButton_3.isChecked() or self.radioButton_4.isChecked()):
-                QtWidgets.QMessageBox.warning(self.page_v3, "Advertencia", 
-                    "Por favor seleccione un método de pago")
-                return
+            # Verificar si se seleccionó un método de pago
+            payment_method = None
+            received_amount = None  # Variable para almacenar el valor recibido
             
-            # Obtener el tipo de pago seleccionado y la diferencia
-            diferencia = None  # Por defecto, la diferencia es NULL
             if self.radioButton.isChecked():
-                tipo_pago = "efectivo"
+                payment_method = "efectivo"
+                # Verificar si se ingresó el valor recibido
+                if not self.recibido_input.text():
+                    QtWidgets.QMessageBox.warning(self.page_v3, "Advertencia", "Por favor ingrese el valor recibido")
+                    return
+                received_amount = self.recibido_input.text()
             elif self.radioButton_2.isChecked():
-                tipo_pago = "daviplata"
+                payment_method = "daviplata"
             elif self.radioButton_3.isChecked():
-                tipo_pago = "pago mixto"
-                # Solo para pago mixto, obtener la diferencia del total
-                diferencia = float(self.total_label.text().replace("Total: $", "").replace(",", ""))
+                payment_method = "pago mixto"
+                # Verificar si se ingresó el valor en efectivo
+                if not self.efectivo_mixto_input.text():
+                    QtWidgets.QMessageBox.warning(self.page_v3, "Advertencia", "Por favor ingrese el valor en efectivo")
+                    return
+                # Verificar si se seleccionó el método de transferencia
+                if not (self.radioButton_mixto_nequi.isChecked() or self.radioButton_mixto_daviplata.isChecked()):
+                    QtWidgets.QMessageBox.warning(self.page_v3, "Advertencia", "Por favor seleccione el método de transferencia")
+                    return
+                # Obtener el valor en efectivo para el pago mixto
+                efectivo_value = int(self.efectivo_mixto_input.text())
+                transferencia_value = int(self.transferencia_mixto_input.text())
+                total_value = int(self.total_label.text().replace("Total: $", "").replace(",", ""))
+                
+                # Verificar que la suma sea igual al total
+                if efectivo_value + transferencia_value != total_value:
+                    QtWidgets.QMessageBox.warning(self.page_v3, "Advertencia", 
+                        f"La suma del efectivo (${efectivo_value}) y la transferencia (${transferencia_value}) debe ser igual al total (${total_value})")
+                    return
+                
+                received_amount = str(efectivo_value)
             elif self.radioButton_4.isChecked():
-                tipo_pago = "nequi"
+                payment_method = "nequi"
+            
+            if not payment_method:
+                QtWidgets.QMessageBox.warning(self.page_v3, "Advertencia", "Por favor seleccione un método de pago")
+                return
             
             # Obtener el usuario activo
             current_user = self.user_active.text().replace("usuario activo: ", "")
             
-            # Obtener fecha y hora actual
-            fecha = datetime.now().strftime("%Y-%m-%d")
-            hora = datetime.now().strftime("%H:%M:%S")
+            # Obtener el total
+            total = self.total_label.text().replace("Total: $", "").replace(",", "")
             
             # Conectar a la base de datos
             conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
-            # Obtener id_usuario
+            # Obtener el ID del usuario
             cursor.execute("SELECT id FROM usuarios WHERE nombre = ?", (current_user,))
             user_result = cursor.fetchone()
             if not user_result:
-                print(f"Usuario '{current_user}' no encontrado en la base de datos.")
+                QtWidgets.QMessageBox.critical(self.page_v3, "Error", "No se encontró el usuario en la base de datos")
+                conn.close()
                 return
-            id_usuario = user_result[0]
+            user_id = user_result[0]
             
-            # Obtener id_tipo
-            cursor.execute("SELECT id FROM tipo_de_pago WHERE tipo = ?", (tipo_pago,))
-            tipo_result = cursor.fetchone()
-            if not tipo_result:
-                print(f"Tipo de pago '{tipo_pago}' no encontrado en la base de datos.")
+            # Obtener el ID del tipo de pago
+            if payment_method == "pago mixto":
+                # Determinar el tipo específico de pago mixto
+                if self.radioButton_mixto_nequi.isChecked():
+                    payment_method = "mixto nequi"
+                elif self.radioButton_mixto_daviplata.isChecked():
+                    payment_method = "mixto daviplata"
+            
+            cursor.execute("SELECT id FROM tipo_de_pago WHERE tipo = ?", (payment_method,))
+            payment_result = cursor.fetchone()
+            if not payment_result:
+                QtWidgets.QMessageBox.critical(self.page_v3, "Error", "No se encontró el tipo de pago en la base de datos")
+                conn.close()
                 return
-            id_tipo = tipo_result[0]
+            payment_type_id = payment_result[0]
             
-            # Insertar en la tabla ventas usando los datos recibidos
-            insertados = 0
-            for producto, cantidad in self.productos_venta:
-                print(f"Intentando insertar producto: {producto}, cantidad: {cantidad}")
+            # Obtener fecha y hora del datetime_label
+            datetime_str = self.datetime_label.text().replace("Fecha y hora: ", "")
+            date_str, time_str = datetime_str.split(" ")
+            
+            # Convertir fecha al formato SQL (YYYY-MM-DD)
+            date_parts = date_str.split("/")
+            sql_date = f"{date_parts[2]}-{date_parts[1]}-{date_parts[0]}"
+            
+            # Obtener los productos de la venta desde la ventana v2
+            if not hasattr(self, 'parent_v2') or not self.parent_v2:
+                QtWidgets.QMessageBox.critical(self.page_v3, "Error", "No se pudo encontrar la ventana de productos")
+                conn.close()
+                return
                 
-                # Obtener id_product
-                cursor.execute("SELECT id FROM products WHERE product = ?", (producto,))
-                prod_result = cursor.fetchone()
-                if not prod_result:
-                    print(f"Producto '{producto}' no encontrado en la base de datos.")
-                    continue
-                id_product = prod_result[0]
-
-                # Insertar en la tabla ventas
-                try:
-                    cursor.execute(
-                        """INSERT INTO ventas (fecha, id_usuario, id_product, hora, id_tipo, diferencia, cant)
-                        VALUES (?, ?, ?, ?, ?, ?, ?)""",
-                        (fecha, id_usuario, id_product, hora, id_tipo, diferencia, cantidad)
-                    )
-                    print(f"Insertado: {producto} x{cantidad}")
-                    insertados += 1
-                except Exception as e:
-                    print(f"Error al insertar venta: {e}")
-
-            print(f"Total de productos insertados en ventas: {insertados}")
+            # Obtener la interfaz de usuario de la ventana v2
+            v2_ui = None
+            for child in self.parent_v2.children():
+                if isinstance(child, QtWidgets.QTableWidget):
+                    v2_ui = child
+                    break
             
-            # Guardar cambios y cerrar conexión
+            if not v2_ui:
+                QtWidgets.QMessageBox.critical(self.page_v3, "Error", "No se pudo encontrar la tabla de productos")
+                conn.close()
+                return
+                
+            # Obtener los productos de la venta
+            productos_venta = []
+            for row in range(v2_ui.rowCount()):
+                product_name = v2_ui.item(row, 0).text()
+                quantity = int(v2_ui.item(row, 2).text())
+                
+                # Obtener el ID del producto
+                cursor.execute("SELECT id FROM products WHERE product = ?", (product_name.lower(),))
+                product_result = cursor.fetchone()
+                if not product_result:
+                    QtWidgets.QMessageBox.critical(self.page_v3, "Error", f"No se encontró el producto {product_name} en la base de datos")
+                    conn.close()
+                    return
+                product_id = product_result[0]
+                
+                productos_venta.append((product_id, quantity))
+            
+            # Guardar cada producto en la tabla de ventas
+            # Calcular la diferencia por producto si es pago mixto
+            diferencia_por_producto = None
+            if payment_method == "mixto nequi" or payment_method == "mixto daviplata":
+                efectivo_value = int(self.efectivo_mixto_input.text())
+                diferencia_por_producto = efectivo_value // len(productos_venta)
+
+            for product_id, quantity in productos_venta:
+                # Determinar el valor de la diferencia
+                diferencia = diferencia_por_producto if (payment_method == "mixto nequi" or payment_method == "mixto daviplata") else None
+                
+                cursor.execute("""
+                    INSERT INTO ventas (
+                        fecha, 
+                        hora, 
+                        id_usuario, 
+                        id_product, 
+                        id_tipo, 
+                        diferencia,
+                        cant
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    sql_date, 
+                    time_str, 
+                    user_id, 
+                    product_id, 
+                    payment_type_id, 
+                    diferencia,
+                    quantity
+                ))
+            
+            # Guardar los cambios
             conn.commit()
             conn.close()
+            
+            # Crear y mostrar la ventana final
+            self.window_vfinal = QtWidgets.QWidget()
+            self.ui_vfinal = Ui_page_vfinal()
+            self.ui_vfinal.setupUi(self.window_vfinal)
+            
+            # Configurar la ventana final
+            self.ui_vfinal.set_user_active(current_user)
+            self.ui_vfinal.set_total(total)
+            self.ui_vfinal.set_payment_method(payment_method)
+            
+            # Si hay un valor recibido, pasarlo a la ventana final
+            if received_amount:
+                self.ui_vfinal.set_total(total, received_amount)
+            
+            # Pasar la referencia de la ventana v2 original
+            self.ui_vfinal.set_parent_v2(self.parent_v2)
+            
+            # Mostrar la ventana final
+            self.window_vfinal.resize(1024, 600)
+            self.window_vfinal.show()
             
             # Cerrar la ventana actual
             self.page_v3.close()
             
         except Exception as e:
-            print(f"Error al guardar la venta: {e}")
-            if 'conn' in locals():
-                conn.close()
+            print(f"Error al procesar el pago: {e}")
+            QtWidgets.QMessageBox.critical(self.page_v3, "Error", f"Error al procesar el pago: {str(e)}")
 
     def update_difference(self, source_input, target_input):
         """Actualiza el campo de texto objetivo con la diferencia"""
