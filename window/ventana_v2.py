@@ -27,6 +27,7 @@ class Ui_page_v2(object):
         
         # Increment window counter when creating a new window
         Ui_page_v2.open_windows += 1
+        print(f"Ventanas abiertas después de crear: {Ui_page_v2.open_windows}")  # Debug
         
         # Conectar el evento de cierre
         page_v2.closeEvent = self.closeEvent
@@ -1728,10 +1729,6 @@ class Ui_page_v2(object):
     def open_new_window(self):
         """Abre una nueva ventana y actualiza el contador"""
         try:
-            # Incrementar el contador antes de abrir la nueva ventana
-            Ui_page_v2.open_windows += 1
-            print(f"Ventanas abiertas después de abrir: {Ui_page_v2.open_windows}")  # Debug
-            
             # Create new window instance
             self.new_window = QtWidgets.QWidget()
             self.new_ui = Ui_page_v2()
@@ -1741,18 +1738,14 @@ class Ui_page_v2(object):
             self.new_ui.set_user_active(current_user)
             self.new_window.resize(1024, 600)
             self.new_window.show()
+            print(f"Ventanas abiertas después de abrir nueva: {Ui_page_v2.open_windows}")  # Debug
         except Exception as e:
-            # Si hay error, decrementar el contador
-            Ui_page_v2.open_windows -= 1
             print(f"Error al abrir nueva ventana: {e}")
 
     def close_current_window(self):
         """Cierra la ventana actual y actualiza el contador"""
         try:
             if Ui_page_v2.open_windows > 1:
-                # Decrementar el contador antes de cerrar
-                Ui_page_v2.open_windows -= 1
-                print(f"Ventanas abiertas después de cerrar: {Ui_page_v2.open_windows}")  # Debug
                 # Cerrar la ventana actual
                 self.page_v2.close()
             else:
@@ -1762,20 +1755,30 @@ class Ui_page_v2(object):
 
     def go_back(self):
         try:
-            # Si es la única ventana v2 abierta, volver a ventana v1
+            # Si es la única ventana v2 abierta, mostrar diálogo de confirmación
             if Ui_page_v2.open_windows == 1:
-                # Importar aquí para evitar la importación circular
-                from window.ventana_v1 import Ui_page_v1
+                # Crear diálogo de confirmación
+                reply = QtWidgets.QMessageBox.question(
+                    self.page_v2,
+                    'Confirmar salida',
+                    '¿Está seguro que desea volver a la ventana anterior?',
+                    QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+                    QtWidgets.QMessageBox.No
+                )
                 
-                # Crear nueva ventana v1
-                self.window_v1 = QtWidgets.QWidget()
-                self.ui_v1 = Ui_page_v1()
-                self.ui_v1.setupUi(self.window_v1)
-                self.window_v1.resize(1024, 600)
-                self.window_v1.show()
-                
-                # Cerrar la ventana actual
-                self.page_v2.close()
+                if reply == QtWidgets.QMessageBox.Yes:
+                    # Importar aquí para evitar la importación circular
+                    from window.ventana_v1 import Ui_page_v1
+                    
+                    # Crear nueva ventana v1
+                    self.window_v1 = QtWidgets.QWidget()
+                    self.ui_v1 = Ui_page_v1()
+                    self.ui_v1.setupUi(self.window_v1)
+                    self.window_v1.resize(1024, 600)
+                    self.window_v1.show()
+                    
+                    # Cerrar la ventana actual
+                    self.page_v2.close()
             else:
                 # Si hay más ventanas v2 abiertas, solo cerrar la actual
                 self.page_v2.close()
@@ -1911,7 +1914,7 @@ class Ui_page_v2(object):
             # Decrementar el contador solo si es mayor que 0
             if Ui_page_v2.open_windows > 0:
                 Ui_page_v2.open_windows -= 1
-            print(f"Ventanas abiertas después de cerrar: {Ui_page_v2.open_windows}")  # Debug
+                print(f"Ventanas abiertas después de cerrar: {Ui_page_v2.open_windows}")  # Debug
             event.accept()
         except Exception as e:
             print(f"Error en closeEvent: {e}")
