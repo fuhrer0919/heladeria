@@ -11,6 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sqlite3  # Import SQLite for database interaction
 from window.ventana_v2 import Ui_page_v2  # Import ventana_v2
+from datetime import datetime  # Import datetime para manejar fechas
 
 
 class Ui_page_v1(object):
@@ -19,24 +20,63 @@ class Ui_page_v1(object):
         page_v1.setObjectName("page_v1")
         page_v1.resize(400, 300)
         page_v1.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)  # Disable close button
+
+        # Crear layout vertical principal
+        main_layout = QtWidgets.QVBoxLayout(page_v1)
+        main_layout.setContentsMargins(20, 20, 20, 20)
+        main_layout.setSpacing(15)
+
+        # Label para el título
         self.label = QtWidgets.QLabel(page_v1)
-        self.label.setGeometry(QtCore.QRect(150, 40, 141, 31))
         self.label.setObjectName("label")
+        self.label.setAlignment(QtCore.Qt.AlignCenter)
+        main_layout.addWidget(self.label)
+
+        # LineEdit para el usuario
         self.username_in = QtWidgets.QLineEdit(page_v1)
-        self.username_in.setGeometry(QtCore.QRect(160, 90, 113, 24))
         self.username_in.setObjectName("username_in")
+        self.username_in.setFixedWidth(200)
+        self.username_in.setAlignment(QtCore.Qt.AlignCenter)
+        main_layout.addWidget(self.username_in, alignment=QtCore.Qt.AlignCenter)
+
+        # Label para mensajes de validación
         self.user_ivalid = QtWidgets.QLabel(page_v1)
-        self.user_ivalid.setGeometry(QtCore.QRect(120, 130, 161, 16))  # Adjusted width for full message
-        self.user_ivalid.setText("")
         self.user_ivalid.setObjectName("user_ivalid")
-        self.pushButton_2 = QtWidgets.QPushButton(page_v1)
-        self.pushButton_2.setGeometry(QtCore.QRect(220, 200, 91, 30))
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.pushButton_2.clicked.connect(self.go_back)  # Conectar el botón Atrás
+        self.user_ivalid.setAlignment(QtCore.Qt.AlignCenter)
+        main_layout.addWidget(self.user_ivalid)
+
+        # Layout horizontal para los botones OK y Atrás
+        button_layout = QtWidgets.QHBoxLayout()
+        button_layout.setSpacing(0)  # Sin espaciado entre botones
+        button_layout.setContentsMargins(0, 0, 0, 0)  # Sin márgenes
+
+        # Botón OK
         self.pushButton = QtWidgets.QPushButton(page_v1)
-        self.pushButton.setGeometry(QtCore.QRect(110, 200, 91, 30))
         self.pushButton.setObjectName("pushButton")
-        self.pushButton.clicked.connect(self.validate_user)  # Connect OK button to validation
+        self.pushButton.setFixedWidth(95)  # Reducido ligeramente el ancho
+        self.pushButton.clicked.connect(self.validate_user)
+        button_layout.addWidget(self.pushButton)
+
+        # Botón Atrás
+        self.pushButton_2 = QtWidgets.QPushButton(page_v1)
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.pushButton_2.setFixedWidth(95)  # Reducido ligeramente el ancho
+        self.pushButton_2.clicked.connect(self.go_back)
+        button_layout.addWidget(self.pushButton_2)
+
+        # Agregar el layout de botones al layout principal
+        main_layout.addLayout(button_layout)
+
+        # Botón Venta del día
+        self.venta_dia_button = QtWidgets.QPushButton(page_v1)
+        self.venta_dia_button.setObjectName("venta_dia_button")
+        self.venta_dia_button.setFixedWidth(200)
+        self.venta_dia_button.clicked.connect(self.show_ventas_dia)  # Conectar el botón
+        main_layout.addWidget(self.venta_dia_button, alignment=QtCore.Qt.AlignCenter)
+
+        # Agregar espaciador flexible al final
+        main_layout.addStretch()
+
         self.user_name = None  # Store the user's name
 
         self.retranslateUi(page_v1)
@@ -98,9 +138,82 @@ class Ui_page_v1(object):
         self.window.show()
         QtWidgets.QApplication.instance().activeWindow().hide()  # Hide the current window
 
+    def show_ventas_dia(self):
+        try:
+            # Crear ventana de diálogo
+            dialog = QtWidgets.QDialog(self.page_v1)
+            dialog.setWindowTitle("Ventas del Día")
+            dialog.resize(800, 400)
+
+            # Crear layout vertical para la ventana
+            layout = QtWidgets.QVBoxLayout(dialog)
+
+            # Crear tabla
+            table = QtWidgets.QTableWidget()
+            table.setColumnCount(4)
+            table.setHorizontalHeaderLabels(["Producto", "Cantidad", "Precio Unitario", "Total"])
+            table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+
+            # Conectar a la base de datos
+            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            cursor = conn.cursor()
+
+            # Obtener la fecha actual
+            fecha_actual = datetime.now().strftime('%Y-%m-%d')
+
+            # Consultar ventas del día
+            cursor.execute("""
+                SELECT p.product, SUM(v.cant) as cantidad, p.price, SUM(v.cant * p.price) as total
+                FROM ventas v
+                JOIN products p ON v.id_product = p.id
+                WHERE date(v.fecha) = ?
+                GROUP BY p.id, p.product, p.price
+                ORDER BY p.product
+            """, (fecha_actual,))
+
+            # Llenar la tabla con los resultados
+            for row, data in enumerate(cursor.fetchall()):
+                table.insertRow(row)
+                for col, value in enumerate(data):
+                    item = QtWidgets.QTableWidgetItem(str(value))
+                    if col in [1, 2, 3]:  # Alinear números a la derecha
+                        item.setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                    table.setItem(row, col, item)
+
+            # Calcular total del día
+            cursor.execute("""
+                SELECT SUM(v.cant * p.price) as total_dia
+                FROM ventas v
+                JOIN products p ON v.id_product = p.id
+                WHERE date(v.fecha) = ?
+            """, (fecha_actual,))
+            total_dia = cursor.fetchone()[0] or 0
+
+            # Agregar la tabla al layout
+            layout.addWidget(table)
+
+            # Agregar label con el total
+            total_label = QtWidgets.QLabel(f"Total del día: ${total_dia:,.0f}")
+            total_label.setAlignment(QtCore.Qt.AlignRight)
+            layout.addWidget(total_label)
+
+            # Botón para cerrar
+            close_button = QtWidgets.QPushButton("Cerrar")
+            close_button.clicked.connect(dialog.close)
+            layout.addWidget(close_button, alignment=QtCore.Qt.AlignCenter)
+
+            conn.close()
+            dialog.exec_()
+
+        except sqlite3.Error as e:
+            QtWidgets.QMessageBox.critical(self.page_v1, "Error", f"Error de base de datos: {str(e)}")
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self.page_v1, "Error", f"Error inesperado: {str(e)}")
+
     def retranslateUi(self, page_v1):
         _translate = QtCore.QCoreApplication.translate
         page_v1.setWindowTitle(_translate("page_v1", "page_v1"))
         self.label.setText(_translate("page_v1", "Ingrese su Usuario"))
         self.pushButton_2.setText(_translate("page_v1", "Atrás"))
         self.pushButton.setText(_translate("page_v1", "OK"))
+        self.venta_dia_button.setText(_translate("page_v1", "Venta del día"))
