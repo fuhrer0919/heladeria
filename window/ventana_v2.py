@@ -415,7 +415,7 @@ class Ui_page_v2(object):
 
     def add_cono1(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'cono 1'")
@@ -449,7 +449,7 @@ class Ui_page_v2(object):
 
     def add_cono2(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'cono 2'")
@@ -483,7 +483,7 @@ class Ui_page_v2(object):
 
     def add_canasta2(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'canasta 2'")
@@ -517,7 +517,7 @@ class Ui_page_v2(object):
 
     def add_canasta3(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'canasta 3'")
@@ -551,7 +551,7 @@ class Ui_page_v2(object):
 
     def add_supercanasta(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'super canasta'")
@@ -585,7 +585,7 @@ class Ui_page_v2(object):
 
     def add_canastafrutal(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'canasta frutal'")
@@ -619,7 +619,7 @@ class Ui_page_v2(object):
 
     def add_canastaalaska(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'canasta alaska'")
@@ -653,7 +653,7 @@ class Ui_page_v2(object):
 
     def add_canastapowice(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'canasta powice'")
@@ -693,7 +693,7 @@ class Ui_page_v2(object):
 
     def add_refrescante(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'refrescante'")
@@ -726,7 +726,7 @@ class Ui_page_v2(object):
 
     def add_cremosa(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'cremosa'")
@@ -759,7 +759,7 @@ class Ui_page_v2(object):
 
     def add_superpaleta(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'super paleta'")
@@ -798,7 +798,7 @@ class Ui_page_v2(object):
 
     def add_obleasencilla(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'oblea sencilla'")
@@ -831,7 +831,7 @@ class Ui_page_v2(object):
 
     def add_superoblea(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'super oblea'")
@@ -864,7 +864,7 @@ class Ui_page_v2(object):
 
     def add_obleapowice(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'oblea powice'")
@@ -902,7 +902,7 @@ class Ui_page_v2(object):
 
     def add_browniehelado(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'brownie helado'")
@@ -935,7 +935,7 @@ class Ui_page_v2(object):
 
     def add_brownieespecial(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'brownie especial'")
@@ -973,7 +973,7 @@ class Ui_page_v2(object):
 
     def add_fresassencillas(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'fresas sencillas'")
@@ -1006,7 +1006,7 @@ class Ui_page_v2(object):
 
     def add_superfresas(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'super fresas'")
@@ -1047,7 +1047,7 @@ class Ui_page_v2(object):
 
     def add_wafflesencillo(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'waffle sencillo'")
@@ -1080,7 +1080,7 @@ class Ui_page_v2(object):
 
     def add_wafflefrutal(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'waffle frutal'")
@@ -1113,7 +1113,7 @@ class Ui_page_v2(object):
 
     def add_superwaffle(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'super waffle'")
@@ -1146,7 +1146,7 @@ class Ui_page_v2(object):
 
     def add_megawaffles(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'mega waffles'")
@@ -1179,7 +1179,7 @@ class Ui_page_v2(object):
 
     def add_wafflecosmico(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'waffle cosmico'")
@@ -1223,7 +1223,7 @@ class Ui_page_v2(object):
 
     def add_malteadasencilla(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'malteada sencilla'")
@@ -1256,7 +1256,7 @@ class Ui_page_v2(object):
 
     def add_malteadasuper(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'malteada super'")
@@ -1289,7 +1289,7 @@ class Ui_page_v2(object):
 
     def add_smoothie(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'smoothie'")
@@ -1322,7 +1322,7 @@ class Ui_page_v2(object):
 
     def add_limonada(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'limonada'")
@@ -1355,7 +1355,7 @@ class Ui_page_v2(object):
 
     def add_jugoenagua(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'jugo en agua'")
@@ -1388,7 +1388,7 @@ class Ui_page_v2(object):
 
     def add_jugoenleche(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'jugo en leche'")
@@ -1421,7 +1421,7 @@ class Ui_page_v2(object):
 
     def add_granizadofrutal(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'granizado frutal'")
@@ -1454,7 +1454,7 @@ class Ui_page_v2(object):
 
     def add_granizadocafe(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'granizado cafe'")
@@ -1497,7 +1497,7 @@ class Ui_page_v2(object):
 
     def add_bananasplit(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'banana split'")
@@ -1530,7 +1530,7 @@ class Ui_page_v2(object):
 
     def add_topping(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'topping'")
@@ -1563,7 +1563,7 @@ class Ui_page_v2(object):
 
     def add_empaque(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'empaque'")
@@ -1596,7 +1596,7 @@ class Ui_page_v2(object):
 
     def add_tintoamericano(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'tinto americano'")
@@ -1629,7 +1629,7 @@ class Ui_page_v2(object):
 
     def add_cappuccino(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'cappuccino'")
@@ -1662,7 +1662,7 @@ class Ui_page_v2(object):
 
     def add_mochaccino(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'mochaccino'")
@@ -1695,7 +1695,7 @@ class Ui_page_v2(object):
 
     def add_aromatica(self):
         try:
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'aromatica'")

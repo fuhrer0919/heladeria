@@ -108,7 +108,7 @@ class Ui_page_v1(object):
         user_id = int(input_text)
         try:
             # Connect to the database
-            connection = sqlite3.connect("/home/andres/Documentos/app_heladeria/databases/Pow_Ice")
+            connection = sqlite3.connect("/home/andres/Documentos/heladeria/databases/Pow_Ice")
             cursor = connection.cursor()
 
             # Query to check if the ID exists and fetch the name
@@ -155,7 +155,7 @@ class Ui_page_v1(object):
             table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
 
             # Conectar a la base de datos
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
 
             # Obtener la fecha actual
