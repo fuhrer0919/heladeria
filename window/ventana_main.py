@@ -17,25 +17,48 @@ class Ui_main(object):
         main.setObjectName("main")
         main.resize(1024, 600)
         main.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)  # Disable close button
+
+        # Configurar fuente base
+        base_font = QtGui.QFont()
+        base_font.setPointSize(16)  # Tamaño de fuente base
+
+        # Título
+        self.title_label = QtWidgets.QLabel(main)
+        self.title_label.setObjectName("title_label")
+        self.title_label.setGeometry(QtCore.QRect(0, 50, 1024, 60))
+        self.title_label.setAlignment(QtCore.Qt.AlignCenter)
+        title_font = QtGui.QFont()
+        title_font.setPointSize(32)
+        self.title_label.setFont(title_font)
+        self.title_label.setText("Pow Ice")
+
+        # Botón Iniciar Ventas
         self.ventas = QtWidgets.QPushButton(main)
-        self.ventas.setGeometry(QtCore.QRect(411, 150, 202, 48))  # Centered horizontally
         self.ventas.setObjectName("ventas")
-        self.ventas.clicked.connect(self.open_ventas)  # Connect button to function
+        self.ventas.setGeometry(QtCore.QRect(312, 200, 400, 80))  # Centrado horizontalmente
+        self.ventas.setFont(base_font)
+        self.ventas.clicked.connect(self.open_ventas)
+
+        # Botón Ingresar Compras
         self.pushButton_2 = QtWidgets.QPushButton(main)
-        self.pushButton_2.setGeometry(QtCore.QRect(391, 250, 242, 48))  # Centered horizontally
         self.pushButton_2.setObjectName("pushButton_2")
+        self.pushButton_2.setGeometry(QtCore.QRect(312, 300, 400, 80))  # Centrado horizontalmente
+        self.pushButton_2.setFont(base_font)
+
+        # Botón Administrar
         self.pushButton_3 = QtWidgets.QPushButton(main)
-        self.pushButton_3.setGeometry(QtCore.QRect(421, 350, 182, 48))  # Centered horizontally
         self.pushButton_3.setObjectName("pushButton_3")
+        self.pushButton_3.setGeometry(QtCore.QRect(312, 400, 400, 80))  # Centrado horizontalmente
+        self.pushButton_3.setFont(base_font)
 
         self.retranslateUi(main)
         QtCore.QMetaObject.connectSlotsByName(main)
 
     def retranslateUi(self, main):
         _translate = QtCore.QCoreApplication.translate
-        main.setWindowTitle(_translate("main", "Pow Ice main"))
+        main.setWindowTitle(_translate("main", "Pow Ice"))
         self.ventas.setText(_translate("main", "Iniciar Ventas"))
-        self.pushButton_2.setText(_translate("main", "ingresar compas"))
+        self.pushButton_2.setText(_translate("main", "Ingresar Compras"))
         self.pushButton_3.setText(_translate("main", "Administrar"))
 
     def open_ventas(self):

@@ -16,14 +16,24 @@ from window.ventana_v3 import Ui_page_v3  # Agregar esta línea
 
 class Ui_page_v2(object):
     # Class variable to track number of open windows
-    
     open_windows = 0
+    # Dictionary to store open windows
+    mesa_windows = {}
+    # Referencia a la ventana principal (Mesa 1)
+    main_window = None
 
     def setupUi(self, page_v2):
         self.page_v2 = page_v2  # Guardar referencia a la ventana principal
+        self.mesa_number = 1  # Default mesa number
         page_v2.setObjectName("page_v2")
         page_v2.resize(1024, 600)
         page_v2.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)  # Disable close button
+        page_v2.setWindowTitle("Pedido 1")  # Establecer título de la ventana principal
+        
+        # Guardar referencia a la ventana principal si es Mesa 1
+        if not Ui_page_v2.main_window:
+            Ui_page_v2.main_window = page_v2
+            Ui_page_v2.mesa_windows[1] = page_v2  # Agregar también al diccionario de ventanas
         
         # Increment window counter when creating a new window
         Ui_page_v2.open_windows += 1
@@ -35,6 +45,12 @@ class Ui_page_v2(object):
         self.user_active = QtWidgets.QLabel(page_v2)
         self.user_active.setGeometry(QtCore.QRect(150, 0, 300, 20))
         self.user_active.setObjectName("user_active")
+        
+        # Label para mostrar el número de mesa
+        self.mesa_label = QtWidgets.QLabel(page_v2)
+        self.mesa_label.setGeometry(QtCore.QRect(460, 0, 100, 20))
+        self.mesa_label.setObjectName("mesa_label")
+        self.mesa_label.setText(f"Pedido {self.mesa_number}")
         
         # Configurar TableView
         self.tableView = QtWidgets.QTableWidget(page_v2)
@@ -156,6 +172,18 @@ class Ui_page_v2(object):
         self.minusButton.setGeometry(QtCore.QRect(580, 490, 120, 30))
         self.minusButton.setObjectName("minusButton")
         self.minusButton.clicked.connect(self.close_current_window)
+
+        # Botón mesa 3
+        self.mesa3Button = QtWidgets.QPushButton(page_v2)
+        self.mesa3Button.setGeometry(QtCore.QRect(740, 490, 120, 30))
+        self.mesa3Button.setObjectName("mesa3Button")
+        self.mesa3Button.clicked.connect(self.open_mesa3)
+
+        # Botón mesa 4
+        self.mesa4Button = QtWidgets.QPushButton(page_v2)
+        self.mesa4Button.setGeometry(QtCore.QRect(880, 490, 120, 30))
+        self.mesa4Button.setObjectName("mesa4Button")
+        self.mesa4Button.clicked.connect(self.open_mesa4)
 
         self.pushButton_3 = QtWidgets.QPushButton(page_v2)
         self.pushButton_3.setGeometry(QtCore.QRect(20, 450, 120, 30))
@@ -1726,47 +1754,67 @@ class Ui_page_v2(object):
         except Exception as e:
             pass
 
+    def open_mesa_window(self, mesa_number):
+        """Abre una nueva ventana para la mesa especificada o cambia a una existente"""
+        if mesa_number == 1:
+            # Si es Mesa 1, volver a la ventana principal
+            if Ui_page_v2.main_window:
+                Ui_page_v2.main_window.activateWindow()
+                Ui_page_v2.main_window.raise_()
+            return
+            
+        if mesa_number in Ui_page_v2.mesa_windows:
+            # Si la ventana ya existe, traerla al frente
+            window = Ui_page_v2.mesa_windows[mesa_number]
+            window.activateWindow()
+            window.raise_()
+        else:
+            # Crear nueva ventana solo para mesas 2, 3 y 4
+            if mesa_number in [2, 3, 4]:
+                self.window = QtWidgets.QWidget()
+                self.ui = Ui_page_v2()
+                self.ui.setupUi(self.window)
+                self.ui.mesa_number = mesa_number
+                self.ui.set_user_active(self.user_active.text().replace("usuario activo: ", ""))
+                self.ui.mesa_label.setText(f"Pedido {mesa_number}")  # Actualizar el label de mesa
+                self.window.resize(1024, 600)
+                self.window.setWindowTitle(f"Pedido {mesa_number}")
+                self.window.show()
+                # Guardar referencia a la ventana
+                Ui_page_v2.mesa_windows[mesa_number] = self.window
+
     def open_new_window(self):
-        """Abre una nueva ventana y actualiza el contador"""
-        try:
-            # Create new window instance
-            self.new_window = QtWidgets.QWidget()
-            self.new_ui = Ui_page_v2()
-            self.new_ui.setupUi(self.new_window)
-            # Get current user from the active window
-            current_user = self.user_active.text().replace("usuario activo: ", "")
-            self.new_ui.set_user_active(current_user)
-            self.new_window.resize(1024, 600)
-            self.new_window.show()
-            print(f"Ventanas abiertas después de abrir nueva: {Ui_page_v2.open_windows}")  # Debug
-        except Exception as e:
-            print(f"Error al abrir nueva ventana: {e}")
+        """Vuelve a la ventana principal (Mesa 1)"""
+        if Ui_page_v2.main_window:
+            Ui_page_v2.main_window.activateWindow()
+            Ui_page_v2.main_window.raise_()
 
     def close_current_window(self):
-        """Cierra la ventana actual y actualiza el contador"""
-        try:
-            if Ui_page_v2.open_windows > 1:
-                # Cerrar la ventana actual
-                self.page_v2.close()
-            else:
-                print("No se puede cerrar la última ventana")
-        except Exception as e:
-            print(f"Error al cerrar ventana: {e}")
+        """Abre una nueva ventana para Mesa 2"""
+        self.open_mesa_window(2)
+
+    def open_mesa3(self):
+        """Abre una nueva ventana para Mesa 3"""
+        self.open_mesa_window(3)
+
+    def open_mesa4(self):
+        """Abre una nueva ventana para Mesa 4"""
+        self.open_mesa_window(4)
 
     def go_back(self):
         try:
-            # Si es la única ventana v2 abierta, mostrar diálogo de confirmación
-            if Ui_page_v2.open_windows == 1:
-                # Crear diálogo de confirmación
-                reply = QtWidgets.QMessageBox.question(
-                    self.page_v2,
-                    'Confirmar salida',
-                    '¿Está seguro que desea volver a la ventana anterior?',
-                    QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
-                    QtWidgets.QMessageBox.No
-                )
-                
-                if reply == QtWidgets.QMessageBox.Yes:
+            # Crear diálogo de advertencia
+            reply = QtWidgets.QMessageBox.question(
+                self.page_v2,
+                'Advertencia',
+                '¿Está seguro que desea volver a la ventana anterior? Se perderán los cambios no guardados.',
+                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+                QtWidgets.QMessageBox.No
+            )
+            
+            if reply == QtWidgets.QMessageBox.Yes:
+                # Si es la única ventana v2 abierta, mostrar diálogo de confirmación
+                if Ui_page_v2.open_windows == 1:
                     # Importar aquí para evitar la importación circular
                     from window.ventana_v1 import Ui_page_v1
                     
@@ -1779,9 +1827,9 @@ class Ui_page_v2(object):
                     
                     # Cerrar la ventana actual
                     self.page_v2.close()
-            else:
-                # Si hay más ventanas v2 abiertas, solo cerrar la actual
-                self.page_v2.close()
+                else:
+                    # Si hay más ventanas v2 abiertas, solo cerrar la actual
+                    self.page_v2.close()
         except Exception as e:
             print(f"Error al cerrar la ventana: {e}")
 
@@ -1818,7 +1866,7 @@ class Ui_page_v2(object):
 
     def retranslateUi(self, page_v2):
         _translate = QtCore.QCoreApplication.translate
-        page_v2.setWindowTitle(_translate("page_v2", "page_v2"))
+        page_v2.setWindowTitle(_translate("page_v2", "Pedido 1"))  # Cambiar el título aquí también
         self.user_active.setText(_translate("page_v2", "usuario activo: _____"))
         self.Helados.setText(_translate("page_v2", "Helados"))
         self.Cono1.setText(_translate("page_v2", "Cono 1"))
@@ -1854,8 +1902,10 @@ class Ui_page_v2(object):
         self.Otros.setText(_translate("page_v2", "Otros"))
         self.pushButton_2.setText(_translate("page_v2", "Atrás"))
         self.pushButton.setText(_translate("page_v2", "OK"))
-        self.plusButton.setText(_translate("page_v2", "+"))
-        self.minusButton.setText(_translate("page_v2", "-"))
+        self.plusButton.setText(_translate("page_v2", "Pedido 1"))
+        self.minusButton.setText(_translate("page_v2", "Pedido 2"))
+        self.mesa3Button.setText(_translate("page_v2", "Pedido 3"))
+        self.mesa4Button.setText(_translate("page_v2", "Pedido 4"))
         self.label.setText(_translate("page_v2", "Total:"))
         self.label_2.setText(_translate("page_v2", "0"))
         self.pushButton_3.setText(_translate("page_v2", "Borrar"))
@@ -1915,6 +1965,9 @@ class Ui_page_v2(object):
             if Ui_page_v2.open_windows > 0:
                 Ui_page_v2.open_windows -= 1
                 print(f"Ventanas abiertas después de cerrar: {Ui_page_v2.open_windows}")  # Debug
+            # Remover la ventana del diccionario
+            if self.mesa_number in Ui_page_v2.mesa_windows:
+                del Ui_page_v2.mesa_windows[self.mesa_number]
             event.accept()
         except Exception as e:
             print(f"Error en closeEvent: {e}")

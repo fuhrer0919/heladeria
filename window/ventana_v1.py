@@ -18,60 +18,78 @@ class Ui_page_v1(object):
     def setupUi(self, page_v1):
         self.page_v1 = page_v1  # Guardar referencia a la ventana
         page_v1.setObjectName("page_v1")
-        page_v1.resize(400, 300)
+        page_v1.resize(800, 600)  # Aumentado el tamaño de la ventana
         page_v1.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)  # Disable close button
 
         # Crear layout vertical principal
         main_layout = QtWidgets.QVBoxLayout(page_v1)
-        main_layout.setContentsMargins(20, 20, 20, 20)
-        main_layout.setSpacing(15)
+        main_layout.setContentsMargins(40, 40, 40, 40)  # Aumentado los márgenes
+        main_layout.setSpacing(30)  # Aumentado el espaciado
+
+        # Configurar fuente base
+        base_font = QtGui.QFont()
+        base_font.setPointSize(12)  # Tamaño de fuente base
 
         # Label para el título
         self.label = QtWidgets.QLabel(page_v1)
         self.label.setObjectName("label")
         self.label.setAlignment(QtCore.Qt.AlignCenter)
+        title_font = QtGui.QFont()
+        title_font.setPointSize(24)  # Título más grande
+        self.label.setFont(title_font)
         main_layout.addWidget(self.label)
 
         # LineEdit para el usuario
         self.username_in = QtWidgets.QLineEdit(page_v1)
         self.username_in.setObjectName("username_in")
-        self.username_in.setFixedWidth(200)
+        self.username_in.setFixedWidth(400)  # Aumentado el ancho
+        self.username_in.setFixedHeight(50)  # Aumentado el alto
         self.username_in.setAlignment(QtCore.Qt.AlignCenter)
+        self.username_in.setFont(base_font)
         main_layout.addWidget(self.username_in, alignment=QtCore.Qt.AlignCenter)
 
         # Label para mensajes de validación
         self.user_ivalid = QtWidgets.QLabel(page_v1)
         self.user_ivalid.setObjectName("user_ivalid")
         self.user_ivalid.setAlignment(QtCore.Qt.AlignCenter)
+        self.user_ivalid.setFont(base_font)
         main_layout.addWidget(self.user_ivalid)
 
         # Layout horizontal para los botones OK y Atrás
-        button_layout = QtWidgets.QHBoxLayout()
-        button_layout.setSpacing(0)  # Sin espaciado entre botones
-        button_layout.setContentsMargins(0, 0, 0, 0)  # Sin márgenes
+        button_container = QtWidgets.QWidget()
+        button_container.setFixedWidth(410)  # Ancho fijo para contener ambos botones
+        button_layout = QtWidgets.QHBoxLayout(button_container)
+        button_layout.setSpacing(0)
+        button_layout.setContentsMargins(0, 0, 0, 0)
 
         # Botón OK
         self.pushButton = QtWidgets.QPushButton(page_v1)
         self.pushButton.setObjectName("pushButton")
-        self.pushButton.setFixedWidth(95)  # Reducido ligeramente el ancho
+        self.pushButton.setFixedWidth(200)  # Aumentado el ancho
+        self.pushButton.setFixedHeight(50)  # Aumentado el alto
+        self.pushButton.setFont(base_font)
         self.pushButton.clicked.connect(self.validate_user)
         button_layout.addWidget(self.pushButton)
 
         # Botón Atrás
         self.pushButton_2 = QtWidgets.QPushButton(page_v1)
         self.pushButton_2.setObjectName("pushButton_2")
-        self.pushButton_2.setFixedWidth(95)  # Reducido ligeramente el ancho
+        self.pushButton_2.setFixedWidth(200)  # Aumentado el ancho
+        self.pushButton_2.setFixedHeight(50)  # Aumentado el alto
+        self.pushButton_2.setFont(base_font)
         self.pushButton_2.clicked.connect(self.go_back)
         button_layout.addWidget(self.pushButton_2)
 
-        # Agregar el layout de botones al layout principal
-        main_layout.addLayout(button_layout)
+        # Agregar el contenedor de botones al layout principal
+        main_layout.addWidget(button_container, alignment=QtCore.Qt.AlignCenter)
 
         # Botón Venta del día
         self.venta_dia_button = QtWidgets.QPushButton(page_v1)
         self.venta_dia_button.setObjectName("venta_dia_button")
-        self.venta_dia_button.setFixedWidth(200)
-        self.venta_dia_button.clicked.connect(self.show_ventas_dia)  # Conectar el botón
+        self.venta_dia_button.setFixedWidth(400)  # Aumentado el ancho
+        self.venta_dia_button.setFixedHeight(50)  # Aumentado el alto
+        self.venta_dia_button.setFont(base_font)
+        self.venta_dia_button.clicked.connect(self.show_ventas_dia)
         main_layout.addWidget(self.venta_dia_button, alignment=QtCore.Qt.AlignCenter)
 
         # Agregar espaciador flexible al final
@@ -143,16 +161,24 @@ class Ui_page_v1(object):
             # Crear ventana de diálogo
             dialog = QtWidgets.QDialog(self.page_v1)
             dialog.setWindowTitle("Ventas del Día")
-            dialog.resize(800, 400)
+            dialog.resize(1000, 600)  # Aumentado el tamaño de la ventana
 
             # Crear layout vertical para la ventana
             layout = QtWidgets.QVBoxLayout(dialog)
+            layout.setContentsMargins(40, 40, 40, 40)  # Aumentado los márgenes
+            layout.setSpacing(20)  # Aumentado el espaciado
+
+            # Configurar fuente
+            font = QtGui.QFont()
+            font.setPointSize(12)
 
             # Crear tabla
             table = QtWidgets.QTableWidget()
             table.setColumnCount(4)
             table.setHorizontalHeaderLabels(["Producto", "Cantidad", "Precio Unitario", "Total"])
             table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+            table.setFont(font)
+            table.verticalHeader().setDefaultSectionSize(40)  # Aumentado el alto de las filas
 
             # Conectar a la base de datos
             conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
@@ -195,10 +221,14 @@ class Ui_page_v1(object):
             # Agregar label con el total
             total_label = QtWidgets.QLabel(f"Total del día: ${total_dia:,.0f}")
             total_label.setAlignment(QtCore.Qt.AlignRight)
+            total_label.setFont(font)
             layout.addWidget(total_label)
 
             # Botón para cerrar
             close_button = QtWidgets.QPushButton("Cerrar")
+            close_button.setFixedWidth(200)  # Aumentado el ancho
+            close_button.setFixedHeight(50)  # Aumentado el alto
+            close_button.setFont(font)
             close_button.clicked.connect(dialog.close)
             layout.addWidget(close_button, alignment=QtCore.Qt.AlignCenter)
 

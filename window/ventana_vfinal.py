@@ -20,48 +20,55 @@ class Ui_page_vfinal(object):
         page_vfinal.resize(1024, 600)
         page_vfinal.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)  # Disable close button
         
+        # Configurar fuente base
+        base_font = QtGui.QFont()
+        base_font.setPointSize(14)  # Tamaño de fuente base
+        
         # Label para usuario activo
         self.user_active = QtWidgets.QLabel(page_vfinal)
-        self.user_active.setGeometry(QtCore.QRect(150, 0, 300, 20))
+        self.user_active.setGeometry(QtCore.QRect(50, 30, 400, 40))
         self.user_active.setObjectName("user_active")
+        self.user_active.setFont(base_font)
         
         # Label para fecha y hora
         self.datetime_label = QtWidgets.QLabel(page_vfinal)
-        self.datetime_label.setGeometry(QtCore.QRect(150, 20, 300, 20))
+        self.datetime_label.setGeometry(QtCore.QRect(50, 80, 400, 40))
         self.datetime_label.setObjectName("datetime_label")
+        self.datetime_label.setFont(base_font)
         
         # Label para el total
         self.total_label = QtWidgets.QLabel(page_vfinal)
-        self.total_label.setGeometry(QtCore.QRect(150, 40, 300, 40))
+        self.total_label.setGeometry(QtCore.QRect(50, 130, 400, 50))
         self.total_label.setObjectName("total_label")
-        font = QtGui.QFont()
-        font.setPointSize(10)  # Tamaño de fuente más grande
-        self.total_label.setFont(font)
+        total_font = QtGui.QFont()
+        total_font.setPointSize(20)  # Tamaño de fuente más grande para el total
+        self.total_label.setFont(total_font)
         
         # Label para el cambio
         self.change_label = QtWidgets.QLabel(page_vfinal)
-        self.change_label.setGeometry(QtCore.QRect(150, 80, 900, 40))  # Ajustada la posición x a 150 para alinearlo con los otros labels
+        self.change_label.setGeometry(QtCore.QRect(50, 190, 900, 50))
         self.change_label.setObjectName("change_label")
-        font = QtGui.QFont()
-        font.setPointSize(16)  # Tamaño de fuente más grande
-        self.change_label.setFont(font)
-        self.change_label.setWordWrap(True)  # Permite que el texto se envuelva si es muy largo
-        self.change_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)  # Alineación a la izquierda y arriba
+        change_font = QtGui.QFont()
+        change_font.setPointSize(18)  # Tamaño de fuente más grande para el cambio
+        self.change_label.setFont(change_font)
+        self.change_label.setWordWrap(True)
+        self.change_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         
         # Label para método de pago
         self.payment_method_label = QtWidgets.QLabel(page_vfinal)
-        self.payment_method_label.setGeometry(QtCore.QRect(150, 120, 700, 40))  # Aumentado el ancho para mostrar más texto
+        self.payment_method_label.setGeometry(QtCore.QRect(50, 250, 900, 50))
         self.payment_method_label.setObjectName("payment_method_label")
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.payment_method_label.setFont(font)
-        self.payment_method_label.setWordWrap(True)  # Permite que el texto se envuelva si es muy largo
-        self.payment_method_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)  # Alineación a la izquierda y arriba
+        payment_font = QtGui.QFont()
+        payment_font.setPointSize(16)
+        self.payment_method_label.setFont(payment_font)
+        self.payment_method_label.setWordWrap(True)
+        self.payment_method_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         
         # Botón OK para cerrar la ventana
         self.ok_button = QtWidgets.QPushButton(page_vfinal)
-        self.ok_button.setGeometry(QtCore.QRect(400, 180, 91, 30))
+        self.ok_button.setGeometry(QtCore.QRect(412, 500, 200, 60))  # Centrado y más grande
         self.ok_button.setObjectName("ok_button")
+        self.ok_button.setFont(base_font)
         self.ok_button.clicked.connect(self.close_window)
         
         # Timer para actualizar la fecha y hora
@@ -124,38 +131,38 @@ class Ui_page_vfinal(object):
         self.parent_v2 = parent_v2
 
     def close_window(self):
-        """Abre la ventana v2 y cierra la actual"""
+        """Vuelve a la ventana principal (Mesa 1) y cierra la actual"""
         try:
             # Importar aquí para evitar la importación circular
             from window.ventana_v2 import Ui_page_v2
             
-            # Cerrar la ventana v2 específica si existe
-            if self.parent_v2:
+            # Buscar la ventana principal (Mesa 1)
+            if Ui_page_v2.main_window:
+                # Solo limpiar la tabla y el total si estamos cerrando la ventana principal
+                if self.parent_v2 == Ui_page_v2.main_window:
+                    for window in QtWidgets.QApplication.topLevelWidgets():
+                        if window == Ui_page_v2.main_window:
+                            # Encontrar la instancia de Ui_page_v2 asociada
+                            for child in window.children():
+                                if isinstance(child, QtWidgets.QTableWidget):
+                                    child.setRowCount(0)
+                                elif isinstance(child, QtWidgets.QLabel) and child.objectName() == "label_2":
+                                    child.setText("0")
+                            break
+                
+                # Traer la ventana principal al frente
+                Ui_page_v2.main_window.activateWindow()
+                Ui_page_v2.main_window.raise_()
+            
+            # Cerrar la ventana v2 específica solo si no es la ventana principal
+            if self.parent_v2 and self.parent_v2 != Ui_page_v2.main_window:
                 self.parent_v2.close()
-            
-            # Crear nueva ventana v2
-            self.window_v2 = QtWidgets.QWidget()
-            self.ui_v2 = Ui_page_v2()
-            self.ui_v2.setupUi(self.window_v2)
-            
-            # Obtener el usuario activo actual y pasarlo a v2
-            current_user = self.user_active.text().replace("usuario activo: ", "")
-            self.ui_v2.set_user_active(current_user)
-            
-            # Limpiar la tabla de productos
-            self.ui_v2.tableView.setRowCount(0)
-            # Reiniciar el total
-            self.ui_v2.label_2.setText("0")
-            
-            # Mostrar la ventana v2
-            self.window_v2.resize(1024, 600)
-            self.window_v2.show()
             
             # Cerrar la ventana actual
             self.page_vfinal.close()
             
         except Exception as e:
-            print(f"Error al abrir ventana v2: {e}")
+            print(f"Error al volver a la ventana principal: {e}")
 
     def retranslateUi(self, page_vfinal):
         _translate = QtCore.QCoreApplication.translate

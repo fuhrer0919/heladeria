@@ -27,22 +27,32 @@ class Ui_page_v3(object):
         page_v3.resize(1024, 600)
         page_v3.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)  # Disable close button
         
+        # Label para usuario activo
         self.user_active = QtWidgets.QLabel(page_v3)
-        self.user_active.setGeometry(QtCore.QRect(150, 0, 300, 20))
+        self.user_active.setGeometry(QtCore.QRect(20, 20, 300, 30))  # Aumentado tamaño y posición
         self.user_active.setObjectName("user_active")
-        
-        # Agregar label para fecha y hora
-        self.datetime_label = QtWidgets.QLabel(page_v3)
-        self.datetime_label.setGeometry(QtCore.QRect(150, 20, 300, 20))
-        self.datetime_label.setObjectName("datetime_label")
-        
-        # Agregar label para el total con fuente más grande
-        self.total_label = QtWidgets.QLabel(page_v3)
-        self.total_label.setGeometry(QtCore.QRect(150, 40, 300, 40))  # Aumentado el alto para acomodar texto más grande
-        self.total_label.setObjectName("total_label")
         font = QtGui.QFont()
-        font.setPointSize(16)  # Tamaño de fuente más grande
+        font.setPointSize(12)  # Aumentado tamaño de fuente
+        self.user_active.setFont(font)
+        
+        # Label para fecha y hora
+        self.datetime_label = QtWidgets.QLabel(page_v3)
+        self.datetime_label.setGeometry(QtCore.QRect(340, 20, 300, 30))  # Aumentado tamaño y posición
+        self.datetime_label.setObjectName("datetime_label")
+        self.datetime_label.setFont(font)
+        
+        # Label para total
+        self.total_label = QtWidgets.QLabel(page_v3)
+        self.total_label.setGeometry(QtCore.QRect(660, 20, 300, 30))  # Aumentado tamaño y posición
+        self.total_label.setObjectName("total_label")
         self.total_label.setFont(font)
+        
+        # Label para medio de pago
+        self.label = QtWidgets.QLabel(page_v3)
+        self.label.setGeometry(QtCore.QRect(20, 80, 200, 40))  # Aumentado tamaño y posición
+        self.label.setObjectName("label")
+        font.setPointSize(14)  # Aumentado tamaño de fuente
+        self.label.setFont(font)
         
         # Timer para actualizar la fecha y hora
         self.timer = QtCore.QTimer()
@@ -53,107 +63,112 @@ class Ui_page_v3(object):
         current_datetime = datetime.now().strftime("%d/%m/%Y %H:%M")
         self.datetime_label.setText(f"Fecha y hora: {current_datetime}")
         
-        self.label = QtWidgets.QLabel(page_v3)
-        self.label.setGeometry(QtCore.QRect(160, 100, 111, 22))  # Movido más abajo
-        self.label.setObjectName("label")
-        
+        # Radio buttons para métodos de pago
         self.radioButton = QtWidgets.QRadioButton(page_v3)
-        self.radioButton.setGeometry(QtCore.QRect(160, 130, 114, 28))  # Movido más abajo
+        self.radioButton.setGeometry(QtCore.QRect(20, 140, 200, 40))  # Aumentado tamaño y posición
         self.radioButton.setObjectName("radioButton")
-        self.radioButton.toggled.connect(self.on_efectivo_toggled)  # Conectar el evento de cambio
+        self.radioButton.setFont(font)
+        self.radioButton.toggled.connect(self.on_efectivo_toggled)
         
         self.radioButton_2 = QtWidgets.QRadioButton(page_v3)
-        self.radioButton_2.setGeometry(QtCore.QRect(160, 160, 114, 28))  # Movido más abajo
+        self.radioButton_2.setGeometry(QtCore.QRect(20, 190, 200, 40))  # Aumentado tamaño y posición
         self.radioButton_2.setObjectName("radioButton_2")
-        self.radioButton_2.toggled.connect(self.on_daviplata_toggled)  # Conectar el evento de cambio
+        self.radioButton_2.setFont(font)
+        self.radioButton_2.toggled.connect(self.on_daviplata_toggled)
         
         self.radioButton_3 = QtWidgets.QRadioButton(page_v3)
-        self.radioButton_3.setGeometry(QtCore.QRect(160, 190, 114, 28))  # Movido más abajo
+        self.radioButton_3.setGeometry(QtCore.QRect(20, 240, 200, 40))  # Aumentado tamaño y posición
         self.radioButton_3.setObjectName("radioButton_3")
-        self.radioButton_3.toggled.connect(self.on_pago_mixto_toggled)  # Conectar el evento de cambio
+        self.radioButton_3.setFont(font)
+        self.radioButton_3.toggled.connect(self.on_pago_mixto_toggled)
         
         self.radioButton_4 = QtWidgets.QRadioButton(page_v3)
-        self.radioButton_4.setGeometry(QtCore.QRect(160, 220, 114, 28))  # Movido más abajo
+        self.radioButton_4.setGeometry(QtCore.QRect(20, 290, 200, 40))  # Aumentado tamaño y posición
         self.radioButton_4.setObjectName("radioButton_4")
-        self.radioButton_4.toggled.connect(self.on_nequi_toggled)  # Conectar el evento de cambio
+        self.radioButton_4.setFont(font)
+        self.radioButton_4.toggled.connect(self.on_nequi_toggled)
         
-        # Label para "Recibido" (inicialmente oculto)
+        # Labels y campos para efectivo
         self.recibido_label = QtWidgets.QLabel(page_v3)
-        self.recibido_label.setGeometry(QtCore.QRect(400, 130, 111, 22))
+        self.recibido_label.setGeometry(QtCore.QRect(300, 140, 200, 40))  # Aumentado tamaño y posición
         self.recibido_label.setObjectName("recibido_label")
+        self.recibido_label.setFont(font)
         self.recibido_label.hide()
         
-        # Campo de texto para el valor recibido (inicialmente oculto)
         self.recibido_input = QtWidgets.QLineEdit(page_v3)
-        self.recibido_input.setGeometry(QtCore.QRect(400, 160, 111, 22))
+        self.recibido_input.setGeometry(QtCore.QRect(300, 190, 200, 40))  # Aumentado tamaño y posición
         self.recibido_input.setObjectName("recibido_input")
-        self.recibido_input.setValidator(QtGui.QIntValidator())  # Solo permite números enteros
+        self.recibido_input.setFont(font)
+        self.recibido_input.setValidator(QtGui.QIntValidator())
         self.recibido_input.hide()
         
-        # Radio buttons para pago mixto (inicialmente ocultos)
+        # Radio buttons para pago mixto
         self.radioButton_mixto_nequi = QtWidgets.QRadioButton(page_v3)
-        self.radioButton_mixto_nequi.setGeometry(QtCore.QRect(400, 130, 114, 28))
+        self.radioButton_mixto_nequi.setGeometry(QtCore.QRect(300, 140, 200, 40))  # Aumentado tamaño y posición
         self.radioButton_mixto_nequi.setObjectName("radioButton_mixto_nequi")
+        self.radioButton_mixto_nequi.setFont(font)
         self.radioButton_mixto_nequi.hide()
         
         self.radioButton_mixto_daviplata = QtWidgets.QRadioButton(page_v3)
-        self.radioButton_mixto_daviplata.setGeometry(QtCore.QRect(400, 160, 114, 28))
+        self.radioButton_mixto_daviplata.setGeometry(QtCore.QRect(300, 190, 200, 40))  # Aumentado tamaño y posición
         self.radioButton_mixto_daviplata.setObjectName("radioButton_mixto_daviplata")
+        self.radioButton_mixto_daviplata.setFont(font)
         self.radioButton_mixto_daviplata.hide()
         
-        # Crear un grupo de botones para los radio buttons de pago mixto
-        self.mixto_button_group = QtWidgets.QButtonGroup(page_v3)
-        self.mixto_button_group.addButton(self.radioButton_mixto_nequi)
-        self.mixto_button_group.addButton(self.radioButton_mixto_daviplata)
-        
-        # Label para efectivo en pago mixto (inicialmente oculto)
+        # Labels y campos para pago mixto
         self.efectivo_mixto_label = QtWidgets.QLabel(page_v3)
-        self.efectivo_mixto_label.setGeometry(QtCore.QRect(400, 190, 111, 22))
+        self.efectivo_mixto_label.setGeometry(QtCore.QRect(300, 240, 200, 40))  # Aumentado tamaño y posición
         self.efectivo_mixto_label.setObjectName("efectivo_mixto_label")
+        self.efectivo_mixto_label.setFont(font)
         self.efectivo_mixto_label.hide()
         
-        # Campo de texto para efectivo en pago mixto (inicialmente oculto)
         self.efectivo_mixto_input = QtWidgets.QLineEdit(page_v3)
-        self.efectivo_mixto_input.setGeometry(QtCore.QRect(400, 220, 111, 22))
+        self.efectivo_mixto_input.setGeometry(QtCore.QRect(300, 290, 200, 40))  # Aumentado tamaño y posición
         self.efectivo_mixto_input.setObjectName("efectivo_mixto_input")
-        self.efectivo_mixto_input.setValidator(QtGui.QIntValidator())  # Solo permite números enteros
+        self.efectivo_mixto_input.setFont(font)
+        self.efectivo_mixto_input.setValidator(QtGui.QIntValidator())
         self.efectivo_mixto_input.hide()
         self.efectivo_mixto_input.textChanged.connect(lambda: self.update_difference(self.efectivo_mixto_input, self.transferencia_mixto_input))
-
-        # Label para transferencia en pago mixto (inicialmente oculto)
+        
         self.transferencia_mixto_label = QtWidgets.QLabel(page_v3)
-        self.transferencia_mixto_label.setGeometry(QtCore.QRect(520, 190, 111, 22))
+        self.transferencia_mixto_label.setGeometry(QtCore.QRect(520, 240, 200, 40))  # Aumentado tamaño y posición
         self.transferencia_mixto_label.setObjectName("transferencia_mixto_label")
+        self.transferencia_mixto_label.setFont(font)
         self.transferencia_mixto_label.hide()
         
-        # Campo de texto para transferencia en pago mixto (inicialmente oculto)
         self.transferencia_mixto_input = QtWidgets.QLineEdit(page_v3)
-        self.transferencia_mixto_input.setGeometry(QtCore.QRect(520, 220, 111, 22))
-        self.transferencia_mixto_input.setObjectName("transferencia_mixto_input")
-        self.transferencia_mixto_input.setValidator(QtGui.QIntValidator())  # Solo permite números enteros
+        self.transferencia_mixto_input.setGeometry(QtCore.QRect(520, 290, 200, 40))  # Aumentado tamaño y posición
+        self.transferencia_mixto_input.setObjectName("transference_mixto_input")
+        self.transferencia_mixto_input.setFont(font)
+        self.transferencia_mixto_input.setValidator(QtGui.QIntValidator())
         self.transferencia_mixto_input.hide()
         self.transferencia_mixto_input.textChanged.connect(lambda: self.update_difference(self.transferencia_mixto_input, self.efectivo_mixto_input))
-
-        # Labels para mostrar las diferencias (inicialmente ocultos)
+        
+        # Labels para diferencias
         self.diferencia_efectivo_label = QtWidgets.QLabel(page_v3)
-        self.diferencia_efectivo_label.setGeometry(QtCore.QRect(400, 250, 111, 22))
+        self.diferencia_efectivo_label.setGeometry(QtCore.QRect(300, 340, 200, 40))  # Aumentado tamaño y posición
         self.diferencia_efectivo_label.setObjectName("diferencia_efectivo_label")
+        self.diferencia_efectivo_label.setFont(font)
         self.diferencia_efectivo_label.hide()
-
+        
         self.diferencia_transferencia_label = QtWidgets.QLabel(page_v3)
-        self.diferencia_transferencia_label.setGeometry(QtCore.QRect(520, 250, 111, 22))
+        self.diferencia_transferencia_label.setGeometry(QtCore.QRect(520, 340, 200, 40))  # Aumentado tamaño y posición
         self.diferencia_transferencia_label.setObjectName("diferencia_transferencia_label")
+        self.diferencia_transferencia_label.setFont(font)
         self.diferencia_transferencia_label.hide()
         
-        self.pushButton = QtWidgets.QPushButton(page_v3)
-        self.pushButton.setGeometry(QtCore.QRect(310, 270, 91, 30))  # Movido más abajo
-        self.pushButton.setObjectName("pushButton")
-        self.pushButton.clicked.connect(self.on_ok_clicked)  # Conectar el evento de clic
-        
+        # Botones de control
         self.pushButton_2 = QtWidgets.QPushButton(page_v3)
-        self.pushButton_2.setGeometry(QtCore.QRect(200, 270, 91, 30))  # Movido más abajo
+        self.pushButton_2.setGeometry(QtCore.QRect(20, 400, 200, 50))  # Aumentado tamaño y posición
         self.pushButton_2.setObjectName("pushButton_2")
+        self.pushButton_2.setFont(font)
         self.pushButton_2.clicked.connect(self.go_back)
+        
+        self.pushButton = QtWidgets.QPushButton(page_v3)
+        self.pushButton.setGeometry(QtCore.QRect(240, 400, 200, 50))  # Aumentado tamaño y posición
+        self.pushButton.setObjectName("pushButton")
+        self.pushButton.setFont(font)
+        self.pushButton.clicked.connect(self.on_ok_clicked)
 
         self.retranslateUi(page_v3)
         QtCore.QMetaObject.connectSlotsByName(page_v3)
@@ -243,6 +258,12 @@ class Ui_page_v3(object):
                     QtWidgets.QMessageBox.warning(self.page_v3, "Advertencia", "Por favor ingrese el valor recibido")
                     return
                 received_amount = self.recibido_input.text()
+                # Verificar que el valor recibido no sea menor al total
+                total_value = int(self.total_label.text().replace("Total: $", "").replace(",", ""))
+                if int(received_amount) < total_value:
+                    QtWidgets.QMessageBox.warning(self.page_v3, "Advertencia", 
+                        f"El valor recibido (${received_amount}) no puede ser menor al total (${total_value})")
+                    return
             elif self.radioButton_2.isChecked():
                 payment_method = "daviplata"
             elif self.radioButton_3.isChecked():
@@ -275,20 +296,20 @@ class Ui_page_v3(object):
                 return
             
             # Obtener el usuario activo
-            current_user = self.user_active.text().replace("usuario activo: ", "")
+            current_user = self.user_active.text().replace("usuario activo: ", "").strip()
             
             # Obtener el total
             total = self.total_label.text().replace("Total: $", "").replace(",", "")
             
             # Conectar a la base de datos
-            conn = sqlite3.connect('/home/andres/Documentos/app_heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect("/home/andres/Documentos/heladeria/databases/Pow_Ice")
             cursor = conn.cursor()
             
-            # Obtener el ID del usuario
+            # Obtener el ID del usuario (case insensitive)
             cursor.execute("SELECT id FROM usuarios WHERE nombre = ?", (current_user,))
             user_result = cursor.fetchone()
             if not user_result:
-                QtWidgets.QMessageBox.critical(self.page_v3, "Error", "No se encontró el usuario en la base de datos")
+                QtWidgets.QMessageBox.critical(self.page_v3, "Error", f"No se encontró el usuario '{current_user}' en la base de datos")
                 conn.close()
                 return
             user_id = user_result[0]
