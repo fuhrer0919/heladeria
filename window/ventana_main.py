@@ -18,6 +18,49 @@ class Ui_main(object):
         main.resize(1024, 600)
         main.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)  # Disable close button
 
+        # Establecer el color de fondo de la ventana (tono azul claro)
+        main.setStyleSheet("""
+            QWidget {
+                background-color: #E6F3FF;  /* Azul pastel claro */
+            }
+            QPushButton {
+                background-color: #4A90E2;  /* Azul medio */
+                border: 3px solid #2C5282;  /* Azul oscuro */
+                border-radius: 15px;
+                color: white;  /* Texto blanco para mejor contraste */
+                font-weight: bold;
+                padding: 5px;
+            }
+            QPushButton:hover {
+                background-color: #2C5282;  /* Azul oscuro al pasar el mouse */
+                color: white;
+            }
+            QLabel {
+                color: #1A365D;  /* Azul muy oscuro para el texto */
+                font-weight: bold;
+            }
+            QTableWidget {
+                background-color: white;
+                border: 3px solid #4A90E2;
+                border-radius: 10px;
+                gridline-color: #E6F3FF;
+            }
+            QTableWidget::item {
+                padding: 5px;
+            }
+            QTableWidget::item:selected {
+                background-color: #4A90E2;
+                color: white;
+            }
+            QHeaderView::section {
+                background-color: #4A90E2;
+                color: white;
+                padding: 5px;
+                border: 1px solid #2C5282;
+                font-weight: bold;
+            }
+        """)
+
         # Configurar fuente base
         base_font = QtGui.QFont()
         base_font.setPointSize(16)  # Tamaño de fuente base
@@ -29,26 +72,34 @@ class Ui_main(object):
         self.title_label.setAlignment(QtCore.Qt.AlignCenter)
         title_font = QtGui.QFont()
         title_font.setPointSize(32)
+        title_font.setBold(True)
         self.title_label.setFont(title_font)
         self.title_label.setText("Pow Ice")
+        self.title_label.setStyleSheet("""
+            QLabel {
+                color: #1A365D;  /* Azul muy oscuro para el título */
+                font-weight: bold;
+                background-color: transparent;
+            }
+        """)
 
         # Botón Iniciar Ventas
         self.ventas = QtWidgets.QPushButton(main)
         self.ventas.setObjectName("ventas")
-        self.ventas.setGeometry(QtCore.QRect(312, 200, 400, 80))  # Centrado horizontalmente
+        self.ventas.setGeometry(QtCore.QRect(312, 200, 400, 80))
         self.ventas.setFont(base_font)
         self.ventas.clicked.connect(self.open_ventas)
 
         # Botón Ingresar Compras
         self.pushButton_2 = QtWidgets.QPushButton(main)
         self.pushButton_2.setObjectName("pushButton_2")
-        self.pushButton_2.setGeometry(QtCore.QRect(312, 300, 400, 80))  # Centrado horizontalmente
+        self.pushButton_2.setGeometry(QtCore.QRect(312, 300, 400, 80))
         self.pushButton_2.setFont(base_font)
 
         # Botón Administrar
         self.pushButton_3 = QtWidgets.QPushButton(main)
         self.pushButton_3.setObjectName("pushButton_3")
-        self.pushButton_3.setGeometry(QtCore.QRect(312, 400, 400, 80))  # Centrado horizontalmente
+        self.pushButton_3.setGeometry(QtCore.QRect(312, 400, 400, 80))
         self.pushButton_3.setFont(base_font)
 
         self.retranslateUi(main)

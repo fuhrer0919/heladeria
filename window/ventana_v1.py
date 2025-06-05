@@ -21,6 +21,39 @@ class Ui_page_v1(object):
         page_v1.resize(800, 600)  # Aumentado el tamaño de la ventana
         page_v1.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)  # Disable close button
 
+        # Establecer el color de fondo de la ventana (tono azul claro)
+        page_v1.setStyleSheet("""
+            QWidget {
+                background-color: #E6F3FF;  /* Azul pastel claro */
+            }
+            QPushButton {
+                background-color: #4A90E2;  /* Azul medio */
+                border: 3px solid #2C5282;  /* Azul oscuro */
+                border-radius: 15px;
+                color: white;  /* Texto blanco para mejor contraste */
+                font-weight: bold;
+                padding: 5px;
+            }
+            QPushButton:hover {
+                background-color: #2C5282;  /* Azul oscuro al pasar el mouse */
+                color: white;
+            }
+            QLabel {
+                color: #1A365D;  /* Azul muy oscuro para el texto */
+                font-weight: bold;
+            }
+            QLineEdit {
+                background-color: white;
+                border: 2px solid #4A90E2;
+                border-radius: 10px;
+                padding: 5px;
+                color: #1A365D;
+            }
+            QLineEdit:focus {
+                border: 2px solid #2C5282;
+            }
+        """)
+
         # Crear layout vertical principal
         main_layout = QtWidgets.QVBoxLayout(page_v1)
         main_layout.setContentsMargins(40, 40, 40, 40)  # Aumentado los márgenes
@@ -28,16 +61,26 @@ class Ui_page_v1(object):
 
         # Configurar fuente base
         base_font = QtGui.QFont()
-        base_font.setPointSize(12)  # Tamaño de fuente base
+        base_font.setPointSize(14)  # Tamaño de fuente base
 
-        # Label para el título
-        self.label = QtWidgets.QLabel(page_v1)
-        self.label.setObjectName("label")
-        self.label.setAlignment(QtCore.Qt.AlignCenter)
+        # Título
+        self.title_label = QtWidgets.QLabel(page_v1)
+        self.title_label.setObjectName("title_label")
+        self.title_label.setGeometry(QtCore.QRect(0, 50, 800, 60))
+        self.title_label.setAlignment(QtCore.Qt.AlignCenter)
         title_font = QtGui.QFont()
-        title_font.setPointSize(24)  # Título más grande
-        self.label.setFont(title_font)
-        main_layout.addWidget(self.label)
+        title_font.setPointSize(32)
+        title_font.setBold(True)
+        self.title_label.setFont(title_font)
+        self.title_label.setText("Pow Ice")
+        self.title_label.setStyleSheet("""
+            QLabel {
+                color: #1A365D;  /* Azul muy oscuro para el título */
+                font-weight: bold;
+                background-color: transparent;
+            }
+        """)
+        main_layout.addWidget(self.title_label)
 
         # LineEdit para el usuario
         self.username_in = QtWidgets.QLineEdit(page_v1)
@@ -243,7 +286,6 @@ class Ui_page_v1(object):
     def retranslateUi(self, page_v1):
         _translate = QtCore.QCoreApplication.translate
         page_v1.setWindowTitle(_translate("page_v1", "page_v1"))
-        self.label.setText(_translate("page_v1", "Ingrese su Usuario"))
         self.pushButton_2.setText(_translate("page_v1", "Atrás"))
         self.pushButton.setText(_translate("page_v1", "OK"))
         self.venta_dia_button.setText(_translate("page_v1", "Venta del día"))

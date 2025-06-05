@@ -19,6 +19,80 @@ class Ui_page_vfinal(object):
         page_vfinal.setObjectName("page_vfinal")
         page_vfinal.resize(1024, 600)
         page_vfinal.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)  # Disable close button
+        page_vfinal.setWindowTitle("Pedido 1")  # Establecer título de la ventana principal
+
+        # Establecer el color de fondo de la ventana (tono azul claro)
+        page_vfinal.setStyleSheet("""
+            QWidget {
+                background-color: #E6F3FF;  /* Azul pastel claro */
+            }
+            QPushButton {
+                background-color: #4A90E2;  /* Azul medio */
+                border: 3px solid #2C5282;  /* Azul oscuro */
+                border-radius: 15px;
+                color: white;  /* Texto blanco para mejor contraste */
+                font-weight: bold;
+                padding: 5px;
+            }
+            QPushButton:hover {
+                background-color: #2C5282;  /* Azul oscuro al pasar el mouse */
+                color: white;
+            }
+            QLabel {
+                color: #1A365D;  /* Azul muy oscuro para el texto */
+                font-weight: bold;
+            }
+            QTableWidget {
+                background-color: white;
+                border: 3px solid #4A90E2;
+                border-radius: 10px;
+                gridline-color: #E6F3FF;
+            }
+            QTableWidget::item {
+                padding: 5px;
+            }
+            QTableWidget::item:selected {
+                background-color: #4A90E2;
+                color: white;
+            }
+            QHeaderView::section {
+                background-color: #4A90E2;
+                color: white;
+                padding: 5px;
+                border: 1px solid #2C5282;
+                font-weight: bold;
+            }
+            QLineEdit {
+                background-color: white;
+                border: 2px solid #4A90E2;
+                border-radius: 10px;
+                padding: 5px;
+                color: #1A365D;
+                font-weight: bold;
+            }
+            QLineEdit:focus {
+                border: 2px solid #2C5282;
+                background-color: #F0F7FF;
+            }
+            QRadioButton {
+                color: #1A365D;
+                font-weight: bold;
+            }
+            QRadioButton::indicator {
+                width: 20px;
+                height: 20px;
+            }
+            QRadioButton::indicator:unchecked {
+                border: 2px solid #4A90E2;
+                background-color: white;
+                border-radius: 10px;
+            }
+            QRadioButton::indicator:checked {
+                border: 2px solid #2C5282;
+                background-color: #4A90E2;
+                border-radius: 10px;
+            }
+        """)
         
         # Configurar fuente base
         base_font = QtGui.QFont()
@@ -46,17 +120,17 @@ class Ui_page_vfinal(object):
         
         # Label para el cambio
         self.change_label = QtWidgets.QLabel(page_vfinal)
-        self.change_label.setGeometry(QtCore.QRect(50, 190, 900, 50))
+        self.change_label.setGeometry(QtCore.QRect(50, 190, 900, 100))  # Aumentado el alto a 100
         self.change_label.setObjectName("change_label")
         change_font = QtGui.QFont()
-        change_font.setPointSize(18)  # Tamaño de fuente más grande para el cambio
+        change_font.setPointSize(28)  # Aumentado el tamaño de fuente a 28
         self.change_label.setFont(change_font)
         self.change_label.setWordWrap(True)
         self.change_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         
         # Label para método de pago
         self.payment_method_label = QtWidgets.QLabel(page_vfinal)
-        self.payment_method_label.setGeometry(QtCore.QRect(50, 250, 900, 50))
+        self.payment_method_label.setGeometry(QtCore.QRect(50, 300, 900, 50))  # Ajustada la posición Y
         self.payment_method_label.setObjectName("payment_method_label")
         payment_font = QtGui.QFont()
         payment_font.setPointSize(16)

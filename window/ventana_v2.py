@@ -12,6 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import sqlite3
 from PyQt5.QtWidgets import QTableWidgetItem
 from window.ventana_v3 import Ui_page_v3  # Agregar esta línea
+from datetime import datetime
 
 
 class Ui_page_v2(object):
@@ -26,10 +27,57 @@ class Ui_page_v2(object):
         self.page_v2 = page_v2  # Guardar referencia a la ventana principal
         self.mesa_number = 1  # Default mesa number
         page_v2.setObjectName("page_v2")
-        page_v2.resize(1024, 600)
+        page_v2.resize(1200, 600)  # Aumentado el ancho de la ventana a 1200 para acomodar los botones de 200px
         page_v2.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)  # Disable close button
         page_v2.setWindowTitle("Pedido 1")  # Establecer título de la ventana principal
-        
+
+        # Establecer el color de fondo de la ventana (tono azul claro)
+        page_v2.setStyleSheet("""
+            QWidget {
+                background-color: #E6F3FF;  /* Azul pastel claro */
+            }
+            QPushButton {
+                background-color: #4A90E2;  /* Azul medio */
+                border: 3px solid #2C5282;  /* Azul oscuro */
+                border-radius: 15px;
+                color: white;  /* Texto blanco para mejor contraste */
+                font-weight: bold;
+                padding: 5px;
+            }
+            QPushButton:hover {
+                background-color: #2C5282;  /* Azul oscuro al pasar el mouse */
+                color: white;
+            }
+            QLabel {
+                color: #1A365D;  /* Azul muy oscuro para el texto */
+                font-weight: bold;
+            }
+            QTableWidget {
+                background-color: white;
+                border: 3px solid #4A90E2;
+                border-radius: 10px;
+                gridline-color: #E6F3FF;
+            }
+            QTableWidget::item {
+                padding: 5px;
+            }
+            QTableWidget::item:selected {
+                background-color: #4A90E2;
+                color: white;
+            }
+            QHeaderView::section {
+                background-color: #4A90E2;
+                color: white;
+                padding: 5px;
+                border: 1px solid #2C5282;
+                font-weight: bold;
+            }
+        """)
+
+        # Configurar fuente base
+        base_font = QtGui.QFont()
+        base_font.setPointSize(14)  # Tamaño de fuente base
+
         # Guardar referencia a la ventana principal si es Mesa 1
         if not Ui_page_v2.main_window:
             Ui_page_v2.main_window = page_v2
@@ -42,19 +90,31 @@ class Ui_page_v2(object):
         # Conectar el evento de cierre
         page_v2.closeEvent = self.closeEvent
         
+        # Label para usuario activo
         self.user_active = QtWidgets.QLabel(page_v2)
-        self.user_active.setGeometry(QtCore.QRect(150, 0, 300, 20))
+        self.user_active.setGeometry(QtCore.QRect(20, 10, 400, 30))  # Movido arriba de la tabla
         self.user_active.setObjectName("user_active")
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.user_active.setFont(font)
         
         # Label para mostrar el número de mesa
         self.mesa_label = QtWidgets.QLabel(page_v2)
-        self.mesa_label.setGeometry(QtCore.QRect(460, 0, 100, 20))
+        self.mesa_label.setGeometry(QtCore.QRect(460, 30, 100, 40))
         self.mesa_label.setObjectName("mesa_label")
         self.mesa_label.setText(f"Pedido {self.mesa_number}")
+        self.mesa_label.setFont(base_font)
+        self.mesa_label.setStyleSheet("""
+            QLabel {
+                color: #1A365D;  /* Azul muy oscuro para el texto */
+                font-weight: bold;
+                background-color: transparent;
+            }
+        """)
         
         # Configurar TableView
         self.tableView = QtWidgets.QTableWidget(page_v2)
-        self.tableView.setGeometry(QtCore.QRect(20, 40, 400, 400))  # Aumentado el tamaño
+        self.tableView.setGeometry(QtCore.QRect(20, 50, 400, 400))  # Ajustada la posición Y para dejar espacio al label
         self.tableView.setObjectName("tableView")
         self.tableView.setColumnCount(3)
         self.tableView.setHorizontalHeaderLabels(["Producto", "Precio", "Cant"])
@@ -104,62 +164,62 @@ class Ui_page_v2(object):
 
         # Botones de Helados (segunda columna) - Movidos más a la derecha
         self.Cono1 = QtWidgets.QPushButton(page_v2)
-        self.Cono1.setGeometry(QtCore.QRect(580, 40, 140, 30))
+        self.Cono1.setGeometry(QtCore.QRect(580, 40, 200, 30))  # Aumentado el ancho a 200
         self.Cono1.setObjectName("Cono1")
         self.Cono1.hide()
         self.Cono1.clicked.connect(self.add_cono1)
 
         self.Cono2 = QtWidgets.QPushButton(page_v2)
-        self.Cono2.setGeometry(QtCore.QRect(580, 80, 140, 30))
+        self.Cono2.setGeometry(QtCore.QRect(580, 80, 200, 30))  # Aumentado el ancho a 200
         self.Cono2.setObjectName("Cono2")
         self.Cono2.hide()
         self.Cono2.clicked.connect(self.add_cono2)
 
         # Botones de Canasta (tercera columna) - Movidos más a la derecha
         self.Canasta2 = QtWidgets.QPushButton(page_v2)
-        self.Canasta2.setGeometry(QtCore.QRect(740, 40, 140, 30))
+        self.Canasta2.setGeometry(QtCore.QRect(780, 40, 200, 30))  # Aumentado el ancho a 200
         self.Canasta2.setObjectName("Canasta2")
         self.Canasta2.hide()
         self.Canasta2.clicked.connect(self.add_canasta2)
 
         self.Canasta3 = QtWidgets.QPushButton(page_v2)
-        self.Canasta3.setGeometry(QtCore.QRect(740, 80, 140, 30))
+        self.Canasta3.setGeometry(QtCore.QRect(780, 80, 200, 30))  # Aumentado el ancho a 200
         self.Canasta3.setObjectName("Canasta3")
         self.Canasta3.hide()
         self.Canasta3.clicked.connect(self.add_canasta3)
 
         self.SuperCanasta = QtWidgets.QPushButton(page_v2)
-        self.SuperCanasta.setGeometry(QtCore.QRect(740, 120, 140, 30))
+        self.SuperCanasta.setGeometry(QtCore.QRect(780, 120, 200, 30))  # Aumentado el ancho a 200
         self.SuperCanasta.setObjectName("SuperCanasta")
         self.SuperCanasta.hide()
         self.SuperCanasta.clicked.connect(self.add_supercanasta)
 
         self.CanastaFrutal = QtWidgets.QPushButton(page_v2)
-        self.CanastaFrutal.setGeometry(QtCore.QRect(740, 160, 140, 30))
+        self.CanastaFrutal.setGeometry(QtCore.QRect(780, 160, 200, 30))  # Aumentado el ancho a 200
         self.CanastaFrutal.setObjectName("CanastaFrutal")
         self.CanastaFrutal.hide()
         self.CanastaFrutal.clicked.connect(self.add_canastafrutal)
 
         self.CanastaAlaska = QtWidgets.QPushButton(page_v2)
-        self.CanastaAlaska.setGeometry(QtCore.QRect(740, 200, 140, 30))
+        self.CanastaAlaska.setGeometry(QtCore.QRect(780, 200, 200, 30))  # Aumentado el ancho a 200
         self.CanastaAlaska.setObjectName("CanastaAlaska")
         self.CanastaAlaska.hide()
         self.CanastaAlaska.clicked.connect(self.add_canastaalaska)
 
         self.CanastaPowIce = QtWidgets.QPushButton(page_v2)
-        self.CanastaPowIce.setGeometry(QtCore.QRect(740, 240, 140, 30))
+        self.CanastaPowIce.setGeometry(QtCore.QRect(780, 240, 200, 30))  # Aumentado el ancho a 200
         self.CanastaPowIce.setObjectName("CanastaPowIce")
         self.CanastaPowIce.hide()
         self.CanastaPowIce.clicked.connect(self.add_canastapowice)
 
         # Botones de control - Movidos a la parte inferior
         self.pushButton_2 = QtWidgets.QPushButton(page_v2)
-        self.pushButton_2.setGeometry(QtCore.QRect(440, 450, 120, 30))
+        self.pushButton_2.setGeometry(QtCore.QRect(50, 530, 120, 30))  # Bajado a y=530
         self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton_2.clicked.connect(self.go_back)
 
         self.pushButton = QtWidgets.QPushButton(page_v2)
-        self.pushButton.setGeometry(QtCore.QRect(580, 450, 120, 30))
+        self.pushButton.setGeometry(QtCore.QRect(190, 530, 120, 30))  # Bajado a y=530
         self.pushButton.setObjectName("pushButton")
         self.pushButton.clicked.connect(self.open_v3)  # Conectar el botón OK con la nueva función
 
@@ -201,187 +261,187 @@ class Ui_page_v2(object):
 
         # Botones de Paletas - Ajustados a la nueva posición
         self.Refrescante = QtWidgets.QPushButton(page_v2)
-        self.Refrescante.setGeometry(QtCore.QRect(580, 40, 140, 30))
+        self.Refrescante.setGeometry(QtCore.QRect(580, 40, 200, 30))  # Aumentado el ancho a 200
         self.Refrescante.setObjectName("Refrescante")
         self.Refrescante.hide()
         self.Refrescante.clicked.connect(self.add_refrescante)
 
         self.Cremosa = QtWidgets.QPushButton(page_v2)
-        self.Cremosa.setGeometry(QtCore.QRect(580, 80, 140, 30))
+        self.Cremosa.setGeometry(QtCore.QRect(580, 80, 200, 30))  # Aumentado el ancho a 200
         self.Cremosa.setObjectName("Cremosa")
         self.Cremosa.hide()
         self.Cremosa.clicked.connect(self.add_cremosa)
 
         self.SuperPaleta = QtWidgets.QPushButton(page_v2)
-        self.SuperPaleta.setGeometry(QtCore.QRect(580, 120, 140, 30))
+        self.SuperPaleta.setGeometry(QtCore.QRect(580, 120, 200, 30))  # Aumentado el ancho a 200
         self.SuperPaleta.setObjectName("SuperPaleta")
         self.SuperPaleta.hide()
         self.SuperPaleta.clicked.connect(self.add_superpaleta)
 
         # Botones de Obleas - Ajustados a la nueva posición
         self.ObleaSencilla = QtWidgets.QPushButton(page_v2)
-        self.ObleaSencilla.setGeometry(QtCore.QRect(580, 40, 140, 30))
+        self.ObleaSencilla.setGeometry(QtCore.QRect(580, 40, 200, 30))  # Aumentado el ancho a 200
         self.ObleaSencilla.setObjectName("ObleaSencilla")
         self.ObleaSencilla.hide()
         self.ObleaSencilla.clicked.connect(self.add_obleasencilla)
 
         self.SuperOblea = QtWidgets.QPushButton(page_v2)
-        self.SuperOblea.setGeometry(QtCore.QRect(580, 80, 140, 30))
+        self.SuperOblea.setGeometry(QtCore.QRect(580, 80, 200, 30))  # Aumentado el ancho a 200
         self.SuperOblea.setObjectName("SuperOblea")
         self.SuperOblea.hide()
         self.SuperOblea.clicked.connect(self.add_superoblea)
 
         self.ObleaPowIce = QtWidgets.QPushButton(page_v2)
-        self.ObleaPowIce.setGeometry(QtCore.QRect(580, 120, 140, 30))
+        self.ObleaPowIce.setGeometry(QtCore.QRect(580, 120, 200, 30))  # Aumentado el ancho a 200
         self.ObleaPowIce.setObjectName("ObleaPowIce")
         self.ObleaPowIce.hide()
         self.ObleaPowIce.clicked.connect(self.add_obleapowice)
 
         # Botones de Brownie - Ajustados a la nueva posición
         self.BrownieHelado = QtWidgets.QPushButton(page_v2)
-        self.BrownieHelado.setGeometry(QtCore.QRect(580, 40, 140, 30))
+        self.BrownieHelado.setGeometry(QtCore.QRect(580, 40, 200, 30))  # Aumentado el ancho a 200
         self.BrownieHelado.setObjectName("BrownieHelado")
         self.BrownieHelado.hide()
         self.BrownieHelado.clicked.connect(self.add_browniehelado)
 
         self.BrownieEspecial = QtWidgets.QPushButton(page_v2)
-        self.BrownieEspecial.setGeometry(QtCore.QRect(580, 80, 140, 30))
+        self.BrownieEspecial.setGeometry(QtCore.QRect(580, 80, 200, 30))  # Aumentado el ancho a 200
         self.BrownieEspecial.setObjectName("BrownieEspecial")
         self.BrownieEspecial.hide()
         self.BrownieEspecial.clicked.connect(self.add_brownieespecial)
 
         # Botones de Fresas - Ajustados a la nueva posición
         self.FresasSencillas = QtWidgets.QPushButton(page_v2)
-        self.FresasSencillas.setGeometry(QtCore.QRect(580, 40, 140, 30))
+        self.FresasSencillas.setGeometry(QtCore.QRect(580, 40, 200, 30))  # Aumentado el ancho a 200
         self.FresasSencillas.setObjectName("FresasSencillas")
         self.FresasSencillas.hide()
         self.FresasSencillas.clicked.connect(self.add_fresassencillas)
 
         self.SuperFresas = QtWidgets.QPushButton(page_v2)
-        self.SuperFresas.setGeometry(QtCore.QRect(580, 80, 140, 30))
+        self.SuperFresas.setGeometry(QtCore.QRect(580, 80, 200, 30))  # Aumentado el ancho a 200
         self.SuperFresas.setObjectName("SuperFresas")
         self.SuperFresas.hide()
         self.SuperFresas.clicked.connect(self.add_superfresas)
 
         # Botones de Waffles - Ajustados a la nueva posición
         self.WaffleSencillo = QtWidgets.QPushButton(page_v2)
-        self.WaffleSencillo.setGeometry(QtCore.QRect(580, 40, 140, 30))
+        self.WaffleSencillo.setGeometry(QtCore.QRect(580, 40, 200, 30))  # Aumentado el ancho a 200
         self.WaffleSencillo.setObjectName("WaffleSencillo")
         self.WaffleSencillo.hide()
         self.WaffleSencillo.clicked.connect(self.add_wafflesencillo)
 
         self.WaffleFrutal = QtWidgets.QPushButton(page_v2)
-        self.WaffleFrutal.setGeometry(QtCore.QRect(580, 80, 140, 30))
+        self.WaffleFrutal.setGeometry(QtCore.QRect(580, 80, 200, 30))  # Aumentado el ancho a 200
         self.WaffleFrutal.setObjectName("WaffleFrutal")
         self.WaffleFrutal.hide()
         self.WaffleFrutal.clicked.connect(self.add_wafflefrutal)
 
         self.SuperWaffle = QtWidgets.QPushButton(page_v2)
-        self.SuperWaffle.setGeometry(QtCore.QRect(580, 120, 140, 30))
+        self.SuperWaffle.setGeometry(QtCore.QRect(580, 120, 200, 30))  # Aumentado el ancho a 200
         self.SuperWaffle.setObjectName("SuperWaffle")
         self.SuperWaffle.hide()
         self.SuperWaffle.clicked.connect(self.add_superwaffle)
 
         self.MegaWaffles = QtWidgets.QPushButton(page_v2)
-        self.MegaWaffles.setGeometry(QtCore.QRect(580, 160, 140, 30))
+        self.MegaWaffles.setGeometry(QtCore.QRect(580, 160, 200, 30))  # Aumentado el ancho a 200
         self.MegaWaffles.setObjectName("MegaWaffles")
         self.MegaWaffles.hide()
         self.MegaWaffles.clicked.connect(self.add_megawaffles)
 
         self.WaffleCosmico = QtWidgets.QPushButton(page_v2)
-        self.WaffleCosmico.setGeometry(QtCore.QRect(580, 200, 140, 30))
+        self.WaffleCosmico.setGeometry(QtCore.QRect(580, 200, 200, 30))  # Aumentado el ancho a 200
         self.WaffleCosmico.setObjectName("WaffleCosmico")
         self.WaffleCosmico.hide()
         self.WaffleCosmico.clicked.connect(self.add_wafflecosmico)
 
         # Botones de Bebidas - Ajustados a la nueva posición
         self.MalteadaSencilla = QtWidgets.QPushButton(page_v2)
-        self.MalteadaSencilla.setGeometry(QtCore.QRect(580, 40, 140, 30))
+        self.MalteadaSencilla.setGeometry(QtCore.QRect(580, 40, 200, 30))  # Aumentado el ancho a 200
         self.MalteadaSencilla.setObjectName("MalteadaSencilla")
         self.MalteadaSencilla.hide()
         self.MalteadaSencilla.clicked.connect(self.add_malteadasencilla)
 
         self.MalteadaSuper = QtWidgets.QPushButton(page_v2)
-        self.MalteadaSuper.setGeometry(QtCore.QRect(580, 80, 140, 30))
+        self.MalteadaSuper.setGeometry(QtCore.QRect(580, 80, 200, 30))  # Aumentado el ancho a 200
         self.MalteadaSuper.setObjectName("MalteadaSuper")
         self.MalteadaSuper.hide()
         self.MalteadaSuper.clicked.connect(self.add_malteadasuper)
 
         self.Smoothie = QtWidgets.QPushButton(page_v2)
-        self.Smoothie.setGeometry(QtCore.QRect(580, 120, 140, 30))
+        self.Smoothie.setGeometry(QtCore.QRect(580, 120, 200, 30))  # Aumentado el ancho a 200
         self.Smoothie.setObjectName("Smoothie")
         self.Smoothie.hide()
         self.Smoothie.clicked.connect(self.add_smoothie)
 
         self.Limonada = QtWidgets.QPushButton(page_v2)
-        self.Limonada.setGeometry(QtCore.QRect(740, 40, 140, 30))
+        self.Limonada.setGeometry(QtCore.QRect(780, 40, 200, 30))  # Aumentado el ancho a 200
         self.Limonada.setObjectName("Limonada")
         self.Limonada.hide()
         self.Limonada.clicked.connect(self.add_limonada)
 
         self.JugoEnAgua = QtWidgets.QPushButton(page_v2)
-        self.JugoEnAgua.setGeometry(QtCore.QRect(740, 80, 140, 30))
+        self.JugoEnAgua.setGeometry(QtCore.QRect(780, 80, 200, 30))  # Aumentado el ancho a 200
         self.JugoEnAgua.setObjectName("JugoEnAgua")
         self.JugoEnAgua.hide()
         self.JugoEnAgua.clicked.connect(self.add_jugoenagua)
 
         self.JugoEnLeche = QtWidgets.QPushButton(page_v2)
-        self.JugoEnLeche.setGeometry(QtCore.QRect(740, 120, 140, 30))
+        self.JugoEnLeche.setGeometry(QtCore.QRect(780, 120, 200, 30))  # Aumentado el ancho a 200
         self.JugoEnLeche.setObjectName("JugoEnLeche")
         self.JugoEnLeche.hide()
         self.JugoEnLeche.clicked.connect(self.add_jugoenleche)
 
         self.GranizadoFrutal = QtWidgets.QPushButton(page_v2)
-        self.GranizadoFrutal.setGeometry(QtCore.QRect(740, 160, 140, 30))
+        self.GranizadoFrutal.setGeometry(QtCore.QRect(780, 160, 200, 30))  # Aumentado el ancho a 200
         self.GranizadoFrutal.setObjectName("GranizadoFrutal")
         self.GranizadoFrutal.hide()
         self.GranizadoFrutal.clicked.connect(self.add_granizadofrutal)
 
         self.GranizadoCafe = QtWidgets.QPushButton(page_v2)
-        self.GranizadoCafe.setGeometry(QtCore.QRect(740, 200, 140, 30))
+        self.GranizadoCafe.setGeometry(QtCore.QRect(780, 200, 200, 30))  # Aumentado el ancho a 200
         self.GranizadoCafe.setObjectName("GranizadoCafe")
         self.GranizadoCafe.hide()
         self.GranizadoCafe.clicked.connect(self.add_granizadocafe)
 
         # Botones de Otros - Ajustados a la nueva posición
         self.BananaSplit = QtWidgets.QPushButton(page_v2)
-        self.BananaSplit.setGeometry(QtCore.QRect(580, 40, 140, 30))
+        self.BananaSplit.setGeometry(QtCore.QRect(580, 40, 200, 30))  # Aumentado el ancho a 200
         self.BananaSplit.setObjectName("BananaSplit")
         self.BananaSplit.hide()
         self.BananaSplit.clicked.connect(self.add_bananasplit)
 
         self.Topping = QtWidgets.QPushButton(page_v2)
-        self.Topping.setGeometry(QtCore.QRect(580, 80, 140, 30))
+        self.Topping.setGeometry(QtCore.QRect(580, 80, 200, 30))  # Aumentado el ancho a 200
         self.Topping.setObjectName("Topping")
         self.Topping.hide()
         self.Topping.clicked.connect(self.add_topping)
 
         self.Empaque = QtWidgets.QPushButton(page_v2)
-        self.Empaque.setGeometry(QtCore.QRect(580, 120, 140, 30))
+        self.Empaque.setGeometry(QtCore.QRect(580, 120, 200, 30))  # Aumentado el ancho a 200
         self.Empaque.setObjectName("Empaque")
         self.Empaque.hide()
         self.Empaque.clicked.connect(self.add_empaque)
 
         self.TintoAmericano = QtWidgets.QPushButton(page_v2)
-        self.TintoAmericano.setGeometry(QtCore.QRect(740, 40, 140, 30))
+        self.TintoAmericano.setGeometry(QtCore.QRect(780, 40, 200, 30))  # Aumentado el ancho a 200
         self.TintoAmericano.setObjectName("TintoAmericano")
         self.TintoAmericano.hide()
         self.TintoAmericano.clicked.connect(self.add_tintoamericano)
 
         self.Cappuccino = QtWidgets.QPushButton(page_v2)
-        self.Cappuccino.setGeometry(QtCore.QRect(740, 80, 140, 30))
+        self.Cappuccino.setGeometry(QtCore.QRect(780, 80, 200, 30))  # Aumentado el ancho a 200
         self.Cappuccino.setObjectName("Cappuccino")
         self.Cappuccino.hide()
         self.Cappuccino.clicked.connect(self.add_cappuccino)
 
         self.Mochaccino = QtWidgets.QPushButton(page_v2)
-        self.Mochaccino.setGeometry(QtCore.QRect(740, 120, 140, 30))
+        self.Mochaccino.setGeometry(QtCore.QRect(780, 120, 200, 30))  # Aumentado el ancho a 200
         self.Mochaccino.setObjectName("Mochaccino")
         self.Mochaccino.hide()
         self.Mochaccino.clicked.connect(self.add_mochaccino)
 
         self.Aromatica = QtWidgets.QPushButton(page_v2)
-        self.Aromatica.setGeometry(QtCore.QRect(740, 160, 140, 30))
+        self.Aromatica.setGeometry(QtCore.QRect(780, 160, 200, 30))  # Aumentado el ancho a 200
         self.Aromatica.setObjectName("Aromatica")
         self.Aromatica.hide()
         self.Aromatica.clicked.connect(self.add_aromatica)
