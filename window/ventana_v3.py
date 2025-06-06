@@ -28,6 +28,12 @@ class Ui_page_v3(object):
         page_v3.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)  # Disable close button
         page_v3.setWindowTitle("Pedido 1")  # Establecer título de la ventana principal
 
+        # Crear frame de fondo
+        self.background_frame = QtWidgets.QFrame(page_v3)
+        self.background_frame.setGeometry(QtCore.QRect(0, 0, 1024, 600))
+        self.background_frame.setStyleSheet("background-color: #E6F3FF;")  # Mismo color que el fondo
+        self.background_frame.lower()  # Enviar al fondo
+
         # Establecer el color de fondo de la ventana (tono azul claro)
         page_v3.setStyleSheet("""
             QWidget {
@@ -38,8 +44,8 @@ class Ui_page_v3(object):
                 border: 3px solid #2C5282;  /* Azul oscuro */
                 border-radius: 15px;
                 color: white;  /* Texto blanco para mejor contraste */
-                font-weight: bold;
                 padding: 5px;
+                font-size: 28px;
             }
             QPushButton:hover {
                 background-color: #2C5282;  /* Azul oscuro al pasar el mouse */
@@ -47,7 +53,7 @@ class Ui_page_v3(object):
             }
             QLabel {
                 color: #1A365D;  /* Azul muy oscuro para el texto */
-                font-weight: bold;
+                font-size: 28px;
             }
             QTableWidget {
                 background-color: white;
@@ -57,6 +63,7 @@ class Ui_page_v3(object):
             }
             QTableWidget::item {
                 padding: 5px;
+                font-size: 28px;
             }
             QTableWidget::item:selected {
                 background-color: #4A90E2;
@@ -67,7 +74,7 @@ class Ui_page_v3(object):
                 color: white;
                 padding: 5px;
                 border: 1px solid #2C5282;
-                font-weight: bold;
+                font-size: 28px;
             }
             QLineEdit {
                 background-color: white;
@@ -75,7 +82,7 @@ class Ui_page_v3(object):
                 border-radius: 10px;
                 padding: 5px;
                 color: #1A365D;
-                font-weight: bold;
+                font-size: 28px;
             }
             QLineEdit:focus {
                 border: 2px solid #2C5282;
@@ -83,11 +90,11 @@ class Ui_page_v3(object):
             }
             QRadioButton {
                 color: #1A365D;
-                font-weight: bold;
+                font-size: 28px;
             }
             QRadioButton::indicator {
-                width: 20px;
-                height: 20px;
+                width: 25px;
+                height: 25px;
             }
             QRadioButton::indicator:unchecked {
                 border: 2px solid #4A90E2;
@@ -103,7 +110,7 @@ class Ui_page_v3(object):
         
         # Label para usuario activo
         self.user_active = QtWidgets.QLabel(page_v3)
-        self.user_active.setGeometry(QtCore.QRect(20, 20, 300, 30))  # Aumentado tamaño y posición
+        self.user_active.setGeometry(QtCore.QRect(20, 20, 400, 40))  # Aumentado el ancho para el usuario
         self.user_active.setObjectName("user_active")
         font = QtGui.QFont()
         font.setPointSize(12)  # Aumentado tamaño de fuente
@@ -111,19 +118,19 @@ class Ui_page_v3(object):
         
         # Label para fecha y hora
         self.datetime_label = QtWidgets.QLabel(page_v3)
-        self.datetime_label.setGeometry(QtCore.QRect(340, 20, 300, 30))  # Aumentado tamaño y posición
+        self.datetime_label.setGeometry(QtCore.QRect(440, 20, 300, 40))  # Movido más a la derecha
         self.datetime_label.setObjectName("datetime_label")
         self.datetime_label.setFont(font)
         
         # Label para total
         self.total_label = QtWidgets.QLabel(page_v3)
-        self.total_label.setGeometry(QtCore.QRect(660, 20, 300, 30))  # Aumentado tamaño y posición
+        self.total_label.setGeometry(QtCore.QRect(760, 20, 300, 40))  # Movido más a la derecha
         self.total_label.setObjectName("total_label")
         self.total_label.setFont(font)
         
         # Label para medio de pago
         self.label = QtWidgets.QLabel(page_v3)
-        self.label.setGeometry(QtCore.QRect(20, 80, 200, 40))  # Aumentado tamaño y posición
+        self.label.setGeometry(QtCore.QRect(20, 80, 200, 40))  # Ajustada la posición Y
         self.label.setObjectName("label")
         font.setPointSize(14)  # Aumentado tamaño de fuente
         self.label.setFont(font)

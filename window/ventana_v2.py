@@ -27,9 +27,15 @@ class Ui_page_v2(object):
         self.page_v2 = page_v2  # Guardar referencia a la ventana principal
         self.mesa_number = 1  # Default mesa number
         page_v2.setObjectName("page_v2")
-        page_v2.resize(1200, 600)  # Aumentado el ancho de la ventana a 1200 para acomodar los botones de 200px
+        page_v2.resize(1024, 600)
         page_v2.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)  # Disable close button
         page_v2.setWindowTitle("Pedido 1")  # Establecer título de la ventana principal
+
+        # Crear frame de fondo
+        self.background_frame = QtWidgets.QFrame(page_v2)
+        self.background_frame.setGeometry(QtCore.QRect(0, 0, 1024, 600))
+        self.background_frame.setStyleSheet("background-color: #E6F3FF;")  # Mismo color que el fondo
+        self.background_frame.lower()  # Enviar al fondo
 
         # Establecer el color de fondo de la ventana (tono azul claro)
         page_v2.setStyleSheet("""
@@ -41,8 +47,8 @@ class Ui_page_v2(object):
                 border: 3px solid #2C5282;  /* Azul oscuro */
                 border-radius: 15px;
                 color: white;  /* Texto blanco para mejor contraste */
-                font-weight: bold;
                 padding: 5px;
+                font-size: 18px;
             }
             QPushButton:hover {
                 background-color: #2C5282;  /* Azul oscuro al pasar el mouse */
@@ -50,7 +56,7 @@ class Ui_page_v2(object):
             }
             QLabel {
                 color: #1A365D;  /* Azul muy oscuro para el texto */
-                font-weight: bold;
+                font-size: 18px;
             }
             QTableWidget {
                 background-color: white;
@@ -60,6 +66,7 @@ class Ui_page_v2(object):
             }
             QTableWidget::item {
                 padding: 5px;
+                font-size: 18px;
             }
             QTableWidget::item:selected {
                 background-color: #4A90E2;
@@ -70,7 +77,37 @@ class Ui_page_v2(object):
                 color: white;
                 padding: 5px;
                 border: 1px solid #2C5282;
-                font-weight: bold;
+                font-size: 20px;
+            }
+            QLineEdit {
+                background-color: white;
+                border: 2px solid #4A90E2;
+                border-radius: 10px;
+                padding: 5px;
+                color: #1A365D;
+                font-size: 20px;
+            }
+            QLineEdit:focus {
+                border: 2px solid #2C5282;
+                background-color: #F0F7FF;
+            }
+            QRadioButton {
+                color: #1A365D;
+                font-size: 20px;
+            }
+            QRadioButton::indicator {
+                width: 20px;
+                height: 20px;
+            }
+            QRadioButton::indicator:unchecked {
+                border: 2px solid #4A90E2;
+                background-color: white;
+                border-radius: 10px;
+            }
+            QRadioButton::indicator:checked {
+                border: 2px solid #2C5282;
+                background-color: #4A90E2;
+                border-radius: 10px;
             }
         """)
 

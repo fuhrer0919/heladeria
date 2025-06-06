@@ -18,8 +18,15 @@ class Ui_page_v1(object):
     def setupUi(self, page_v1):
         self.page_v1 = page_v1  # Guardar referencia a la ventana
         page_v1.setObjectName("page_v1")
-        page_v1.resize(800, 600)  # Aumentado el tamaño de la ventana
+        page_v1.resize(1024, 600)
         page_v1.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)  # Disable close button
+        page_v1.setWindowTitle("Pedido 1")  # Establecer título de la ventana principal
+
+        # Crear frame de fondo
+        self.background_frame = QtWidgets.QFrame(page_v1)
+        self.background_frame.setGeometry(QtCore.QRect(0, 0, 1024, 600))
+        self.background_frame.setStyleSheet("background-color: #E6F3FF;")  # Mismo color que el fondo
+        self.background_frame.lower()  # Enviar al fondo
 
         # Establecer el color de fondo de la ventana (tono azul claro)
         page_v1.setStyleSheet("""
@@ -31,8 +38,8 @@ class Ui_page_v1(object):
                 border: 3px solid #2C5282;  /* Azul oscuro */
                 border-radius: 15px;
                 color: white;  /* Texto blanco para mejor contraste */
-                font-weight: bold;
                 padding: 5px;
+                font-size: 32px;
             }
             QPushButton:hover {
                 background-color: #2C5282;  /* Azul oscuro al pasar el mouse */
@@ -40,7 +47,26 @@ class Ui_page_v1(object):
             }
             QLabel {
                 color: #1A365D;  /* Azul muy oscuro para el texto */
-                font-weight: bold;
+                font-size: 32px;
+            }
+            QTableWidget {
+                background-color: white;
+                border: 3px solid #4A90E2;
+                border-radius: 10px;
+                gridline-color: #E6F3FF;
+            }
+            QTableWidget::item {
+                padding: 5px;
+            }
+            QTableWidget::item:selected {
+                background-color: #4A90E2;
+                color: white;
+            }
+            QHeaderView::section {
+                background-color: #4A90E2;
+                color: white;
+                padding: 5px;
+                border: 1px solid #2C5282;
             }
             QLineEdit {
                 background-color: white;
@@ -48,9 +74,29 @@ class Ui_page_v1(object):
                 border-radius: 10px;
                 padding: 5px;
                 color: #1A365D;
+                font-size: 32px;
             }
             QLineEdit:focus {
                 border: 2px solid #2C5282;
+                background-color: #F0F7FF;
+            }
+            QRadioButton {
+                color: #1A365D;
+                font-size: 32px;
+            }
+            QRadioButton::indicator {
+                width: 20px;
+                height: 20px;
+            }
+            QRadioButton::indicator:unchecked {
+                border: 2px solid #4A90E2;
+                background-color: white;
+                border-radius: 10px;
+            }
+            QRadioButton::indicator:checked {
+                border: 2px solid #2C5282;
+                background-color: #4A90E2;
+                border-radius: 10px;
             }
         """)
 
