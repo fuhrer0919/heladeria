@@ -215,7 +215,7 @@ class Ui_page_v1(object):
         user_id = int(input_text)
         try:
             # Connect to the database
-            connection = sqlite3.connect("/home/andres/Documentos/heladeria/databases/Pow_Ice")
+            connection = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
             cursor = connection.cursor()
 
             # Query to check if the ID exists and fetch the name
@@ -257,20 +257,20 @@ class Ui_page_v1(object):
             layout.setContentsMargins(40, 40, 40, 40)  # Aumentado los márgenes
             layout.setSpacing(20)  # Aumentado el espaciado
 
-            # Configurar fuente
-            font = QtGui.QFont()
-            font.setPointSize(12)
+            # Configurar fuente para la tabla (más grande)
+            table_font = QtGui.QFont()
+            table_font.setPointSize(18)  # <-- Disminuir tamaño de fuente de la tabla a 18
 
             # Crear tabla
             table = QtWidgets.QTableWidget()
             table.setColumnCount(4)
             table.setHorizontalHeaderLabels(["Producto", "Cantidad", "Precio Unitario", "Total"])
             table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
-            table.setFont(font)
-            table.verticalHeader().setDefaultSectionSize(40)  # Aumentado el alto de las filas
+            table.setFont(table_font)
+            table.verticalHeader().setDefaultSectionSize(50)  # Aumentado el alto de las filas
 
             # Conectar a la base de datos
-            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
 
             # Obtener la fecha actual
@@ -293,6 +293,7 @@ class Ui_page_v1(object):
                     item = QtWidgets.QTableWidgetItem(str(value))
                     if col in [1, 2, 3]:  # Alinear números a la derecha
                         item.setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                    item.setFont(table_font)  # <-- Aplica la fuente grande a cada celda
                     table.setItem(row, col, item)
 
             # Calcular total del día
@@ -310,14 +311,14 @@ class Ui_page_v1(object):
             # Agregar label con el total
             total_label = QtWidgets.QLabel(f"Total del día: ${total_dia:,.0f}")
             total_label.setAlignment(QtCore.Qt.AlignRight)
-            total_label.setFont(font)
+            total_label.setFont(table_font)
             layout.addWidget(total_label)
 
             # Botón para cerrar
             close_button = QtWidgets.QPushButton("Cerrar")
             close_button.setFixedWidth(200)  # Aumentado el ancho
             close_button.setFixedHeight(50)  # Aumentado el alto
-            close_button.setFont(font)
+            close_button.setFont(table_font)
             close_button.clicked.connect(dialog.close)
             layout.addWidget(close_button, alignment=QtCore.Qt.AlignCenter)
 
