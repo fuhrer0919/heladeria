@@ -63,16 +63,16 @@ class Ui_page_v2(object):
                 border: 3px solid #4A90E2;
                 border-radius: 10px;
                 gridline-color: #E6F3FF;
-                font-size: 20px;  /* <-- Cambiado de 18px a 20px */
+                font-size: 14px;  /* <-- Reducido de 20px a 14px */
             }
             QTableWidget::item {
                 padding: 5px;
-                font-size: 20px;  /* <-- Cambiado de 18px a 20px */
+                font-size: 14px;  /* <-- Reducido de 20px a 14px */
             }
             QTableWidget::item:selected {
                 background-color: #4A90E2;
                 color: white;
-                font-size: 20px;  /* <-- Añadido para consistencia */
+                font-size: 14px;  /* <-- Reducido de 20px a 14px */
             }
             QHeaderView::section {
                 background-color: #4A90E2;
@@ -161,6 +161,8 @@ class Ui_page_v2(object):
         self.tableView.itemChanged.connect(self.calculate_total)  # Conectar el evento de cambio de celda
         # Ajustar altura de filas para texto grande
         self.tableView.verticalHeader().setDefaultSectionSize(40)
+        # Reducir el ancho de la columna 'Cant'
+        self.tableView.setColumnWidth(2, 60)  # <-- Reducir el ancho de la columna 'Cant'
 
         # Botones principales (columna izquierda) - Movidos a la derecha del TableView
         self.Helados = QtWidgets.QPushButton(page_v2)
@@ -1707,7 +1709,8 @@ class Ui_page_v2(object):
                         current_cant = int(self.tableView.item(row, 2).text())
                         self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
                         found = True
-                       
+                        break
+                
                 if not found:
                     row_position = self.tableView.rowCount()
                     self.tableView.insertRow(row_position)
