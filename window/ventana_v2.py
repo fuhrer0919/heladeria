@@ -492,6 +492,9 @@ class Ui_page_v2(object):
         self.retranslateUi(page_v2)
         QtCore.QMetaObject.connectSlotsByName(page_v2)
 
+        # Mostrar la marca visual para el pedido activo (incluye Pedido 1)
+        self.show_pedido_marker()
+
     def hide_right_buttons(self):
         # Oculta todos los botones a la derecha de la columna principal
         self.Cono1.hide()
@@ -546,7 +549,7 @@ class Ui_page_v2(object):
 
     def add_cono1(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'cono 1'")
@@ -580,7 +583,7 @@ class Ui_page_v2(object):
 
     def add_cono2(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'cono 2'")
@@ -614,7 +617,7 @@ class Ui_page_v2(object):
 
     def add_canasta2(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'canasta 2'")
@@ -648,7 +651,7 @@ class Ui_page_v2(object):
 
     def add_canasta3(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'canasta 3'")
@@ -682,7 +685,7 @@ class Ui_page_v2(object):
 
     def add_supercanasta(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'super canasta'")
@@ -716,7 +719,7 @@ class Ui_page_v2(object):
 
     def add_canastafrutal(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'canasta frutal'")
@@ -750,7 +753,7 @@ class Ui_page_v2(object):
 
     def add_canastaalaska(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'canasta alaska'")
@@ -784,7 +787,7 @@ class Ui_page_v2(object):
 
     def add_canastapowice(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'canasta powice'")
@@ -824,7 +827,7 @@ class Ui_page_v2(object):
 
     def add_refrescante(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'refrescante'")
@@ -857,7 +860,7 @@ class Ui_page_v2(object):
 
     def add_cremosa(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'cremosa'")
@@ -890,7 +893,7 @@ class Ui_page_v2(object):
 
     def add_superpaleta(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'super paleta'")
@@ -929,7 +932,7 @@ class Ui_page_v2(object):
 
     def add_obleasencilla(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'oblea sencilla'")
@@ -962,7 +965,7 @@ class Ui_page_v2(object):
 
     def add_superoblea(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'super oblea'")
@@ -995,7 +998,7 @@ class Ui_page_v2(object):
 
     def add_obleapowice(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'oblea powice'")
@@ -1033,7 +1036,7 @@ class Ui_page_v2(object):
 
     def add_browniehelado(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'brownie helado'")
@@ -1066,7 +1069,7 @@ class Ui_page_v2(object):
 
     def add_brownieespecial(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'brownie especial'")
@@ -1104,7 +1107,7 @@ class Ui_page_v2(object):
 
     def add_fresassencillas(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'fresas sencillas'")
@@ -1137,7 +1140,7 @@ class Ui_page_v2(object):
 
     def add_superfresas(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'super fresas'")
@@ -1178,7 +1181,7 @@ class Ui_page_v2(object):
 
     def add_wafflesencillo(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'waffle sencillo'")
@@ -1211,7 +1214,7 @@ class Ui_page_v2(object):
 
     def add_wafflefrutal(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'waffle frutal'")
@@ -1244,7 +1247,7 @@ class Ui_page_v2(object):
 
     def add_superwaffle(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'super waffle'")
@@ -1277,7 +1280,7 @@ class Ui_page_v2(object):
 
     def add_megawaffles(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'mega waffles'")
@@ -1310,7 +1313,7 @@ class Ui_page_v2(object):
 
     def add_wafflecosmico(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'waffle cosmico'")
@@ -1354,7 +1357,7 @@ class Ui_page_v2(object):
 
     def add_malteadasencilla(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'malteada sencilla'")
@@ -1387,7 +1390,7 @@ class Ui_page_v2(object):
 
     def add_malteadasuper(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'malteada super'")
@@ -1420,7 +1423,7 @@ class Ui_page_v2(object):
 
     def add_smoothie(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'smoothie'")
@@ -1453,7 +1456,7 @@ class Ui_page_v2(object):
 
     def add_limonada(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'limonada'")
@@ -1486,7 +1489,7 @@ class Ui_page_v2(object):
 
     def add_jugoenagua(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'jugo en agua'")
@@ -1519,7 +1522,7 @@ class Ui_page_v2(object):
 
     def add_jugoenleche(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'jugo en leche'")
@@ -1552,7 +1555,7 @@ class Ui_page_v2(object):
 
     def add_granizadofrutal(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'granizado frutal'")
@@ -1585,7 +1588,7 @@ class Ui_page_v2(object):
 
     def add_granizadocafe(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'granizado cafe'")
@@ -1628,7 +1631,7 @@ class Ui_page_v2(object):
 
     def add_bananasplit(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'banana split'")
@@ -1661,7 +1664,7 @@ class Ui_page_v2(object):
 
     def add_topping(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'topping'")
@@ -1694,7 +1697,7 @@ class Ui_page_v2(object):
 
     def add_empaque(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'empaque'")
@@ -1727,7 +1730,7 @@ class Ui_page_v2(object):
 
     def add_tintoamericano(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'tinto americano'")
@@ -1760,7 +1763,7 @@ class Ui_page_v2(object):
 
     def add_cappuccino(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'cappuccino'")
@@ -1793,7 +1796,7 @@ class Ui_page_v2(object):
 
     def add_mochaccino(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'mochaccino'")
@@ -1826,7 +1829,7 @@ class Ui_page_v2(object):
 
     def add_aromatica(self):
         try:
-            conn = sqlite3.connect('/home/heladeria/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'aromatica'")
@@ -1880,6 +1883,7 @@ class Ui_page_v2(object):
                 self.ui.mesa_number = mesa_number
                 self.ui.set_user_active(self.user_active.text().replace("usuario activo: ", ""))
                 self.ui.mesa_label.setText(f"Pedido {mesa_number}")  # Actualizar el label de mesa
+                self.ui.show_pedido_marker()  # <-- Mostrar la marca visual correctamente
                 self.window.resize(1024, 600)
                 self.window.setWindowTitle(f"Pedido {mesa_number}")
                 self.window.show()
@@ -1971,61 +1975,61 @@ class Ui_page_v2(object):
         _translate = QtCore.QCoreApplication.translate
         page_v2.setWindowTitle(_translate("page_v2", "Pedido 1"))  # Cambiar el título aquí también
         self.user_active.setText(_translate("page_v2", "usuario activo: _____"))
-        self.Helados.setText(_translate("page_v2", "Helados"))
-        self.Cono1.setText(_translate("page_v2", "Cono 1"))
-        self.Cono2.setText(_translate("page_v2", "Cono 2"))
-        self.Canasta2.setText(_translate("page_v2", "Canasta 2"))
-        self.Canasta3.setText(_translate("page_v2", "Canasta 3"))
-        self.SuperCanasta.setText(_translate("page_v2", "Super Canasta"))
-        self.CanastaFrutal.setText(_translate("page_v2", "Canasta Frutal"))
-        self.CanastaAlaska.setText(_translate("page_v2", "Canasta Alaska"))
-        self.CanastaPowIce.setText(_translate("page_v2", "Canasta PowIce"))
-        self.Paletas.setText(_translate("page_v2", "Paletas"))
-        self.Refrescante.setText(_translate("page_v2", "Refrescante"))
-        self.Cremosa.setText(_translate("page_v2", "Cremosa"))
-        self.SuperPaleta.setText(_translate("page_v2", "Super Paleta"))
-        self.Obleas.setText(_translate("page_v2", "Obleas"))
-        self.ObleaSencilla.setText(_translate("page_v2", "Oblea Sencilla"))
-        self.SuperOblea.setText(_translate("page_v2", "Super Oblea"))
-        self.ObleaPowIce.setText(_translate("page_v2", "Oblea PowIce"))
-        self.Brownie.setText(_translate("page_v2", "Brownie"))
-        self.BrownieHelado.setText(_translate("page_v2", "Brownie Helado"))
-        self.BrownieEspecial.setText(_translate("page_v2", "Brownie Especial"))
-        self.Waffles.setText(_translate("page_v2", "Waffles"))
-        self.Fresas.setText(_translate("page_v2", "Fresas"))
-        self.Bebidas.setText(_translate("page_v2", "Bebidas"))
-        self.MalteadaSencilla.setText(_translate("page_v2", "Malteada Sencilla"))
-        self.MalteadaSuper.setText(_translate("page_v2", "Malteada Super"))
-        self.Smoothie.setText(_translate("page_v2", "Smoothie"))
-        self.Limonada.setText(_translate("page_v2", "Limonada"))
-        self.JugoEnAgua.setText(_translate("page_v2", "Jugo En Agua"))
-        self.JugoEnLeche.setText(_translate("page_v2", "Jugo En Leche"))
-        self.GranizadoFrutal.setText(_translate("page_v2", "Granizado Frutal"))
-        self.GranizadoCafe.setText(_translate("page_v2", "Granizado Cafe"))
-        self.Otros.setText(_translate("page_v2", "Otros"))
-        self.pushButton_2.setText(_translate("page_v2", "Atrás"))
+        self.Helados.setText(_translate("page_v2", "HELADOS"))
+        self.Cono1.setText(_translate("page_v2", "CONO 1"))
+        self.Cono2.setText(_translate("page_v2", "CONO 2"))
+        self.Canasta2.setText(_translate("page_v2", "CANASTA 2"))
+        self.Canasta3.setText(_translate("page_v2", "CANASTA 3"))
+        self.SuperCanasta.setText(_translate("page_v2", "SUPER CANASTA"))
+        self.CanastaFrutal.setText(_translate("page_v2", "CANASTA FRUTAL"))
+        self.CanastaAlaska.setText(_translate("page_v2", "CANASTA ALASKA"))
+        self.CanastaPowIce.setText(_translate("page_v2", "CANASTA POWICE"))
+        self.Paletas.setText(_translate("page_v2", "PALETAS"))
+        self.Refrescante.setText(_translate("page_v2", "REFRESCANTE"))
+        self.Cremosa.setText(_translate("page_v2", "CREMOSA"))
+        self.SuperPaleta.setText(_translate("page_v2", "SUPER PALETA"))
+        self.Obleas.setText(_translate("page_v2", "OBLEAS"))
+        self.ObleaSencilla.setText(_translate("page_v2", "OBLEA SENCILLA"))
+        self.SuperOblea.setText(_translate("page_v2", "SUPER OBLEA"))
+        self.ObleaPowIce.setText(_translate("page_v2", "OBLEA POWICE"))
+        self.Brownie.setText(_translate("page_v2", "BROWNIE"))
+        self.BrownieHelado.setText(_translate("page_v2", "BROWNIE HELADO"))
+        self.BrownieEspecial.setText(_translate("page_v2", "BROWNIE ESPECIAL"))
+        self.Waffles.setText(_translate("page_v2", "WAFFLES"))
+        self.Fresas.setText(_translate("page_v2", "FRESAS"))
+        self.Bebidas.setText(_translate("page_v2", "BEBIDAS"))
+        self.MalteadaSencilla.setText(_translate("page_v2", "MALTEADA SENCILLA"))
+        self.MalteadaSuper.setText(_translate("page_v2", "MALTEADA SUPER"))
+        self.Smoothie.setText(_translate("page_v2", "SMOOTHIE"))
+        self.Limonada.setText(_translate("page_v2", "LIMONADA"))
+        self.JugoEnAgua.setText(_translate("page_v2", "JUGO EN AGUA"))
+        self.JugoEnLeche.setText(_translate("page_v2", "JUGO EN LECHE"))
+        self.GranizadoFrutal.setText(_translate("page_v2", "GRANIZADO FRUTAL"))
+        self.GranizadoCafe.setText(_translate("page_v2", "GRANIZADO CAFE"))
+        self.Otros.setText(_translate("page_v2", "OTROS"))
+        self.pushButton_2.setText(_translate("page_v2", "ATRÁS"))
         self.pushButton.setText(_translate("page_v2", "OK"))
-        self.plusButton.setText(_translate("page_v2", "Pedido 1"))
-        self.minusButton.setText(_translate("page_v2", "Pedido 2"))
-        self.mesa3Button.setText(_translate("page_v2", "Pedido 3"))
-        self.mesa4Button.setText(_translate("page_v2", "Pedido 4"))
-        self.label.setText(_translate("page_v2", "Total:"))
+        self.plusButton.setText(_translate("page_v2", "PEDIDO 1"))
+        self.minusButton.setText(_translate("page_v2", "PEDIDO 2"))
+        self.mesa3Button.setText(_translate("page_v2", "PEDIDO 3"))
+        self.mesa4Button.setText(_translate("page_v2", "PEDIDO 4"))
+        self.label.setText(_translate("page_v2", "TOTAL:"))
         self.label_2.setText(_translate("page_v2", "0"))
-        self.pushButton_3.setText(_translate("page_v2", "Borrar"))
-        self.FresasSencillas.setText(_translate("page_v2", "Fresas Sencillas"))
-        self.SuperFresas.setText(_translate("page_v2", "Super Fresas"))
-        self.WaffleSencillo.setText(_translate("page_v2", "Waffle Sencillo"))
-        self.WaffleFrutal.setText(_translate("page_v2", "Waffle Frutal"))
-        self.SuperWaffle.setText(_translate("page_v2", "Super Waffle"))
-        self.MegaWaffles.setText(_translate("page_v2", "Mega Waffles"))
-        self.WaffleCosmico.setText(_translate("page_v2", "Waffle Cosmico"))
-        self.BananaSplit.setText(_translate("page_v2", "Banana Split"))
-        self.Topping.setText(_translate("page_v2", "Topping"))
-        self.Empaque.setText(_translate("page_v2", "Empaque"))
-        self.TintoAmericano.setText(_translate("page_v2", "Tinto Americano"))
-        self.Cappuccino.setText(_translate("page_v2", "Cappuccino"))
-        self.Mochaccino.setText(_translate("page_v2", "Mochaccino"))
-        self.Aromatica.setText(_translate("page_v2", "Aromatica"))
+        self.pushButton_3.setText(_translate("page_v2", "BORRAR"))
+        self.FresasSencillas.setText(_translate("page_v2", "FRESAS SENCILLAS"))
+        self.SuperFresas.setText(_translate("page_v2", "SUPER FRESAS"))
+        self.WaffleSencillo.setText(_translate("page_v2", "WAFFLE SENCILLO"))
+        self.WaffleFrutal.setText(_translate("page_v2", "WAFFLE FRUTAL"))
+        self.SuperWaffle.setText(_translate("page_v2", "SUPER WAFFLE"))
+        self.MegaWaffles.setText(_translate("page_v2", "MEGA WAFFLES"))
+        self.WaffleCosmico.setText(_translate("page_v2", "WAFFLE COSMICO"))
+        self.BananaSplit.setText(_translate("page_v2", "BANANA SPLIT"))
+        self.Topping.setText(_translate("page_v2", "TOPPING"))
+        self.Empaque.setText(_translate("page_v2", "EMPAQUE"))
+        self.TintoAmericano.setText(_translate("page_v2", "TINTO AMERICANO"))
+        self.Cappuccino.setText(_translate("page_v2", "CAPPUCCINO"))
+        self.Mochaccino.setText(_translate("page_v2", "MOCHACCINO"))
+        self.Aromatica.setText(_translate("page_v2", "AROMATICA"))
 
     def set_user_active(self, user_name):
         """Update the user_active label with the given username"""
@@ -2075,6 +2079,36 @@ class Ui_page_v2(object):
         except Exception as e:
             print(f"Error en closeEvent: {e}")
             event.accept()
+
+    def show_pedido_marker(self):
+        # Elimina la marca anterior si existe
+        if hasattr(self, 'pedido_marker') and self.pedido_marker:
+            self.pedido_marker.deleteLater()
+        # Coordenadas de los botones de pedido
+        pedido_buttons = {
+            1: (440, 490),  # Pedido 1 (plusButton)
+            2: (580, 490),  # Pedido 2 (minusButton)
+            3: (740, 490),  # Pedido 3 (mesa3Button)
+            4: (880, 490),  # Pedido 4 (mesa4Button)
+        }
+        if self.mesa_number in pedido_buttons:
+            x, y = pedido_buttons[self.mesa_number]
+            self.pedido_marker = QtWidgets.QLabel(self.page_v2)
+            self.pedido_marker.setGeometry(QtCore.QRect(x+45, y-30, 30, 30))  # Centrado sobre el botón
+            self.pedido_marker.setText(str(self.mesa_number))
+            self.pedido_marker.setAlignment(QtCore.Qt.AlignCenter)
+            self.pedido_marker.setStyleSheet('''
+                QLabel {
+                    background-color: #4A90E2;
+                    color: white;
+                    border: 3px solid #E6F3FF;
+                    border-radius: 15px;
+                    font-size: 20px;
+                    font-weight: bold;
+                    box-shadow: 0px 2px 8px #2C5282;
+                }
+            ''')
+            self.pedido_marker.raise_()  # Asegura que esté encima del botón
 
 
 if __name__ == "__main__":

@@ -383,7 +383,7 @@ class Ui_page_v3(object):
             total = self.total_label.text().replace("Total: $", "").replace(",", "")
             
             # Conectar a la base de datos
-            conn = sqlite3.connect("/home/heladeria/Documentos/heladeria/databases/Pow_Ice")
+            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
             cursor = conn.cursor()
             
             # Obtener el ID del usuario (case insensitive)
