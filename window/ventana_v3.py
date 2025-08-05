@@ -32,8 +32,8 @@ except (ImportError, RuntimeError):
 
 # Configurar GPIO
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(23, GPIO.OUT)  # Configurar pin 23 como salida
-GPIO.output(23, GPIO.HIGH)  # Inicializar en estado alto
+GPIO.setup(24, GPIO.OUT)  # Configurar pin 24 como salida
+GPIO.output(24, GPIO.HIGH)  # Inicializar en estado alto
 
 
 class Ui_page_v3(object):
@@ -512,13 +512,13 @@ class Ui_page_v3(object):
             conn.commit()
             conn.close()
             
-            # Activar GPIO pin 23 para caja registradora (solo en efectivo o mixto)
+            # Activar GPIO pin 24 para caja registradora (solo en efectivo o mixto)
             if payment_method == "efectivo" or payment_method.startswith("mixto"):
                 try:
-                    GPIO.output(23, GPIO.LOW)  # Activar el relay
-                    print("GPIO pin 23 activado para caja registradora")
+                    GPIO.output(24, GPIO.LOW)  # Activar el relay
+                    print("GPIO pin 24 activado para caja registradora")
                     # Mantener activo por 500ms
-                    QtCore.QTimer.singleShot(500, lambda: GPIO.output(23, GPIO.HIGH))
+                    QtCore.QTimer.singleShot(100, lambda: GPIO.output(24, GPIO.HIGH))
                 except Exception as e:
                     print(f"Error al activar GPIO: {e}")
             
