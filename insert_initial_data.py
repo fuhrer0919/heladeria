@@ -1,7 +1,7 @@
 import sqlite3
 
 def insert_initial_data():
-    conn = sqlite3.connect('Pow_Ice.db')
+    conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
     cursor = conn.cursor()
 
     # Insert default user

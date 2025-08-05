@@ -13,6 +13,28 @@ from datetime import datetime
 import sqlite3
 from window.ventana_vfinal import Ui_page_vfinal
 
+try:
+    import RPi.GPIO as GPIO
+    IS_RPI = True
+except (ImportError, RuntimeError):
+    IS_RPI = False
+    # Mock GPIO para desarrollo en PC
+    class MockGPIO:
+        BCM = OUT = HIGH = LOW = None
+        def setmode(self, *args, **kwargs): pass
+        def setup(self, *args, **kwargs): pass
+        def output(self, *args, **kwargs): pass
+    GPIO = MockGPIO()
+
+
+
+#import RPi.GPIO as GPIO  # Importar GPIO para Raspberry Pi
+
+# Configurar GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(23, GPIO.OUT)  # Configurar pin 23 como salida
+GPIO.output(23, GPIO.HIGH)  # Inicializar en estado alto
+
 
 class Ui_page_v3(object):
     def __init__(self, productos_venta=None):
@@ -383,7 +405,7 @@ class Ui_page_v3(object):
             total = self.total_label.text().replace("Total: $", "").replace(",", "")
             
             # Conectar a la base de datos
-            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
             cursor = conn.cursor()
             
             # Obtener el ID del usuario (case insensitive)
@@ -489,6 +511,16 @@ class Ui_page_v3(object):
             # Guardar los cambios
             conn.commit()
             conn.close()
+            
+            # Activar GPIO pin 23 para caja registradora (solo en efectivo o mixto)
+            if payment_method == "efectivo" or payment_method.startswith("mixto"):
+                try:
+                    GPIO.output(23, GPIO.LOW)  # Activar el relay
+                    print("GPIO pin 23 activado para caja registradora")
+                    # Mantener activo por 500ms
+                    QtCore.QTimer.singleShot(500, lambda: GPIO.output(23, GPIO.HIGH))
+                except Exception as e:
+                    print(f"Error al activar GPIO: {e}")
             
             # Crear y mostrar la ventana final
             self.window_vfinal = QtWidgets.QWidget()

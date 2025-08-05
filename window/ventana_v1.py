@@ -215,7 +215,7 @@ class Ui_page_v1(object):
         user_id = int(input_text)
         try:
             # Connect to the database
-            connection = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
+            connection = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
             cursor = connection.cursor()
 
             # Query to check if the ID exists and fetch the name
@@ -270,7 +270,7 @@ class Ui_page_v1(object):
             table.verticalHeader().setDefaultSectionSize(50)  # Aumentado el alto de las filas
 
             # Conectar a la base de datos
-            conn = sqlite3.connect('/home/andres/Documentos/heladeria/databases/Pow_Ice')
+            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
             cursor = conn.cursor()
 
             # Obtener la fecha actual
