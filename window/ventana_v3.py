@@ -166,30 +166,37 @@ class Ui_page_v3(object):
         current_datetime = datetime.now().strftime("%d/%m/%Y %H:%M")
         self.datetime_label.setText(f"Fecha y hora: {current_datetime}")
         
-        # Radio buttons para métodos de pago
+        # Radio buttons para métodos de pago principales
         self.radioButton = QtWidgets.QRadioButton(page_v3)
-        self.radioButton.setGeometry(QtCore.QRect(20, 140, 200, 40))  # Aumentado tamaño y posición
+        self.radioButton.setGeometry(QtCore.QRect(20, 140, 200, 40))
         self.radioButton.setObjectName("radioButton")
         self.radioButton.setFont(font)
         self.radioButton.toggled.connect(self.on_efectivo_toggled)
-        
+
         self.radioButton_2 = QtWidgets.QRadioButton(page_v3)
-        self.radioButton_2.setGeometry(QtCore.QRect(20, 190, 200, 40))  # Aumentado tamaño y posición
+        self.radioButton_2.setGeometry(QtCore.QRect(20, 190, 200, 40))
         self.radioButton_2.setObjectName("radioButton_2")
         self.radioButton_2.setFont(font)
         self.radioButton_2.toggled.connect(self.on_daviplata_toggled)
-        
+
         self.radioButton_3 = QtWidgets.QRadioButton(page_v3)
-        self.radioButton_3.setGeometry(QtCore.QRect(20, 240, 200, 40))  # Aumentado tamaño y posición
+        self.radioButton_3.setGeometry(QtCore.QRect(20, 240, 200, 40))
         self.radioButton_3.setObjectName("radioButton_3")
         self.radioButton_3.setFont(font)
         self.radioButton_3.toggled.connect(self.on_pago_mixto_toggled)
-        
+
         self.radioButton_4 = QtWidgets.QRadioButton(page_v3)
-        self.radioButton_4.setGeometry(QtCore.QRect(20, 290, 200, 40))  # Aumentado tamaño y posición
+        self.radioButton_4.setGeometry(QtCore.QRect(20, 290, 200, 40))
         self.radioButton_4.setObjectName("radioButton_4")
         self.radioButton_4.setFont(font)
         self.radioButton_4.toggled.connect(self.on_nequi_toggled)
+
+        # Agrupar los radio buttons principales en un QButtonGroup
+        self.main_payment_group = QtWidgets.QButtonGroup(page_v3)
+        self.main_payment_group.addButton(self.radioButton)
+        self.main_payment_group.addButton(self.radioButton_2)
+        self.main_payment_group.addButton(self.radioButton_3)
+        self.main_payment_group.addButton(self.radioButton_4)
         
         # Labels y campos para efectivo
         self.recibido_label = QtWidgets.QLabel(page_v3)
@@ -205,18 +212,24 @@ class Ui_page_v3(object):
         self.recibido_input.setValidator(QtGui.QIntValidator())
         self.recibido_input.hide()
         
-        # Radio buttons para pago mixto
+        # Radio buttons para pago mixto (en un grupo aparte)
         self.radioButton_mixto_nequi = QtWidgets.QRadioButton(page_v3)
-        self.radioButton_mixto_nequi.setGeometry(QtCore.QRect(300, 140, 200, 40))  # Aumentado tamaño y posición
+        self.radioButton_mixto_nequi.setGeometry(QtCore.QRect(300, 140, 200, 40))
         self.radioButton_mixto_nequi.setObjectName("radioButton_mixto_nequi")
         self.radioButton_mixto_nequi.setFont(font)
         self.radioButton_mixto_nequi.hide()
-        
+
         self.radioButton_mixto_daviplata = QtWidgets.QRadioButton(page_v3)
-        self.radioButton_mixto_daviplata.setGeometry(QtCore.QRect(300, 190, 200, 40))  # Aumentado tamaño y posición
+        self.radioButton_mixto_daviplata.setGeometry(QtCore.QRect(300, 190, 200, 40))
         self.radioButton_mixto_daviplata.setObjectName("radioButton_mixto_daviplata")
         self.radioButton_mixto_daviplata.setFont(font)
         self.radioButton_mixto_daviplata.hide()
+
+        # Agrupar los radio buttons de pago mixto en un QButtonGroup aparte
+        self.mixto_group = QtWidgets.QButtonGroup(page_v3)
+        self.mixto_group.setExclusive(True)
+        self.mixto_group.addButton(self.radioButton_mixto_nequi)
+        self.mixto_group.addButton(self.radioButton_mixto_daviplata)
         
         # Labels y campos para pago mixto
         self.efectivo_mixto_label = QtWidgets.QLabel(page_v3)
@@ -329,7 +342,7 @@ class Ui_page_v3(object):
 
     def on_pago_mixto_toggled(self, checked):
         """Maneja el evento cuando se selecciona/deselecciona el radio button de pago mixto"""
-        self.clear_right_side()  # Limpiar todo primero
+       # self.clear_right_side()  # Limpiar todo primero
         if checked:
             self.radioButton_mixto_nequi.show()
             self.radioButton_mixto_daviplata.show()
