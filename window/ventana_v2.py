@@ -22,10 +22,23 @@ class Ui_page_v2(object):
     mesa_windows = {}
     # Referencia a la ventana principal (Mesa 1)
     main_window = None
+    active_windows = set()  # Conjunto de ventanas activas
+    mesa_windows = {}
+
+    @classmethod
+    def reset_window_counters(cls):
+        """Reinicia todos los contadores de ventanas"""
+        cls.main_window = None
+        cls.active_windows.clear()
+        cls.mesa_windows.clear()
 
     def setupUi(self, page_v2):
+        # Reiniciar contadores si es la ventana principal (Mesa 1)
+        if not hasattr(self, 'mesa_number'):
+            Ui_page_v2.reset_window_counters()
+            self.mesa_number = 1  # Default mesa number
+            
         self.page_v2 = page_v2  # Guardar referencia a la ventana principal
-        self.mesa_number = 1  # Default mesa number
         page_v2.setObjectName("page_v2")
         page_v2.resize(1024, 600)
         page_v2.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)  # Disable close button
