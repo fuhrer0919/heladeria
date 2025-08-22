@@ -2086,6 +2086,17 @@ class Ui_page_v2(object):
         self.user_active.setText(f"usuario activo: {user_name}")
 
     def open_v3(self):
+        # Verificar si hay productos en la tabla
+        if self.tableView.rowCount() == 0:
+            # Mostrar mensaje de advertencia
+            QtWidgets.QMessageBox.warning(
+                self.page_v2,
+                'Advertencia',
+                'No se han agregado productos al pedido.\nDebe agregar al menos un producto para continuar.',
+                QtWidgets.QMessageBox.Ok
+            )
+            return
+            
         # Recolectar datos de productos y cantidades
         productos_venta = []
         for row in range(self.tableView.rowCount()):
