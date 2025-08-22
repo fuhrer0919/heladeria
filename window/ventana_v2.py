@@ -13,17 +13,17 @@ import sqlite3
 from PyQt5.QtWidgets import QTableWidgetItem
 from window.ventana_v3 import Ui_page_v3  # Agregar esta línea
 from datetime import datetime
+from PyQt5.QtCore import QTimer
 
 
 class Ui_page_v2(object):
-    # Class variable to track number of open windows
-    open_windows = 0
-    # Dictionary to store open windows
-    mesa_windows = {}
-    # Referencia a la ventana principal (Mesa 1)
-    main_window = None
-    active_windows = set()  # Conjunto de ventanas activas
-    mesa_windows = {}
+    # Variables de clase para gestionar ventanas
+    mesa_windows = {}  # Diccionario para almacenar las ventanas de cada mesa (2, 3, 4)
+    main_window = None  # Referencia a la ventana principal (Mesa 1)
+    open_windows = 0  # Contador de ventanas abiertas
+    
+    def __init__(self):
+        self.mesa_number = 1  # Por defecto es Mesa 1
 
     @classmethod
     def reset_window_counters(cls):
@@ -514,7 +514,7 @@ class Ui_page_v2(object):
         QtCore.QMetaObject.connectSlotsByName(page_v2)
 
         # Mostrar la marca visual para el pedido activo (incluye Pedido 1)
-        self.show_pedido_marker()
+        QTimer.singleShot(0, self.show_pedido_marker)
 
     def hide_right_buttons(self):
         # Oculta todos los botones a la derecha de la columna principal
@@ -1917,28 +1917,49 @@ class Ui_page_v2(object):
             if Ui_page_v2.main_window:
                 Ui_page_v2.main_window.activateWindow()
                 Ui_page_v2.main_window.raise_()
-            return
+                return
+            else:
+                # Si no hay ventana principal, establecer esta como principal
+                Ui_page_v2.main_window = self.page_v2
+                Ui_page_v2.open_windows = 1  # Inicializar contador con la ventana principal
+                return
             
+        # Verificar si ya existe una ventana para esta mesa
         if mesa_number in Ui_page_v2.mesa_windows:
             # Si la ventana ya existe, traerla al frente
             window = Ui_page_v2.mesa_windows[mesa_number]
             window.activateWindow()
             window.raise_()
         else:
-            # Crear nueva ventana solo para mesas 2, 3 y 4
+            # Crear nueva ventana para mesas 2, 3 y 4
             if mesa_number in [2, 3, 4]:
+                # Verificar que no excedamos el límite de ventanas (debe haber exactamente una por mesa)
+                if mesa_number in Ui_page_v2.mesa_windows:
+                    QtWidgets.QMessageBox.warning(
+                        self.page_v2,
+                        'Advertencia',
+                        f'Ya existe una ventana para el Pedido {mesa_number}.',
+                        QtWidgets.QMessageBox.Ok
+                    )
+                    return
+                    
                 self.window = QtWidgets.QWidget()
                 self.ui = Ui_page_v2()
                 self.ui.setupUi(self.window)
                 self.ui.mesa_number = mesa_number
                 self.ui.set_user_active(self.user_active.text().replace("usuario activo: ", ""))
-                self.ui.mesa_label.setText(f"Pedido {mesa_number}")  # Actualizar el label de mesa
-                self.ui.show_pedido_marker()  # <-- Mostrar la marca visual correctamente
                 self.window.resize(1024, 600)
                 self.window.setWindowTitle(f"Pedido {mesa_number}")
-                self.window.show()
-                # Guardar referencia a la ventana
+                
+                # Configurar la nueva ventana y guardar referencia
+                self.window.closeEvent = lambda event: self.ui.closeEvent(event)
                 Ui_page_v2.mesa_windows[mesa_number] = self.window
+                # Actualizar el contador de ventanas secundarias
+                Ui_page_v2.open_windows = len(Ui_page_v2.mesa_windows)
+                
+                # Mostrar la ventana y la marca visual
+                self.window.show()
+                self.ui.show_pedido_marker()  # Mostrar la marca visual después de mostrar la ventana
 
     def open_new_window(self):
         """Vuelve a la ventana principal (Mesa 1)"""
@@ -1970,22 +1991,28 @@ class Ui_page_v2(object):
             )
             
             if reply == QtWidgets.QMessageBox.Yes:
-                # Si es la única ventana v2 abierta, mostrar diálogo de confirmación
-                if Ui_page_v2.open_windows == 1:
-                    # Importar aquí para evitar la importación circular
-                    from window.ventana_v1 import Ui_page_v1
-                    
-                    # Crear nueva ventana v1
-                    self.window_v1 = QtWidgets.QWidget()
-                    self.ui_v1 = Ui_page_v1()
-                    self.ui_v1.setupUi(self.window_v1)
-                    self.window_v1.resize(1024, 600)
-                    self.window_v1.show()
-                    
-                    # Cerrar la ventana actual
-                    self.page_v2.close()
+                # Si estamos en la entidad 1 (mesa 1)
+                if getattr(self, 'mesa_number', 1) == 1:
+                    if Ui_page_v2.open_windows > 1:
+                        # Si hay más de una ventana abierta, no hacer nada
+                        QtWidgets.QMessageBox.information(
+                            self.page_v2,
+                            'Información',
+                            'No puede cerrar el Pedido 1 mientras existan otros pedidos abiertos.',
+                            QtWidgets.QMessageBox.Ok
+                        )
+                        return
+                    else:
+                        # Solo está abierta la entidad 1, hacer transición a ventana_v1
+                        from window.ventana_v1 import Ui_page_v1
+                        self.window_v1 = QtWidgets.QWidget()
+                        self.ui_v1 = Ui_page_v1()
+                        self.ui_v1.setupUi(self.window_v1)
+                        self.window_v1.resize(1024, 600)
+                        self.window_v1.show()
+                        self.page_v2.close()
                 else:
-                    # Si hay más ventanas v2 abiertas, solo cerrar la actual
+                    # Si no es la entidad 1, cerrar la ventana normalmente
                     self.page_v2.close()
         except Exception as e:
             print(f"Error al cerrar la ventana: {e}")
@@ -2129,13 +2156,20 @@ class Ui_page_v2(object):
     def closeEvent(self, event):
         """Maneja el evento de cierre de la ventana"""
         try:
-            # Decrementar el contador solo si es mayor que 0
-            if Ui_page_v2.open_windows > 0:
-                Ui_page_v2.open_windows -= 1
-                print(f"Ventanas abiertas después de cerrar: {Ui_page_v2.open_windows}")  # Debug
-            # Remover la ventana del diccionario
-            if self.mesa_number in Ui_page_v2.mesa_windows:
-                del Ui_page_v2.mesa_windows[self.mesa_number]
+            # Si es la ventana principal
+            if self.page_v2 == Ui_page_v2.main_window:
+                # Cerrar todas las ventanas secundarias
+                for window in list(Ui_page_v2.mesa_windows.values()):
+                    window.close()
+                Ui_page_v2.mesa_windows.clear()
+                Ui_page_v2.main_window = None
+                Ui_page_v2.open_windows = 0
+            else:
+                # Si es una ventana secundaria
+                if hasattr(self, 'mesa_number') and self.mesa_number in Ui_page_v2.mesa_windows:
+                    del Ui_page_v2.mesa_windows[self.mesa_number]
+                Ui_page_v2.open_windows = len(Ui_page_v2.mesa_windows)
+            
             event.accept()
         except Exception as e:
             print(f"Error en closeEvent: {e}")
@@ -2145,31 +2179,36 @@ class Ui_page_v2(object):
         # Elimina la marca anterior si existe
         if hasattr(self, 'pedido_marker') and self.pedido_marker:
             self.pedido_marker.deleteLater()
-        # Coordenadas de los botones de pedido
+            self.pedido_marker = None
+        # Mapeo de número de pedido a nombre de botón
         pedido_buttons = {
-            1: (440, 490),  # Pedido 1 (plusButton)
-            2: (580, 490),  # Pedido 2 (minusButton)
-            3: (740, 490),  # Pedido 3 (mesa3Button)
-            4: (880, 490),  # Pedido 4 (mesa4Button)
+            1: 'plusButton',
+            2: 'minusButton',
+            3: 'mesa3Button',
+            4: 'mesa4Button',
         }
         if self.mesa_number in pedido_buttons:
-            x, y = pedido_buttons[self.mesa_number]
-            self.pedido_marker = QtWidgets.QLabel(self.page_v2)
-            self.pedido_marker.setGeometry(QtCore.QRect(x+45, y-30, 30, 30))  # Centrado sobre el botón
-            self.pedido_marker.setText(str(self.mesa_number))
-            self.pedido_marker.setAlignment(QtCore.Qt.AlignCenter)
-            self.pedido_marker.setStyleSheet('''
-                QLabel {
-                    background-color: #4A90E2;
-                    color: white;
-                    border: 3px solid #E6F3FF;
-                    border-radius: 15px;
-                    font-size: 20px;
-                    font-weight: bold;
-                    box-shadow: 0px 2px 8px #2C5282;
-                }
-            ''')
-            self.pedido_marker.raise_()  # Asegura que esté encima del botón
+            boton_nombre = pedido_buttons[self.mesa_number]
+            boton = getattr(self, boton_nombre, None)
+            if boton:
+                print(f"[DEBUG] Botón {boton_nombre} size antes: {boton.width()}x{boton.height()}")
+                # Obtener posición absoluta del botón respecto a la ventana
+                pos = boton.pos()
+                x = pos.x() + (boton.width() - 30) // 2
+                y = pos.y() - 32
+                self.pedido_marker = QtWidgets.QLabel(self.page_v2)
+                self.pedido_marker.setText('★')
+                self.pedido_marker.setAlignment(QtCore.Qt.AlignCenter)
+                self.pedido_marker.setStyleSheet('''
+                    QLabel {
+                        color: gold;
+                        font-size: 28px;
+                        background: transparent;
+                    }
+                ''')
+                self.pedido_marker.setFixedSize(30, 30)
+                self.pedido_marker.move(x, y)
+                self.pedido_marker.show()
 
 
 if __name__ == "__main__":
