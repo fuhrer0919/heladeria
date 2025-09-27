@@ -1657,10 +1657,10 @@ class Ui_page_v2(object):
                 
                 if not found:
                     row_position = self.tableView.rowCount()
-                    self.tableWidget.insertRow(row_position)
-                    self.tableWidget.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableWidget.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableWidget.setItem(row_position, 2, QTableWidgetItem("1"))
+                    self.tableView.insertRow(row_position)
+                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
+                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
+                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
             
             conn.close()
             
