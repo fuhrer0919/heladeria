@@ -16,24 +16,12 @@ from window.ventana_vfinal import Ui_page_vfinal
 try:
     import RPi.GPIO as GPIO
     IS_RPI = True
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(24, GPIO.OUT)
+    GPIO.output(24, GPIO.HIGH)
 except (ImportError, RuntimeError):
     IS_RPI = False
-    # Mock GPIO para desarrollo en PC
-    class MockGPIO:
-        BCM = OUT = HIGH = LOW = None
-        def setmode(self, *args, **kwargs): pass
-        def setup(self, *args, **kwargs): pass
-        def output(self, *args, **kwargs): pass
-    GPIO = MockGPIO()
-
-
-
-#import RPi.GPIO as GPIO  # Importar GPIO para Raspberry Pi
-
-# Configurar GPIO
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(24, GPIO.OUT)  # Configurar pin 24 como salida
-GPIO.output(24, GPIO.HIGH)  # Inicializar en estado alto
+    GPIO = None  # No configurar en PC
 
 
 class Ui_page_v3(object):
@@ -417,8 +405,9 @@ class Ui_page_v3(object):
             # Obtener el total
             total = self.total_label.text().replace("Total: $", "").replace(",", "")
             
-            # Conectar a la base de datos
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
+            # Conectar a la base de datos (timeout para evitar bloqueos en RPi)
+            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice', timeout=10)
+            conn.execute("PRAGMA journal_mode=WAL")  # Mejor rendimiento en RPi
             cursor = conn.cursor()
             
             # Obtener el ID del usuario (case insensitive)
@@ -478,8 +467,8 @@ class Ui_page_v3(object):
                 product_name = v2_ui.item(row, 0).text()
                 quantity = int(v2_ui.item(row, 2).text())
                 
-                # Obtener el ID del producto
-                cursor.execute("SELECT id FROM products WHERE product = ?", (product_name.lower(),))
+                # Obtener el ID del producto (LOWER para coincidencia case-insensitive)
+                cursor.execute("SELECT id FROM products WHERE LOWER(product) = ?", (product_name.lower(),))
                 product_result = cursor.fetchone()
                 if not product_result:
                     QtWidgets.QMessageBox.critical(self.page_v3, "Error", f"No se encontró el producto {product_name} en la base de datos")
@@ -525,12 +514,10 @@ class Ui_page_v3(object):
             conn.commit()
             conn.close()
             
-            # Activar GPIO pin 24 para caja registradora (solo en efectivo o mixto)
-            if payment_method == "efectivo" or payment_method.startswith("mixto"):
+            # Activar GPIO pin 24 para caja registradora (solo en efectivo o mixto, solo en RPi)
+            if IS_RPI and GPIO and (payment_method == "efectivo" or payment_method.startswith("mixto")):
                 try:
                     GPIO.output(24, GPIO.LOW)  # Activar el relay
-                    print("GPIO pin 24 activado para caja registradora")
-                    # Mantener activo por 500ms
                     QtCore.QTimer.singleShot(100, lambda: GPIO.output(24, GPIO.HIGH))
                 except Exception as e:
                     print(f"Error al activar GPIO: {e}")

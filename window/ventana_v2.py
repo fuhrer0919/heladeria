@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import QTableWidgetItem
 from window.ventana_v3 import Ui_page_v3  # Agregar esta línea
 from datetime import datetime
 from PyQt5.QtCore import QTimer
+from db_helper import get_product  # Cache de productos - evita conexiones repetidas
 
 
 class Ui_page_v2(object):
@@ -29,7 +30,6 @@ class Ui_page_v2(object):
     def reset_window_counters(cls):
         """Reinicia todos los contadores de ventanas"""
         cls.main_window = None
-        cls.active_windows.clear()
         cls.mesa_windows.clear()
 
     def setupUi(self, page_v2):
@@ -137,7 +137,6 @@ class Ui_page_v2(object):
         
         # Increment window counter when creating a new window
         Ui_page_v2.open_windows += 1
-        print(f"Ventanas abiertas después de crear: {Ui_page_v2.open_windows}")  # Debug
         
         # Conectar el evento de cierre
         page_v2.closeEvent = self.closeEvent
@@ -486,6 +485,30 @@ class Ui_page_v2(object):
         self.Empaque.hide()
         self.Empaque.clicked.connect(self.add_empaque)
 
+        self.Litro = QtWidgets.QPushButton(page_v2)
+        self.Litro.setGeometry(QtCore.QRect(580, 160, 200, 30))  # Aumentado el ancho a 200
+        self.Litro.setObjectName("Litro")
+        self.Litro.hide()
+        self.Litro.clicked.connect(self.add_litro)
+
+        self.MedioLitro = QtWidgets.QPushButton(page_v2)
+        self.MedioLitro.setGeometry(QtCore.QRect(580, 200, 200, 30))  # Aumentado el ancho a 200
+        self.MedioLitro.setObjectName("MedioLitro")
+        self.MedioLitro.hide()
+        self.MedioLitro.clicked.connect(self.add_medio_litro)
+
+        self.LitroPrem = QtWidgets.QPushButton(page_v2)
+        self.LitroPrem.setGeometry(QtCore.QRect(580, 240, 200, 30))  # Aumentado el ancho a 200
+        self.LitroPrem.setObjectName("LitroPrem")
+        self.LitroPrem.hide()
+        self.LitroPrem.clicked.connect(self.add_litro_prem)
+
+        self.MedioLitroPrem = QtWidgets.QPushButton(page_v2)
+        self.MedioLitroPrem.setGeometry(QtCore.QRect(580, 280, 200, 30))  # Aumentado el ancho a 200
+        self.MedioLitroPrem.setObjectName("MedioLitroPrem")
+        self.MedioLitroPrem.hide()
+        self.MedioLitroPrem.clicked.connect(self.add_medio_litro_prem)
+
         self.TintoAmericano = QtWidgets.QPushButton(page_v2)
         self.TintoAmericano.setGeometry(QtCore.QRect(780, 40, 200, 30))  # Aumentado el ancho a 200
         self.TintoAmericano.setObjectName("TintoAmericano")
@@ -510,11 +533,47 @@ class Ui_page_v2(object):
         self.Aromatica.hide()
         self.Aromatica.clicked.connect(self.add_aromatica)
 
+        self.AguaBotella = QtWidgets.QPushButton(page_v2)
+        self.AguaBotella.setGeometry(QtCore.QRect(780, 200, 200, 30))  # Aumentado el ancho a 200
+        self.AguaBotella.setObjectName("AguaBotella")
+        self.AguaBotella.hide()
+        self.AguaBotella.clicked.connect(self.add_agua_botella)
+
         self.retranslateUi(page_v2)
         QtCore.QMetaObject.connectSlotsByName(page_v2)
 
         # Mostrar la marca visual para el pedido activo (incluye Pedido 1)
         QTimer.singleShot(0, self.show_pedido_marker)
+
+    def add_product_to_table(self, product_name_lower):
+        """Agrega producto a la tabla usando cache (sin abrir conexión DB)."""
+        result = get_product(product_name_lower)
+        if not result:
+            return
+        product_name, price = result
+        price_int = int(price)
+        # Bloquear señales para evitar múltiples calculate_total
+        self.tableView.blockSignals(True)
+        try:
+            found = False
+            for row in range(self.tableView.rowCount()):
+                item = self.tableView.item(row, 0)
+                if item and item.text() == product_name:
+                    cant_item = self.tableView.item(row, 2)
+                    if cant_item:
+                        current_cant = int(cant_item.text())
+                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
+                    found = True
+                    break
+            if not found:
+                row_position = self.tableView.rowCount()
+                self.tableView.insertRow(row_position)
+                self.tableView.setItem(row_position, 0, QTableWidgetItem(product_name))
+                self.tableView.setItem(row_position, 1, QTableWidgetItem(str(price_int)))
+                self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
+        finally:
+            self.tableView.blockSignals(False)
+        self.calculate_total()
 
     def hide_right_buttons(self):
         # Oculta todos los botones a la derecha de la columna principal
@@ -553,10 +612,15 @@ class Ui_page_v2(object):
         self.BananaSplit.hide()
         self.Topping.hide()
         self.Empaque.hide()
+        self.Litro.hide()
+        self.MedioLitro.hide()
+        self.LitroPrem.hide()
+        self.MedioLitroPrem.hide()
         self.TintoAmericano.hide()
         self.Cappuccino.hide()
         self.Mochaccino.hide()
         self.Aromatica.hide()
+        self.AguaBotella.hide()
 
     def show_cono1(self):
         self.hide_right_buttons()
@@ -570,304 +634,31 @@ class Ui_page_v2(object):
         self.CanastaPowIce.show()
         self.CanastaInfantil.show()
     def add_canastainfantil(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'canasta infantil'")
-            result = cursor.fetchone()
-            if result:
-                product_name = str(result[0])
-                found = False
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            conn.close()
-            self.calculate_total()
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('canasta infantil')
 
     def add_cono1(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'cono 1'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            self.calculate_total()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('cono 1')
 
     def add_cono2(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'cono 2'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            self.calculate_total()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('cono 2')
 
     def add_canasta2(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'canasta 2'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            self.calculate_total()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('canasta 2')
 
     def add_canasta3(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'canasta 3'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            self.calculate_total()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('canasta 3')
 
     def add_supercanasta(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'super canasta'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            self.calculate_total()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('super canasta')
 
     def add_canastafrutal(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'canasta frutal'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            self.calculate_total()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('canasta frutal')
 
     def add_canastaalaska(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'canasta alaska'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            self.calculate_total()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('canasta alaska')
 
     def add_canastapowice(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'canasta powice'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            self.calculate_total()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('canasta powice')
 
     def show_refrescante(self):
         self.hide_right_buttons()
@@ -876,103 +667,13 @@ class Ui_page_v2(object):
         self.SuperPaleta.show()
 
     def add_refrescante(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'refrescante'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('refrescante')
 
     def add_cremosa(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'cremosa'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('cremosa')
 
     def add_superpaleta(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'super paleta'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('super paleta')
 
     def show_obleas(self):
         self.hide_right_buttons()
@@ -981,103 +682,13 @@ class Ui_page_v2(object):
         self.ObleaPowIce.show()
 
     def add_obleasencilla(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'oblea sencilla'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('oblea sencilla')
 
     def add_superoblea(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'super oblea'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('super oblea')
 
     def add_obleapowice(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'oblea powice'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('oblea powice')
 
     def show_brownie(self):
         self.hide_right_buttons()
@@ -1085,70 +696,10 @@ class Ui_page_v2(object):
         self.BrownieEspecial.show()
 
     def add_browniehelado(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'brownie helado'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('brownie helado')
 
     def add_brownieespecial(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'brownie especial'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('brownie especial')
 
     def show_fresas(self):
         self.hide_right_buttons()
@@ -1156,70 +707,10 @@ class Ui_page_v2(object):
         self.SuperFresas.show()
 
     def add_fresassencillas(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'fresas sencillas'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('fresas sencillas')
 
     def add_superfresas(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'super fresas'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('super fresas')
 
     def show_waffles(self):
         self.hide_right_buttons()
@@ -1230,169 +721,19 @@ class Ui_page_v2(object):
         self.WaffleCosmico.show()
 
     def add_wafflesencillo(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'waffle sencillo'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('waffle sencillo')
 
     def add_wafflefrutal(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'waffle frutal'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('waffle frutal')
 
     def add_superwaffle(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'super waffle'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('super waffle')
 
     def add_megawaffles(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'mega waffles'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('mega waffles')
 
     def add_wafflecosmico(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'waffle cosmico'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('waffle cosmico')
 
     def show_bebidas(self):
         self.hide_right_buttons()
@@ -1406,509 +747,79 @@ class Ui_page_v2(object):
         self.GranizadoCafe.show()
 
     def add_malteadasencilla(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'malteada sencilla'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('malteada sencilla')
 
     def add_malteadasuper(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'malteada super'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('malteada super')
 
     def add_smoothie(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'smoothie'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('smoothie')
 
     def add_limonada(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'limonada'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('limonada')
 
     def add_jugoenagua(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'jugo en agua'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('jugo en agua')
 
     def add_jugoenleche(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'jugo en leche'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('jugo en leche')
 
     def add_granizadofrutal(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'granizado frutal'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('granizado frutal')
 
     def add_granizadocafe(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'granizado cafe'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('granizado cafe')
 
     def show_otros(self):
         self.hide_right_buttons()
         self.BananaSplit.show()
         self.Topping.show()
         self.Empaque.show()
+        self.Litro.show()
+        self.MedioLitro.show()
+        self.LitroPrem.show()
+        self.MedioLitroPrem.show()
         self.TintoAmericano.show()
         self.Cappuccino.show()
         self.Mochaccino.show()
         self.Aromatica.show()
+        self.AguaBotella.show()
 
     def add_bananasplit(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'banana split'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('banana split')
 
     def add_topping(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'topping'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('topping')
 
     def add_empaque(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'empaque'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('empaque')
+
+    def add_litro(self):
+        self.add_product_to_table('litro')
+
+    def add_medio_litro(self):
+        self.add_product_to_table('1/2 litro')
+
+    def add_litro_prem(self):
+        self.add_product_to_table('litro prem')
+
+    def add_medio_litro_prem(self):
+        self.add_product_to_table('1/2 litro prem')
 
     def add_tintoamericano(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'tinto americano'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('tinto americano')
 
     def add_cappuccino(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'cappuccino'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('cappuccino')
 
     def add_mochaccino(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'mochaccino'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('mochaccino')
 
     def add_aromatica(self):
-        try:
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT product, price FROM products WHERE LOWER(product) = 'aromatica'")
-            result = cursor.fetchone()
-            
-            if result:
-                product_name = str(result[0])
-                found = False
-                
-                for row in range(self.tableView.rowCount()):
-                    if self.tableView.item(row, 0).text() == product_name:
-                        current_cant = int(self.tableView.item(row, 2).text())
-                        self.tableView.setItem(row, 2, QTableWidgetItem(str(current_cant + 1)))
-                        found = True
-                        break
-                
-                if not found:
-                    row_position = self.tableView.rowCount()
-                    self.tableView.insertRow(row_position)
-                    self.tableView.setItem(row_position, 0, QTableWidgetItem(str(result[0])))
-                    self.tableView.setItem(row_position, 1, QTableWidgetItem(str(int(float(result[1])))))
-                    self.tableView.setItem(row_position, 2, QTableWidgetItem("1"))
-            
-            conn.close()
-            
-        except sqlite3.Error as e:
-            pass
-        except Exception as e:
-            pass
+        self.add_product_to_table('aromatica')
+
+    def add_agua_botella(self):
+        self.add_product_to_table('agua botella')
 
     def open_mesa_window(self, mesa_number):
         """Abre una nueva ventana para la mesa especificada o cambia a una existente"""
@@ -2103,10 +1014,15 @@ class Ui_page_v2(object):
         self.BananaSplit.setText(_translate("page_v2", "BANANA SPLIT"))
         self.Topping.setText(_translate("page_v2", "TOPPING"))
         self.Empaque.setText(_translate("page_v2", "EMPAQUE"))
+        self.Litro.setText(_translate("page_v2", "LITRO"))
+        self.MedioLitro.setText(_translate("page_v2", "1/2 LITRO"))
+        self.LitroPrem.setText(_translate("page_v2", "LITRO PREM"))
+        self.MedioLitroPrem.setText(_translate("page_v2", "1/2 LITRO PREM"))
         self.TintoAmericano.setText(_translate("page_v2", "TINTO AMERICANO"))
         self.Cappuccino.setText(_translate("page_v2", "CAPPUCCINO"))
         self.Mochaccino.setText(_translate("page_v2", "MOCHACCINO"))
         self.Aromatica.setText(_translate("page_v2", "AROMATICA"))
+        self.AguaBotella.setText(_translate("page_v2", "AGUA BOTELLA"))
 
     def set_user_active(self, user_name):
         """Update the user_active label with the given username"""
@@ -2191,7 +1107,6 @@ class Ui_page_v2(object):
             boton_nombre = pedido_buttons[self.mesa_number]
             boton = getattr(self, boton_nombre, None)
             if boton:
-                print(f"[DEBUG] Botón {boton_nombre} size antes: {boton.width()}x{boton.height()}")
                 # Obtener posición absoluta del botón respecto a la ventana
                 pos = boton.pos()
                 x = pos.x() + (boton.width() - 30) // 2

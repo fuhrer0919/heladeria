@@ -12,6 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import sqlite3  # Import SQLite for database interaction
 from window.ventana_v2 import Ui_page_v2  # Import ventana_v2
 from datetime import datetime  # Import datetime para manejar fechas
+from db_helper import validate_user as db_validate_user, get_cached_products
 
 
 class Ui_page_v1(object):
@@ -214,27 +215,17 @@ class Ui_page_v1(object):
 
         user_id = int(input_text)
         try:
-            # Connect to the database
-            connection = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
-            cursor = connection.cursor()
-
-            # Query to check if the ID exists and fetch the name
-            cursor.execute("SELECT nombre FROM usuarios WHERE id = ?", (user_id,))
-            result = cursor.fetchone()
-
+            result = db_validate_user(user_id)
             if result:
-                self.user_name = result[0]  # Store the user's name
+                self.user_name = result  # Store the user's name
                 self.user_ivalid.setText("Usuario correcto")
+                get_cached_products()  # Precargar cache de productos antes de abrir v2
                 self.open_ventana_v2()  # Open ventana_v2 if user is valid
             else:
                 self.user_ivalid.setText("Usuario incorrecto")
-
-        except sqlite3.Error as e:
+        except Exception as e:
             self.user_ivalid.setText("Error de BD")
             print(f"Database error: {e}")
-        finally:
-            if connection:
-                connection.close()
 
     def open_ventana_v2(self):
         self.window = QtWidgets.QWidget()
@@ -269,8 +260,8 @@ class Ui_page_v1(object):
             table.setFont(table_font)
             table.verticalHeader().setDefaultSectionSize(50)  # Aumentado el alto de las filas
 
-            # Conectar a la base de datos
-            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice')
+            # Conectar a la base de datos (timeout para RPi)
+            conn = sqlite3.connect('/home/andres/Documentos/databases_heladeria/Pow_Ice', timeout=10)
             cursor = conn.cursor()
 
             # Obtener la fecha actual
