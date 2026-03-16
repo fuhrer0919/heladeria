@@ -231,45 +231,51 @@ class Ui_page_v2(object):
         self.Cono2.clicked.connect(self.add_cono2)
 
         # Botones de Canasta (tercera columna) - Movidos más a la derecha
+        self.Canasta1 = QtWidgets.QPushButton(page_v2)
+        self.Canasta1.setGeometry(QtCore.QRect(780, 40, 200, 30))  # Aumentado el ancho a 200
+        self.Canasta1.setObjectName("Canasta1")
+        self.Canasta1.hide()
+        self.Canasta1.clicked.connect(self.add_canasta1)
+
         self.Canasta2 = QtWidgets.QPushButton(page_v2)
-        self.Canasta2.setGeometry(QtCore.QRect(780, 40, 200, 30))  # Aumentado el ancho a 200
+        self.Canasta2.setGeometry(QtCore.QRect(780, 80, 200, 30))  # Aumentado el ancho a 200
         self.Canasta2.setObjectName("Canasta2")
         self.Canasta2.hide()
         self.Canasta2.clicked.connect(self.add_canasta2)
 
         self.Canasta3 = QtWidgets.QPushButton(page_v2)
-        self.Canasta3.setGeometry(QtCore.QRect(780, 80, 200, 30))  # Aumentado el ancho a 200
+        self.Canasta3.setGeometry(QtCore.QRect(780, 120, 200, 30))  # Aumentado el ancho a 200
         self.Canasta3.setObjectName("Canasta3")
         self.Canasta3.hide()
         self.Canasta3.clicked.connect(self.add_canasta3)
 
         self.SuperCanasta = QtWidgets.QPushButton(page_v2)
-        self.SuperCanasta.setGeometry(QtCore.QRect(780, 120, 200, 30))  # Aumentado el ancho a 200
+        self.SuperCanasta.setGeometry(QtCore.QRect(780, 160, 200, 30))  # Aumentado el ancho a 200
         self.SuperCanasta.setObjectName("SuperCanasta")
         self.SuperCanasta.hide()
         self.SuperCanasta.clicked.connect(self.add_supercanasta)
 
         self.CanastaFrutal = QtWidgets.QPushButton(page_v2)
-        self.CanastaFrutal.setGeometry(QtCore.QRect(780, 160, 200, 30))  # Aumentado el ancho a 200
+        self.CanastaFrutal.setGeometry(QtCore.QRect(780, 200, 200, 30))  # Aumentado el ancho a 200
         self.CanastaFrutal.setObjectName("CanastaFrutal")
         self.CanastaFrutal.hide()
         self.CanastaFrutal.clicked.connect(self.add_canastafrutal)
 
         self.CanastaAlaska = QtWidgets.QPushButton(page_v2)
-        self.CanastaAlaska.setGeometry(QtCore.QRect(780, 200, 200, 30))  # Aumentado el ancho a 200
+        self.CanastaAlaska.setGeometry(QtCore.QRect(780, 240, 200, 30))  # Aumentado el ancho a 200
         self.CanastaAlaska.setObjectName("CanastaAlaska")
         self.CanastaAlaska.hide()
         self.CanastaAlaska.clicked.connect(self.add_canastaalaska)
 
         self.CanastaPowIce = QtWidgets.QPushButton(page_v2)
-        self.CanastaPowIce.setGeometry(QtCore.QRect(780, 240, 200, 30))  # Aumentado el ancho a 200
+        self.CanastaPowIce.setGeometry(QtCore.QRect(780, 280, 200, 30))  # Aumentado el ancho a 200
         self.CanastaPowIce.setObjectName("CanastaPowIce")
         self.CanastaPowIce.hide()
         self.CanastaPowIce.clicked.connect(self.add_canastapowice)
 
         # Botón Canasta Infantil
         self.CanastaInfantil = QtWidgets.QPushButton(page_v2)
-        self.CanastaInfantil.setGeometry(QtCore.QRect(780, 280, 200, 30))  # Debajo de CanastaPowIce
+        self.CanastaInfantil.setGeometry(QtCore.QRect(780, 320, 200, 30))  # Debajo de CanastaPowIce
         self.CanastaInfantil.setObjectName("CanastaInfantil")
         self.CanastaInfantil.setText("CANASTA INFANTIL")
         self.CanastaInfantil.hide()
@@ -372,6 +378,12 @@ class Ui_page_v2(object):
         self.BrownieEspecial.setObjectName("BrownieEspecial")
         self.BrownieEspecial.hide()
         self.BrownieEspecial.clicked.connect(self.add_brownieespecial)
+
+        self.BrownieNevado = QtWidgets.QPushButton(page_v2)
+        self.BrownieNevado.setGeometry(QtCore.QRect(580, 120, 200, 30))  # Aumentado el ancho a 200
+        self.BrownieNevado.setObjectName("BrownieNevado")
+        self.BrownieNevado.hide()
+        self.BrownieNevado.clicked.connect(self.add_brownie_nevado)
 
         # Botones de Fresas - Ajustados a la nueva posición
         self.FresasSencillas = QtWidgets.QPushButton(page_v2)
@@ -579,6 +591,7 @@ class Ui_page_v2(object):
         # Oculta todos los botones a la derecha de la columna principal
         self.Cono1.hide()
         self.Cono2.hide()
+        self.Canasta1.hide()
         self.Canasta2.hide()
         self.Canasta3.hide()
         self.SuperCanasta.hide()
@@ -594,6 +607,7 @@ class Ui_page_v2(object):
         self.ObleaPowIce.hide()
         self.BrownieHelado.hide()
         self.BrownieEspecial.hide()
+        self.BrownieNevado.hide()
         self.FresasSencillas.hide()
         self.SuperFresas.hide()
         self.WaffleSencillo.hide()
@@ -626,6 +640,7 @@ class Ui_page_v2(object):
         self.hide_right_buttons()
         self.Cono1.show()
         self.Cono2.show()
+        self.Canasta1.show()
         self.Canasta2.show()
         self.Canasta3.show()
         self.SuperCanasta.show()
@@ -641,6 +656,9 @@ class Ui_page_v2(object):
 
     def add_cono2(self):
         self.add_product_to_table('cono 2')
+
+    def add_canasta1(self):
+        self.add_product_to_table('canasta 1')
 
     def add_canasta2(self):
         self.add_product_to_table('canasta 2')
@@ -694,12 +712,16 @@ class Ui_page_v2(object):
         self.hide_right_buttons()
         self.BrownieHelado.show()
         self.BrownieEspecial.show()
+        self.BrownieNevado.show()
 
     def add_browniehelado(self):
         self.add_product_to_table('brownie helado')
 
     def add_brownieespecial(self):
         self.add_product_to_table('brownie especial')
+
+    def add_brownie_nevado(self):
+        self.add_product_to_table('brownie nevado')
 
     def show_fresas(self):
         self.hide_right_buttons()
@@ -966,6 +988,7 @@ class Ui_page_v2(object):
         self.Helados.setText(_translate("page_v2", "HELADOS"))
         self.Cono1.setText(_translate("page_v2", "CONO 1"))
         self.Cono2.setText(_translate("page_v2", "CONO 2"))
+        self.Canasta1.setText(_translate("page_v2", "CANASTA 1"))
         self.Canasta2.setText(_translate("page_v2", "CANASTA 2"))
         self.Canasta3.setText(_translate("page_v2", "CANASTA 3"))
         self.SuperCanasta.setText(_translate("page_v2", "SUPER CANASTA"))
@@ -983,6 +1006,7 @@ class Ui_page_v2(object):
         self.Brownie.setText(_translate("page_v2", "BROWNIE"))
         self.BrownieHelado.setText(_translate("page_v2", "BROWNIE HELADO"))
         self.BrownieEspecial.setText(_translate("page_v2", "BROWNIE ESPECIAL"))
+        self.BrownieNevado.setText(_translate("page_v2", "BROWNIE NEVADO"))
         self.Waffles.setText(_translate("page_v2", "WAFFLES"))
         self.Fresas.setText(_translate("page_v2", "FRESAS"))
         self.Bebidas.setText(_translate("page_v2", "BEBIDAS"))
