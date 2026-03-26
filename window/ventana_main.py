@@ -12,6 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from window.ventana_v1 import Ui_page_v1  # Import the ventana_v1 script
 from window.ventana_c1 import Ui_FormularioCompras  # Import the ventana_c1 script
 from window.ventana_f1 import Ui_FormularioF1  # Import la ventana de formularios
+from window.ventana_ad import Ui_FormularioAdmin  # Import la ventana de administrador
 
 
 class Ui_main(object):
@@ -105,6 +106,7 @@ class Ui_main(object):
         self.pushButton_3 = QtWidgets.QPushButton(main)
         self.pushButton_3.setObjectName("pushButton_3")
         self.pushButton_3.setGeometry(QtCore.QRect(312, 480, 400, 80))
+        self.pushButton_3.clicked.connect(self.open_administrador)
 
         self.retranslateUi(main)
         QtCore.QMetaObject.connectSlotsByName(main)
@@ -139,6 +141,15 @@ class Ui_main(object):
 
     def open_formularios(self):
         self.window = Ui_FormularioF1()
+        self.window.parent_window = self.main_widget if hasattr(self, 'main_widget') else None
+        self.window.show()
+        if hasattr(self, 'main_widget') and self.main_widget is not None:
+            self.main_widget.hide()
+        else:
+            QtWidgets.QApplication.instance().activeWindow().hide()
+
+    def open_administrador(self):
+        self.window = Ui_FormularioAdmin()
         self.window.parent_window = self.main_widget if hasattr(self, 'main_widget') else None
         self.window.show()
         if hasattr(self, 'main_widget') and self.main_widget is not None:

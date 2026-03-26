@@ -130,6 +130,20 @@ def get_ultimo_usuario_compra():
         return None
 
 
+def get_ultimo_usuario_aseo():
+    """Obtiene el id_usuario del último registro de aseo."""
+    try:
+        conn = sqlite3.connect(DB_PATH, timeout=5)
+        cursor = conn.cursor()
+        cursor.execute("SELECT id_usuario FROM aseo ORDER BY id DESC LIMIT 1")
+        result = cursor.fetchone()
+        conn.close()
+        return result[0] if result else None
+    except sqlite3.Error as e:
+        print(f"Error obteniendo último usuario de aseo: {e}")
+        return None
+
+
 def insertar_compra(fecha, id_usuario, id_insumo, valor, id_tipo_de_pago, observaciones):
     """Inserta una nueva compra en la base de datos."""
     try:
@@ -145,3 +159,115 @@ def insertar_compra(fecha, id_usuario, id_insumo, valor, id_tipo_de_pago, observ
     except sqlite3.Error as e:
         print(f"Error insertando compra: {e}")
         return False
+
+
+def get_elementos():
+    """Obtiene todos los elementos con sus IDs."""
+    try:
+        conn = sqlite3.connect(DB_PATH, timeout=5)
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, elemento FROM elementos")
+        rows = cursor.fetchall()
+        conn.close()
+        return rows  # Lista de tuplas (id, elemento)
+    except sqlite3.Error as e:
+        print(f"Error cargando elementos: {e}")
+        return []
+
+
+def insertar_aseo(fecha, id_usuario, id_elemento, desinfeccion, lavado, barrido, trapeado, evacuacion_de_basura, observaciones):
+    """Inserta un nuevo registro de aseo en la base de datos."""
+    try:
+        conn = sqlite3.connect(DB_PATH, timeout=5)
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO aseo (fecha, id_usuario, id_elemento, desinfeccion, lavado, barrido, trapeado, evacuacion_de_basura, observaciones)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (fecha, id_usuario, id_elemento, desinfeccion, lavado, barrido, trapeado, evacuacion_de_basura, observaciones))
+        conn.commit()
+        conn.close()
+        return True
+    except sqlite3.Error as e:
+        print(f"Error insertando aseo: {e}")
+        return False
+
+
+def get_insumos_filtrados():
+    """Obtiene insumos excluyendo tipo 4."""
+    try:
+        conn = sqlite3.connect(DB_PATH, timeout=5)
+        cursor = conn.cursor()
+        cursor.execute('SELECT id, insumo FROM insumos WHERE "id_tipo_insumo " != 4')
+        rows = cursor.fetchall()
+        conn.close()
+        return rows
+    except sqlite3.Error as e:
+        print(f"Error cargando insumos filtrados: {e}")
+        return []
+
+
+def get_tipos_insumo():
+    """Obtiene tipos de insumo."""
+    try:
+        conn = sqlite3.connect(DB_PATH, timeout=5)
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, tipo FROM tipo_insumo")
+        rows = cursor.fetchall()
+        conn.close()
+        return rows
+    except sqlite3.Error as e:
+        print(f"Error cargando tipos de insumo: {e}")
+        return []
+
+
+def insertar_materias_primas(fecha, id_insumo, id_tipo, temperatura, olor_extraño, textura_extraña, color_extraño, empaque_extraño, fecha_vencimiento, observaciones):
+    """Inserta registro en materias_primas."""
+    try:
+        conn = sqlite3.connect(DB_PATH, timeout=5)
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO materias_primas (fecha, "id_insumo ", id_tipo, temperatura_grados_celsius, olor_extraño, textura_extraña, color_extraño, empaque_extraño, fecha_vencimiento, observaciones)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (fecha, id_insumo, id_tipo, temperatura, olor_extraño, textura_extraña, color_extraño, empaque_extraño, fecha_vencimiento, observaciones))
+        conn.commit()
+        conn.close()
+        return True
+    except sqlite3.Error as e:
+        print(f"Error insertando materias primas: {e}")
+        return False
+
+
+def get_tipo_insumo_por_insumo(id_insumo):
+    """Obtiene el id_tipo_insumo de un insumo."""
+    try:
+        conn = sqlite3.connect(DB_PATH, timeout=5)
+        cursor = conn.cursor()
+        cursor.execute('SELECT "id_tipo_insumo " FROM insumos WHERE id = ?', (id_insumo,))
+        result = cursor.fetchone()
+        conn.close()
+        return result[0] if result else None
+    except sqlite3.Error as e:
+        print(f"Error obteniendo tipo de insumo: {e}")
+        return None
+
+
+def get_aseo_por_elemento(id_elemento, limite=10):
+    """Obtiene los últimos registros de aseo de un elemento con datos relacionados."""
+    try:
+        conn = sqlite3.connect(DB_PATH, timeout=5)
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT a.id, a.fecha, u.nombre, e.elemento, a.desinfeccion, a.lavado, a.barrido, a.trapeado, a.evacuacion_de_basura, a.observaciones
+            FROM aseo a
+            LEFT JOIN usuarios u ON a.id_usuario = u.id
+            LEFT JOIN elementos e ON a.id_elemento = e.id
+            WHERE a.id_elemento = ?
+            ORDER BY a.id DESC
+            LIMIT ?
+        """, (id_elemento, limite))
+        rows = cursor.fetchall()
+        conn.close()
+        return rows
+    except sqlite3.Error as e:
+        print(f"Error obteniendo aseo por elemento: {e}")
+        return []

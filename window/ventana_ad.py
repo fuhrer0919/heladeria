@@ -1,21 +1,20 @@
 # -*- coding: utf-8 -*-
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from window.ventana_a1 import Ui_FormularioAseo  # Import the aseo form
-from window.ventana_i1 import Ui_FormularioMateriasPrimas  # Import the materias primas form
+from window.ventana_ta import Ui_TablaAseo  # Import tabla aseo
 
 
-class Ui_FormularioF1(QtWidgets.QWidget):
+class Ui_FormularioAdmin(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.parent_window = parent
         self.setupUi()
 
     def setupUi(self):
-        self.setObjectName("FormularioF1")
+        self.setObjectName("FormularioAdmin")
         self.resize(1024, 600)
         self.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)
-        self.setWindowTitle("Formularios - Aseo e Insumos")
+        self.setWindowTitle("Administrador")
 
         self.setStyleSheet("""
             QWidget {
@@ -42,24 +41,32 @@ class Ui_FormularioF1(QtWidgets.QWidget):
 
         self.layout.addStretch()
 
-        self.title_label = QtWidgets.QLabel("Selecciona un formulario")
+        self.title_label = QtWidgets.QLabel("Administrador")
         self.title_label.setAlignment(QtCore.Qt.AlignCenter)
         self.layout.addWidget(self.title_label)
         self.layout.addSpacing(20)
 
-        self.form_aseo_btn = QtWidgets.QPushButton("Formulario Aseo y Desinfeccion")
-        self.form_aseo_btn.setObjectName("form_aseo_btn")
-        self.form_aseo_btn.setFixedWidth(650)
-        self.form_aseo_btn.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
-        self.layout.addWidget(self.form_aseo_btn, alignment=QtCore.Qt.AlignCenter)
+        self.tabla_aseo_btn = QtWidgets.QPushButton("Tabla Control Aseo")
+        self.tabla_aseo_btn.setObjectName("tabla_aseo_btn")
+        self.tabla_aseo_btn.setFixedWidth(650)
+        self.tabla_aseo_btn.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
+        self.layout.addWidget(self.tabla_aseo_btn, alignment=QtCore.Qt.AlignCenter)
 
         self.layout.addSpacing(20)
 
-        self.form_insumos_btn = QtWidgets.QPushButton("Formulario de Control Materias Primas")
-        self.form_insumos_btn.setObjectName("form_insumos_btn")
-        self.form_insumos_btn.setFixedWidth(650)
-        self.form_insumos_btn.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
-        self.layout.addWidget(self.form_insumos_btn, alignment=QtCore.Qt.AlignCenter)
+        self.tabla_materias_btn = QtWidgets.QPushButton("Tabla Control Materias Primas")
+        self.tabla_materias_btn.setObjectName("tabla_materias_btn")
+        self.tabla_materias_btn.setFixedWidth(650)
+        self.tabla_materias_btn.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
+        self.layout.addWidget(self.tabla_materias_btn, alignment=QtCore.Qt.AlignCenter)
+
+        self.layout.addSpacing(20)
+
+        self.modificar_btn = QtWidgets.QPushButton("Modificar Registros")
+        self.modificar_btn.setObjectName("modificar_btn")
+        self.modificar_btn.setFixedWidth(650)
+        self.modificar_btn.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
+        self.layout.addWidget(self.modificar_btn, alignment=QtCore.Qt.AlignCenter)
 
         self.layout.addSpacing(40)
 
@@ -71,37 +78,37 @@ class Ui_FormularioF1(QtWidgets.QWidget):
 
         self.layout.addStretch()
 
-        # Conexiones placeholder (a implementar por la app principal)
-        self.form_aseo_btn.clicked.connect(self.open_aseo)
-        self.form_insumos_btn.clicked.connect(self.open_insumos)
+        # Conexiones
+        self.tabla_aseo_btn.clicked.connect(self.abrir_tabla_aseo)
+        self.tabla_materias_btn.clicked.connect(self.abrir_tabla_materias)
+        self.modificar_btn.clicked.connect(self.abrir_modificar)
         self.atras_btn.clicked.connect(self.volver_a_main)
 
         self.setLayout(self.layout)
 
-    def open_aseo(self):
-        self.window = Ui_FormularioAseo()
+    def abrir_tabla_aseo(self):
+        self.window = Ui_TablaAseo()
         self.window.parent_window = self
         self.window.show()
         self.hide()
 
-    def open_insumos(self):
-        self.window = Ui_FormularioMateriasPrimas()
-        self.window.parent_window = self
-        self.window.show()
-        self.hide()
+    def abrir_tabla_materias(self):
+        QtWidgets.QMessageBox.information(self, "Tabla", "Abrir Tabla Control Materias Primas")
+
+    def abrir_modificar(self):
+        QtWidgets.QMessageBox.information(self, "Modificar", "Abrir Modificar Registros")
 
     def volver_a_main(self):
         if self.parent_window is not None:
             self.parent_window.show()
             self.close()
         else:
-            # En caso de que no haya ventana padre, cierra solo la ventana actual
             self.close()
 
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    window = Ui_FormularioF1()
+    window = Ui_FormularioAdmin()
     window.show()
     sys.exit(app.exec_())
