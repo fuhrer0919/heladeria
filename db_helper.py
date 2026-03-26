@@ -72,3 +72,76 @@ def validate_user(user_id):
         return result[0] if result else None
     except sqlite3.Error:
         return None
+
+
+def get_insumos():
+    """Obtiene todos los insumos con sus IDs."""
+    try:
+        conn = sqlite3.connect(DB_PATH, timeout=5)
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, insumo FROM insumos")
+        rows = cursor.fetchall()
+        conn.close()
+        return rows  # Lista de tuplas (id, insumo)
+    except sqlite3.Error as e:
+        print(f"Error cargando insumos: {e}")
+        return []
+
+
+def get_tipos_de_pago():
+    """Obtiene todos los tipos de pago con sus IDs."""
+    try:
+        conn = sqlite3.connect(DB_PATH, timeout=5)
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, tipo FROM tipo_de_pago")
+        rows = cursor.fetchall()
+        conn.close()
+        return rows  # Lista de tuplas (id, tipo)
+    except sqlite3.Error as e:
+        print(f"Error cargando tipos de pago: {e}")
+        return []
+
+
+def get_usuarios():
+    """Obtiene todos los usuarios con sus IDs."""
+    try:
+        conn = sqlite3.connect(DB_PATH, timeout=5)
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, nombre FROM usuarios")
+        rows = cursor.fetchall()
+        conn.close()
+        return rows  # Lista de tuplas (id, nombre)
+    except sqlite3.Error as e:
+        print(f"Error cargando usuarios: {e}")
+        return []
+
+
+def get_ultimo_usuario_compra():
+    """Obtiene el id_usuario de la última compra registrada."""
+    try:
+        conn = sqlite3.connect(DB_PATH, timeout=5)
+        cursor = conn.cursor()
+        cursor.execute("SELECT id_usuario FROM compras ORDER BY id DESC LIMIT 1")
+        result = cursor.fetchone()
+        conn.close()
+        return result[0] if result else None
+    except sqlite3.Error as e:
+        print(f"Error obteniendo último usuario de compra: {e}")
+        return None
+
+
+def insertar_compra(fecha, id_usuario, id_insumo, valor, id_tipo_de_pago, observaciones):
+    """Inserta una nueva compra en la base de datos."""
+    try:
+        conn = sqlite3.connect(DB_PATH, timeout=5)
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO compras (fecha, id_usuario, id_insumo, valor, id_tipo_de_pago, observaciones)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (fecha, id_usuario, id_insumo, valor, id_tipo_de_pago, observaciones))
+        conn.commit()
+        conn.close()
+        return True
+    except sqlite3.Error as e:
+        print(f"Error insertando compra: {e}")
+        return False
