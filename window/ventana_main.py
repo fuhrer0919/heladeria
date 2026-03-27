@@ -10,10 +10,14 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from window.ventana_v1 import Ui_page_v1  # Import the ventana_v1 script
+from window.ventana_c1 import Ui_FormularioCompras  # Import the ventana_c1 script
+from window.ventana_f1 import Ui_FormularioF1  # Import la ventana de formularios
+from window.ventana_ad import Ui_FormularioAdmin  # Import la ventana de administrador
 
 
 class Ui_main(object):
     def setupUi(self, main):
+        self.main_widget = main
         main.setObjectName("main")
         main.resize(1024, 600)
         main.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)  # Disable close button
@@ -83,18 +87,26 @@ class Ui_main(object):
         # Botón Iniciar Ventas
         self.ventas = QtWidgets.QPushButton(main)
         self.ventas.setObjectName("ventas")
-        self.ventas.setGeometry(QtCore.QRect(312, 200, 400, 80))
+        self.ventas.setGeometry(QtCore.QRect(312, 150, 400, 80))
         self.ventas.clicked.connect(self.open_ventas)
 
         # Botón Ingresar Compras
         self.pushButton_2 = QtWidgets.QPushButton(main)
         self.pushButton_2.setObjectName("pushButton_2")
-        self.pushButton_2.setGeometry(QtCore.QRect(312, 300, 400, 80))
+        self.pushButton_2.setGeometry(QtCore.QRect(312, 260, 400, 80))
+        self.pushButton_2.clicked.connect(self.open_compras)
+
+        # Botón Formularios (nuevo)
+        self.pushButton_4 = QtWidgets.QPushButton(main)
+        self.pushButton_4.setObjectName("pushButton_4")
+        self.pushButton_4.setGeometry(QtCore.QRect(312, 370, 400, 80))
+        self.pushButton_4.clicked.connect(self.open_formularios)
 
         # Botón Administrar
         self.pushButton_3 = QtWidgets.QPushButton(main)
         self.pushButton_3.setObjectName("pushButton_3")
-        self.pushButton_3.setGeometry(QtCore.QRect(312, 400, 400, 80))
+        self.pushButton_3.setGeometry(QtCore.QRect(312, 480, 400, 80))
+        self.pushButton_3.clicked.connect(self.open_administrador)
 
         self.retranslateUi(main)
         QtCore.QMetaObject.connectSlotsByName(main)
@@ -104,6 +116,7 @@ class Ui_main(object):
         main.setWindowTitle(_translate("main", "Pow Ice"))
         self.ventas.setText(_translate("main", "Iniciar Ventas"))
         self.pushButton_2.setText(_translate("main", "Ingresar Compras"))
+        self.pushButton_4.setText(_translate("main", "Formularios"))
         self.pushButton_3.setText(_translate("main", "Administrar"))
 
     def open_ventas(self):
@@ -112,4 +125,34 @@ class Ui_main(object):
         self.ui.setupUi(self.window)
         self.window.resize(1024, 600)  # Set resolution to 1024x600
         self.window.show()
-        QtWidgets.QApplication.instance().activeWindow().hide()  # Hide the current window
+        if hasattr(self, 'main_widget') and self.main_widget is not None:
+            self.main_widget.hide()
+        else:
+            QtWidgets.QApplication.instance().activeWindow().hide()
+
+    def open_compras(self):
+        self.window = Ui_FormularioCompras()
+        self.window.parent_window = self.main_widget if hasattr(self, 'main_widget') else None
+        self.window.show()
+        if hasattr(self, 'main_widget') and self.main_widget is not None:
+            self.main_widget.hide()
+        else:
+            QtWidgets.QApplication.instance().activeWindow().hide()
+
+    def open_formularios(self):
+        self.window = Ui_FormularioF1()
+        self.window.parent_window = self.main_widget if hasattr(self, 'main_widget') else None
+        self.window.show()
+        if hasattr(self, 'main_widget') and self.main_widget is not None:
+            self.main_widget.hide()
+        else:
+            QtWidgets.QApplication.instance().activeWindow().hide()
+
+    def open_administrador(self):
+        self.window = Ui_FormularioAdmin()
+        self.window.parent_window = self.main_widget if hasattr(self, 'main_widget') else None
+        self.window.show()
+        if hasattr(self, 'main_widget') and self.main_widget is not None:
+            self.main_widget.hide()
+        else:
+            QtWidgets.QApplication.instance().activeWindow().hide()
