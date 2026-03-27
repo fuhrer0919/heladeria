@@ -271,3 +271,105 @@ def get_aseo_por_elemento(id_elemento, limite=10):
     except sqlite3.Error as e:
         print(f"Error obteniendo aseo por elemento: {e}")
         return []
+
+
+def get_insumos_por_tipos(tipos):
+    """Obtiene insumos filtrando por ids de tipo_insumo (ej: [1,2,3])."""
+    try:
+        tipos = list(tipos or [])
+        if not tipos:
+            return []
+        placeholders = ",".join(["?"] * len(tipos))
+        conn = sqlite3.connect(DB_PATH, timeout=5)
+        cursor = conn.cursor()
+        cursor.execute(
+            f'SELECT id, insumo FROM insumos WHERE "id_tipo_insumo " IN ({placeholders})',
+            tuple(tipos),
+        )
+        rows = cursor.fetchall()
+        conn.close()
+        return rows
+    except sqlite3.Error as e:
+        print(f"Error cargando insumos por tipos: {e}")
+        return []
+
+
+def get_materias_primas_por_insumo(id_insumo, limite=10):
+    """Obtiene los últimos registros de materias_primas de un insumo con datos relacionados."""
+    try:
+        conn = sqlite3.connect(DB_PATH, timeout=5)
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            SELECT
+                m.id,
+                m.fecha,
+                i.insumo,
+                ti.tipo,
+                m.temperatura_grados_celsius,
+                m.olor_extraño,
+                m.textura_extraña,
+                m.color_extraño,
+                m.empaque_extraño,
+                m.fecha_vencimiento,
+                m.observaciones
+            FROM materias_primas m
+            LEFT JOIN insumos i ON m."id_insumo " = i.id
+            LEFT JOIN tipo_insumo ti ON m.id_tipo = ti.id
+            WHERE m."id_insumo " = ?
+            ORDER BY m.id DESC
+            LIMIT ?
+            """,
+            (id_insumo, limite),
+        )
+        rows = cursor.fetchall()
+        conn.close()
+        return rows
+    except sqlite3.Error as e:
+        print(f"Error obteniendo materias primas por insumo: {e}")
+        return []
+
+
+def get_materias_primas_vencimiento_proximo(dias=60, dias_criticos=15, limite=200):
+    """
+    Obtiene registros de materias_primas cuyo vencimiento sea dentro de 'dias' días.
+    Ordena poniendo primero los vencimientos dentro de 'dias_criticos' días,
+    y dentro de cada grupo ordena por fecha_vencimiento asc (más próxima arriba).
+    """
+    try:
+        conn = sqlite3.connect(DB_PATH, timeout=5)
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            SELECT
+                m.id,
+                m.fecha,
+                i.insumo,
+                ti.tipo,
+                m.temperatura_grados_celsius,
+                m.fecha_vencimiento,
+                m.observaciones
+            FROM materias_primas m
+            LEFT JOIN insumos i ON m."id_insumo " = i.id
+            LEFT JOIN tipo_insumo ti ON m.id_tipo = ti.id
+            WHERE
+                m.fecha_vencimiento IS NOT NULL
+                AND TRIM(m.fecha_vencimiento) != ''
+                AND DATE(m.fecha_vencimiento) <= DATE('now', '+' || ? || ' day')
+            ORDER BY
+                CASE
+                    WHEN DATE(m.fecha_vencimiento) <= DATE('now', '+' || ? || ' day') THEN 0
+                    ELSE 1
+                END,
+                DATE(m.fecha_vencimiento) ASC,
+                m.id DESC
+            LIMIT ?
+            """,
+            (int(dias), int(dias_criticos), int(limite)),
+        )
+        rows = cursor.fetchall()
+        conn.close()
+        return rows
+    except sqlite3.Error as e:
+        print(f"Error obteniendo vencimientos próximos: {e}")
+        return []

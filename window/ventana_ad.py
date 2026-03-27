@@ -2,6 +2,8 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from window.ventana_ta import Ui_TablaAseo  # Import tabla aseo
+from window.ventana_tm import Ui_TablaMateriasPrimas  # Import tabla materias primas
+from window.ventana_tv import Ui_TablaVencimientos  # Import tabla vencimientos
 
 
 class Ui_FormularioAdmin(QtWidgets.QWidget):
@@ -62,6 +64,14 @@ class Ui_FormularioAdmin(QtWidgets.QWidget):
 
         self.layout.addSpacing(20)
 
+        self.vencimientos_btn = QtWidgets.QPushButton("Control Fechas de Vencimiento")
+        self.vencimientos_btn.setObjectName("vencimientos_btn")
+        self.vencimientos_btn.setFixedWidth(650)
+        self.vencimientos_btn.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
+        self.layout.addWidget(self.vencimientos_btn, alignment=QtCore.Qt.AlignCenter)
+
+        self.layout.addSpacing(20)
+
         self.modificar_btn = QtWidgets.QPushButton("Modificar Registros")
         self.modificar_btn.setObjectName("modificar_btn")
         self.modificar_btn.setFixedWidth(650)
@@ -81,6 +91,7 @@ class Ui_FormularioAdmin(QtWidgets.QWidget):
         # Conexiones
         self.tabla_aseo_btn.clicked.connect(self.abrir_tabla_aseo)
         self.tabla_materias_btn.clicked.connect(self.abrir_tabla_materias)
+        self.vencimientos_btn.clicked.connect(self.abrir_tabla_vencimientos)
         self.modificar_btn.clicked.connect(self.abrir_modificar)
         self.atras_btn.clicked.connect(self.volver_a_main)
 
@@ -93,7 +104,16 @@ class Ui_FormularioAdmin(QtWidgets.QWidget):
         self.hide()
 
     def abrir_tabla_materias(self):
-        QtWidgets.QMessageBox.information(self, "Tabla", "Abrir Tabla Control Materias Primas")
+        self.window = Ui_TablaMateriasPrimas()
+        self.window.parent_window = self
+        self.window.show()
+        self.hide()
+
+    def abrir_tabla_vencimientos(self):
+        self.window = Ui_TablaVencimientos()
+        self.window.parent_window = self
+        self.window.show()
+        self.hide()
 
     def abrir_modificar(self):
         QtWidgets.QMessageBox.information(self, "Modificar", "Abrir Modificar Registros")
