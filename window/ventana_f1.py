@@ -78,6 +78,9 @@ class Ui_FormularioF1(QtWidgets.QWidget):
 
         self.setLayout(self.layout)
 
+        # Misma resolución que ventana_main.py (1024x600)
+        self.setFixedSize(1024, 600)
+
     def open_aseo(self):
         self.window = Ui_FormularioAseo()
         self.window.parent_window = self

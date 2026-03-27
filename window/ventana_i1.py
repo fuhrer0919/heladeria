@@ -40,111 +40,152 @@ class Ui_FormularioMateriasPrimas(QtWidgets.QWidget):
                 width: 20px;
                 height: 20px;
             }
-            QPushButton {
+            QPushButton#btn_guardar_form, QPushButton#btn_atras_form {
                 background-color: #4A90E2;
                 border: 3px solid #2C5282;
-                border-radius: 15px;
+                border-radius: 16px;
                 color: white;
-                padding: 10px;
-                font-size: 24px;
+                padding: 0px;
+                font-size: 26px;
+                font-weight: bold;
+                min-width: 320px;
+                max-width: 320px;
+                min-height: 56px;
+                max-height: 56px;
             }
-            QPushButton:hover {
+            QPushButton#btn_guardar_form:hover, QPushButton#btn_atras_form:hover {
                 background-color: #2C5282;
+            }
+            QPushButton#btn_guardar_form:pressed, QPushButton#btn_atras_form:pressed {
+                background-color: #1e3a5f;
             }
         """)
 
-        self.layout = QtWidgets.QVBoxLayout(self)
+        self.main_layout = QtWidgets.QVBoxLayout(self)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.setSpacing(0)
+
+        self.scroll = QtWidgets.QScrollArea()
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+        self.scroll.setStyleSheet("QScrollArea { border: none; background-color: #E6F3FF; }")
+
+        scroll_inner = QtWidgets.QWidget()
+        scroll_inner.setStyleSheet("background-color: #E6F3FF;")
+        self.form_layout = QtWidgets.QVBoxLayout(scroll_inner)
+        self.form_layout.setContentsMargins(16, 12, 16, 16)
+        self.form_layout.setSpacing(0)
 
         # Título
         self.title_label = QtWidgets.QLabel("Formulario de Control Materias Primas")
         self.title_label.setAlignment(QtCore.Qt.AlignCenter)
         self.title_label.setStyleSheet("font-size: 28px; font-weight: bold;")
-        self.layout.addWidget(self.title_label)
+        self.form_layout.addWidget(self.title_label)
 
-        self.layout.addSpacing(20)
+        self.form_layout.addSpacing(16)
 
         # Fecha
         self.fecha_label = QtWidgets.QLabel("Fecha:")
-        self.layout.addWidget(self.fecha_label)
+        self.form_layout.addWidget(self.fecha_label)
         self.fecha_edit = QtWidgets.QDateEdit()
         self.fecha_edit.setDate(QtCore.QDate.currentDate())
         self.fecha_edit.setCalendarPopup(True)
-        self.layout.addWidget(self.fecha_edit)
+        self.form_layout.addWidget(self.fecha_edit)
 
-        self.layout.addSpacing(10)
+        self.form_layout.addSpacing(10)
 
         # Insumo
         self.insumo_label = QtWidgets.QLabel("Insumo:")
-        self.layout.addWidget(self.insumo_label)
+        self.form_layout.addWidget(self.insumo_label)
         self.insumo_combo = QtWidgets.QComboBox()
         insumos = db_helper.get_insumos_filtrados()
         for iid, insumo in insumos:
             self.insumo_combo.addItem(insumo, iid)
-        self.layout.addWidget(self.insumo_combo)
+        self.form_layout.addWidget(self.insumo_combo)
 
-        self.layout.addSpacing(10)
+        self.form_layout.addSpacing(10)
 
         # Temperatura
         self.temp_label = QtWidgets.QLabel("Temperatura (°C):")
-        self.layout.addWidget(self.temp_label)
+        self.form_layout.addWidget(self.temp_label)
         self.temp_spin = QtWidgets.QSpinBox()
         self.temp_spin.setRange(-50, 100)  # Rango razonable
-        self.layout.addWidget(self.temp_spin)
+        self.form_layout.addWidget(self.temp_spin)
 
-        self.layout.addSpacing(20)
+        self.form_layout.addSpacing(16)
 
         # Anomalías
         self.anomalias_label = QtWidgets.QLabel("Anomalías detectadas:")
-        self.layout.addWidget(self.anomalias_label)
+        self.form_layout.addWidget(self.anomalias_label)
 
         self.olor_check = QtWidgets.QCheckBox("Olor Extraño")
-        self.layout.addWidget(self.olor_check)
+        self.form_layout.addWidget(self.olor_check)
 
         self.textura_check = QtWidgets.QCheckBox("Textura Extraña")
-        self.layout.addWidget(self.textura_check)
+        self.form_layout.addWidget(self.textura_check)
 
         self.color_check = QtWidgets.QCheckBox("Color Extraño")
-        self.layout.addWidget(self.color_check)
+        self.form_layout.addWidget(self.color_check)
 
         self.empaque_check = QtWidgets.QCheckBox("Empaque Extraño")
-        self.layout.addWidget(self.empaque_check)
+        self.form_layout.addWidget(self.empaque_check)
 
-        self.layout.addSpacing(10)
+        self.form_layout.addSpacing(10)
 
         # Fecha Vencimiento
         self.venc_label = QtWidgets.QLabel("Fecha de Vencimiento:")
-        self.layout.addWidget(self.venc_label)
+        self.form_layout.addWidget(self.venc_label)
         self.venc_edit = QtWidgets.QDateEdit()
         self.venc_edit.setDate(QtCore.QDate.currentDate().addDays(30))  # Default +30 días
         self.venc_edit.setCalendarPopup(True)
-        self.layout.addWidget(self.venc_edit)
+        self.form_layout.addWidget(self.venc_edit)
 
-        self.layout.addSpacing(10)
+        self.form_layout.addSpacing(10)
 
         # Observaciones
         self.obs_label = QtWidgets.QLabel("Observaciones:")
-        self.layout.addWidget(self.obs_label)
+        self.form_layout.addWidget(self.obs_label)
         self.obs_edit = QtWidgets.QTextEdit()
         self.obs_edit.setMaximumHeight(80)
         self.obs_edit.textChanged.connect(self.limitar_observaciones)
-        self.layout.addWidget(self.obs_edit)
+        self.form_layout.addWidget(self.obs_edit)
 
-        self.layout.addStretch()
+        self.scroll.setWidget(scroll_inner)
+        self.main_layout.addWidget(self.scroll, 1)
 
-        # Botones
-        self.button_layout = QtWidgets.QHBoxLayout()
+        self.button_bar = QtWidgets.QFrame()
+        self.button_bar.setFixedHeight(96)
+        self.button_bar.setStyleSheet(
+            "QFrame { background-color: #d6e8fb; border-top: 2px solid #4A90E2; }"
+        )
+        self.button_layout = QtWidgets.QHBoxLayout(self.button_bar)
+        self.button_layout.setSpacing(40)
+        self.button_layout.setContentsMargins(24, 16, 24, 16)
+        self.button_layout.addStretch(1)
 
         self.guardar_btn = QtWidgets.QPushButton("Guardar")
+        self.guardar_btn.setObjectName("btn_guardar_form")
+        self.guardar_btn.setFixedSize(320, 56)
+        self.guardar_btn.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        self.guardar_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.guardar_btn.clicked.connect(self.guardar_materias)
         self.button_layout.addWidget(self.guardar_btn)
 
         self.atras_btn = QtWidgets.QPushButton("Atrás")
+        self.atras_btn.setObjectName("btn_atras_form")
+        self.atras_btn.setFixedSize(320, 56)
+        self.atras_btn.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        self.atras_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.atras_btn.clicked.connect(self.volver_a_f1)
         self.button_layout.addWidget(self.atras_btn)
 
-        self.layout.addLayout(self.button_layout)
+        self.button_layout.addStretch(1)
+        self.main_layout.addWidget(self.button_bar, 0)
 
-        self.setLayout(self.layout)
+        # Misma resolución que ventana_main.py (1024x600); fijar tras el layout para la Raspberry
+        self.setFixedSize(1024, 600)
 
     def guardar_materias(self):
         fecha = self.fecha_edit.date().toString("yyyy-MM-dd")
