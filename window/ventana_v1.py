@@ -113,7 +113,7 @@ class Ui_page_v1(object):
         # Título
         self.title_label = QtWidgets.QLabel(page_v1)
         self.title_label.setObjectName("title_label")
-        self.title_label.setGeometry(QtCore.QRect(0, 50, 800, 60))
+        self.title_label.setGeometry(QtCore.QRect(0, 50, 1024, 60))
         self.title_label.setAlignment(QtCore.Qt.AlignCenter)
         title_font = QtGui.QFont()
         title_font.setPointSize(32)
@@ -241,7 +241,7 @@ class Ui_page_v1(object):
             # Crear ventana de diálogo
             dialog = QtWidgets.QDialog(self.page_v1)
             dialog.setWindowTitle("Ventas del Día")
-            dialog.resize(1000, 600)  # Aumentado el tamaño de la ventana
+            dialog.resize(1024, 600)  # Misma resolución que ventana_main (1024x600)
 
             # Crear layout vertical para la ventana
             layout = QtWidgets.QVBoxLayout(dialog)
