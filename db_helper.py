@@ -79,7 +79,7 @@ def get_insumos():
     try:
         conn = sqlite3.connect(DB_PATH, timeout=5)
         cursor = conn.cursor()
-        cursor.execute("SELECT id, insumo FROM insumos")
+        cursor.execute("SELECT id, insumo FROM insumos ORDER BY LOWER(insumo)")
         rows = cursor.fetchall()
         conn.close()
         return rows  # Lista de tuplas (id, insumo)
@@ -93,7 +93,7 @@ def get_tipos_de_pago():
     try:
         conn = sqlite3.connect(DB_PATH, timeout=5)
         cursor = conn.cursor()
-        cursor.execute("SELECT id, tipo FROM tipo_de_pago")
+        cursor.execute("SELECT id, tipo FROM tipo_de_pago ORDER BY LOWER(tipo)")
         rows = cursor.fetchall()
         conn.close()
         return rows  # Lista de tuplas (id, tipo)
@@ -107,7 +107,7 @@ def get_usuarios():
     try:
         conn = sqlite3.connect(DB_PATH, timeout=5)
         cursor = conn.cursor()
-        cursor.execute("SELECT id, nombre FROM usuarios")
+        cursor.execute("SELECT id, nombre FROM usuarios ORDER BY LOWER(nombre)")
         rows = cursor.fetchall()
         conn.close()
         return rows  # Lista de tuplas (id, nombre)
@@ -166,7 +166,7 @@ def get_elementos():
     try:
         conn = sqlite3.connect(DB_PATH, timeout=5)
         cursor = conn.cursor()
-        cursor.execute("SELECT id, elemento FROM elementos")
+        cursor.execute("SELECT id, elemento FROM elementos ORDER BY LOWER(elemento)")
         rows = cursor.fetchall()
         conn.close()
         return rows  # Lista de tuplas (id, elemento)
@@ -197,7 +197,7 @@ def get_insumos_filtrados():
     try:
         conn = sqlite3.connect(DB_PATH, timeout=5)
         cursor = conn.cursor()
-        cursor.execute('SELECT id, insumo FROM insumos WHERE "id_tipo_insumo " != 4')
+        cursor.execute('SELECT id, insumo FROM insumos WHERE "id_tipo_insumo " != 4 ORDER BY LOWER(insumo)')
         rows = cursor.fetchall()
         conn.close()
         return rows
@@ -211,7 +211,7 @@ def get_tipos_insumo():
     try:
         conn = sqlite3.connect(DB_PATH, timeout=5)
         cursor = conn.cursor()
-        cursor.execute("SELECT id, tipo FROM tipo_insumo")
+        cursor.execute("SELECT id, tipo FROM tipo_insumo ORDER BY LOWER(tipo)")
         rows = cursor.fetchall()
         conn.close()
         return rows
@@ -283,7 +283,7 @@ def get_insumos_por_tipos(tipos):
         conn = sqlite3.connect(DB_PATH, timeout=5)
         cursor = conn.cursor()
         cursor.execute(
-            f'SELECT id, insumo FROM insumos WHERE "id_tipo_insumo " IN ({placeholders})',
+            f'SELECT id, insumo FROM insumos WHERE "id_tipo_insumo " IN ({placeholders}) ORDER BY LOWER(insumo)',
             tuple(tipos),
         )
         rows = cursor.fetchall()

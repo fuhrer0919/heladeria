@@ -115,6 +115,7 @@ class Ui_FormularioCompras(QtWidgets.QWidget):
 
     def cargar_usuarios(self):
         usuarios = db_helper.get_usuarios()
+        usuarios = sorted(usuarios, key=lambda x: str(x[1]).lower())
         self.usuario_combo.clear()
         ultimo_usuario = db_helper.get_ultimo_usuario_compra()
         for id_usuario, nombre in usuarios:
@@ -124,12 +125,14 @@ class Ui_FormularioCompras(QtWidgets.QWidget):
 
     def cargar_insumos(self):
         insumos = db_helper.get_insumos()
+        insumos = sorted(insumos, key=lambda x: str(x[1]).lower())
         self.insumo_combo.clear()
         for id_insumo, nombre in insumos:
             self.insumo_combo.addItem(nombre, id_insumo)
 
     def cargar_tipos_pago(self):
         tipos = db_helper.get_tipos_de_pago()
+        tipos = sorted(tipos, key=lambda x: str(x[1]).lower())
         self.tipo_pago_combo.clear()
         for id_tipo, tipo in tipos:
             self.tipo_pago_combo.addItem(tipo, id_tipo)
